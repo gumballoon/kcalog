@@ -1,0 +1,21 @@
+<% layout('layouts/boilerplate') %>
+
+<a href="http://localhost:8080/kcalog/logs/exercises/new" class="btn btn-warning btn-lg">New Exercise Log</a>
+
+<h2 class="display-5 fw-semibold my-3">All Exercise Logs</h2>
+
+<div class="d-flex flex-wrap justify-content-center">
+    <% for (let exerciseLog of allExerciseLogs) { %>
+        <section class="border border-secondary m-4 p-3 text-start col-8 col-lg-4">
+            <h3 class="fs-3"><%= exerciseLog.name %></h3>
+            <div class="row">
+                <div class="col">
+                    <p>Kcal: <%= exerciseLog.kcal %></p>
+                    <p>Date: <%= exerciseLog.date.toDateString() %></p>
+                    <a href="http://localhost:8080/kcalog/logs/exercises/<%= exerciseLog._id %>" class="btn btn-secondary">View</a>
+                </div>
+                <img src="<%= exerciseLog.image %>" alt="<%= exerciseLog.name %>" class="img-fluid m-0 col-5">
+            </div>
+        </section>
+    <% } %>
+</div>

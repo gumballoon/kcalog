@@ -1,0 +1,46 @@
+<% layout('layouts/boilerplate') %>
+
+<datalist id="meals-list">
+    <% for (let meal of allMeals) { %>
+        <option value="<%= meal.name %>"></option>
+    <% } %>
+</datalist>
+
+<h2 class="display-5 fw-semibold">New Log</h2>
+
+<form id="meal-log-form" action="/kcalog/logs/meals" method="post">
+    <div class="border-bottom mx-auto pb-3">
+        <label for="date" class="d-block fs-3 fw-semibold my-3">Date</label>
+        <input type="date" id="date" name="mealLog[date]" value="<%= today %>">
+    </div>
+
+    <div class="border-bottom mx-auto pb-3">
+        <label for="name" class="d-block fs-3 fw-semibold my-3">Meal</label>
+        <input type="search" id="name" name="mealLog[name]" list="meals-list" class="col-6" required>
+    </div>
+
+    <div class="border-bottom mx-auto pb-3">
+        <h3 class="fw-semibold fs-3 my-3">Quantity</h3>
+        <div class="row">
+            <div class="col-4 offset-2">
+                <label for="dosage">Dosage</label>
+                <input type="number" id="dosage" name="mealLog[quantity][dosage]" step="any">
+            </div>
+            
+            <div class="col-4">
+                <label for="grams">Grams</label>
+                <input type="number" id="grams" name="mealLog[quantity][grams]">
+            </div>
+        </div>
+    </div>
+
+    <div class="border-bottom col-10 mx-auto pb-3 mb-3">
+        <label for="notes" class="d-block fs-3 fw-semibold my-3">Notes</label>
+        <textarea id="notes" name="mealLog[notes]" class="col-12"></textarea>
+    </div>
+
+    <button type="submit" class="btn btn-success">Save Log</button>
+
+</form>
+
+<a href="http://localhost:8080/kcalog/db/meals" class="btn btn-danger mt-3">Return to Meal Logs</a>

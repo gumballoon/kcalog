@@ -1,0 +1,22 @@
+<% layout('layouts/boilerplate') %>
+
+<form action="/kcalog/db/ingredients">
+    <button class="btn btn-light">All Ingredients</button>
+</form>
+
+<h2 class="display-5 fw-semibold my-3"><%= ingredient.name %></h2>
+
+<p class="fs-3">Kcal Per Gram: <%= ingredient.kcalPerGram%></p>
+<p class="fs-3 d-inline">Category: 
+    <form action="/kcalog/db/ingredients?category=<%= ingredient.category %>" class="d-inline">
+        <button class="btn btn-light"><%= ingredient.category %></button>
+    </form>
+</p>
+
+<form action="/kcalog/db/ingredients/<%= ingredient._id %>/edit" class="d-inline">
+    <button class="btn btn-warning my-3">Edit</button>
+</form>
+
+<form action="/kcalog/db/ingredients/<%= ingredient._id %>?_method=DELETE" method="post">
+    <button type="submit" class="btn btn-danger">Delete</button>
+</form>

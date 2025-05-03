@@ -1,0 +1,45 @@
+<% layout('layouts/boilerplate') %>
+
+<a href="http://localhost:8080/kcalog/logs/exercises" class="btn btn-light">All Exercise Logs</a>
+
+<h2 class="display-3 fw-semibold my-3"><%= exerciseLog.name %></h2>
+
+<img src="<%= exerciseLog.image %>" alt="Image for <%= exerciseLog.name %>" class="img-fluid my-3 d-block mx-auto">
+
+<a href="http://localhost:8080/kcalog/logs/<%= exerciseLog.dailyLog %>" class="btn btn-secondary btn-lg fw-light my-3"><%= exerciseLog.date.toDateString() %></a>
+
+<section class="border d-flex justify-content-around align-items-center p-3">
+    <div class="col-4">
+        <% if (exerciseLog.minutes) { %>
+            <h3 class="display-5"><%= exerciseLog.minutes %></h3>
+        <% } else { %>
+            <h3 class="display-5">-</h3>
+        <% } %>
+        <p class="fw-bold text-muted">Minutes</p>
+    </div>
+
+    <div class="col-4">
+        <h3 class="display-5"><%= exerciseLog.kcal %></h3>
+        <p class="fw-bold text-muted">Kcal</p>
+    </div>
+
+    <div class="col-4">
+        <% if (exerciseLog.minutes) { %>
+            <h3 class="display-5"><%= exerciseLog.kcalPerHour %></h3>
+        <% } else { %>
+            <h3 class="display-5">-</h3>
+        <% } %>
+        <p class="fw-bold text-muted">Kcal Per Hour</p>
+    </div>
+</section>
+
+<% if (exerciseLog.notes) { %>
+    <h3 class="display-5 fw-normal mt-4 mb-3">Notes</h3>
+    <p><%= exerciseLog.notes %></p>
+<% } %>
+
+<a href= "http://localhost:8080/kcalog/logs/exercises/<%= exerciseLog._id %>/edit"   class="btn btn-warning my-4">Edit</a>
+
+<form action="/kcalog/logs/exercises/<%= exerciseLog._id %>?_method=DELETE" method="post">
+    <button type="submit" class="btn btn-danger">Delete</button>
+</form>

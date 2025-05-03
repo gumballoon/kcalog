@@ -1,0 +1,22 @@
+{
+  "name": "kcalog",
+  "version": "1.0.0",
+  "description": "KCAL'OG lets you own your calorie tracking, giving you the power to stay on top of your goals. Because let's face it: losing weight is already hard enough...",
+  "main": "index.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "author": "",
+  "license": "ISC",
+  "dependencies": {
+    "ejs": "^3.1.10",
+    "ejs-mate": "^4.0.0",
+    "express": "^4.21.2",
+    "i": "^0.3.7",
+    "joi": "^17.13.3",
+    "joi-objectid": "^4.0.2",
+    "method-override": "^3.0.0",
+    "mongoose": "^6.13.8",
+    "npm": "^11.2.0"
+  }
+}

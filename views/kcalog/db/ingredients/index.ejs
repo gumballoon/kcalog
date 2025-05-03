@@ -1,0 +1,33 @@
+<% layout('layouts/boilerplate') %>
+
+<form action="/kcalog/db/ingredients/new">
+    <button class="btn btn-warning btn-lg">New Ingredient</button>
+</form>
+
+<% if (category === 'all') { %>
+    <h2 class="display-5 fw-semibold my-3">All Ingredients</h2>
+<% } else { %>
+    <h2 class="display-3 fw-semibold my-3"><%= category[0].toUpperCase() + category.slice(1) %></h2>
+
+    <form action="/kcalog/db/ingredients">
+        <button class="btn btn-light">All Ingredients</button>
+    </form>
+<% } %>
+
+<div class="d-flex flex-wrap justify-content-center">
+    <% for (let ing of allIngredients) { %>
+        <section class="border border-secondary m-4 p-3">
+            <h3 class="fs-2"><%= ing.name %></h3>
+            <p>Kcal Per Gram: <%= ing.kcalPerGram %></p>
+            <p class="d-inline">Category: 
+                <form action="/kcalog/db/ingredients?category=<%= ing.category %>" class="d-inline">
+                    <button class="btn btn-light"><%= ing.category %></button>
+                </form>
+            </p>
+
+            <form action="/kcalog/db/ingredients/<%= ing._id %>">
+                <button class="btn btn-secondary">View</button>
+            </form>
+        </section>
+    <% } %>
+</div>

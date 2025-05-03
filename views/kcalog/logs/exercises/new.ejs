@@ -1,0 +1,45 @@
+<% layout('layouts/boilerplate') %>
+
+<datalist id="exercises-list">
+    <% for (let exercise of allExercises) { %>
+        <option value="<%= exercise %>"></option>
+    <% } %>
+</datalist>
+
+<h2 class="display-5 fw-semibold">New Log</h2>
+
+<form id="exercise-log-form" action="/kcalog/logs/exercises" method="post">
+    <div class="border-bottom mx-auto pb-3">
+        <label for="date" class="d-block fs-3 fw-semibold my-3">Date</label>
+        <input type="date" id="date" name="exerciseLog[date]" value="<%= today %>">
+    </div>
+
+    <div class="border-bottom mx-auto pb-3">
+        <label for="name" class="d-block fs-3 fw-semibold my-3">Exercise</label>
+        <input type="search" id="name" name="exerciseLog[name]" list="exercises-list" class="col-6" required>
+    </div>
+
+    <div class="border-bottom mx-auto pb-3 col-12">
+        <div class="d-flex justify-content-evenly">
+            <div>
+                <label for="kcal" class="d-block fs-3 fw-semibold my-3">Kcal</label>
+                <input type="number" id="kcal" name="exerciseLog[kcal]" min="0">
+            </div>
+            
+            <div>
+                <label for="minutes" class="d-block fs-3 fw-semibold my-3">Minutes</label>
+                <input type="number" id="minutes" name="exerciseLog[minutes]" min="1">
+            </div>
+        </div>
+    </div>
+
+    <div class="border-bottom col-10 mx-auto pb-3 mb-3">
+        <label for="notes" class="d-block fs-3 fw-semibold my-3">Notes</label>
+        <textarea id="notes" name="mealLog[notes]" class="col-12"></textarea>
+    </div>
+
+    <button type="submit" class="btn btn-success">Save Log</button>
+
+</form>
+
+<a href="http://localhost:8080/kcalog/db/exercises" class="btn btn-danger mt-3">Return to Exercise Logs</a>

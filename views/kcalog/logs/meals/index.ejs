@@ -1,0 +1,21 @@
+<% layout('layouts/boilerplate') %>
+
+<a href="http://localhost:8080/kcalog/logs/meals/new" class="btn btn-warning btn-lg">New Meal Log</a>
+
+<h2 class="display-5 fw-semibold my-3">All Meal Logs</h2>
+
+<div class="d-flex flex-wrap justify-content-center">
+    <% for (let mealLog of allMealLogs) { %>
+        <section class="border border-secondary m-4 p-3 text-start col-8 col-lg-4">
+            <h3 class="fs-3"><%= mealLog.name %></h3>
+            <div class="row">
+                <div class="col">
+                    <p>Kcal: <%= mealLog.kcal %></p>
+                    <p>Date: <%= mealLog.date.toDateString() %></p>
+                    <a href="http://localhost:8080/kcalog/logs/meals/<%= mealLog._id %>" class="btn btn-secondary">View</a>
+                </div>
+                <img src="<%= mealLog.image %>" alt="<%= mealLog.name %>" class="img-fluid m-0 col-5">
+            </div>
+        </section>
+    <% } %>
+</div>

@@ -1,0 +1,31 @@
+<% layout('layouts/boilerplate') %>
+
+<h2 class="display-5 fw-semibold">New Ingredient</h2>
+
+<form action="/kcalog/db/ingredients" method="post">
+    <div class="border-bottom">
+        <label for="name" class="d-block fs-3 my-3">Name</label>
+        <input type="text" id="name" name="ingredient[name]" required class="w-50 mb-3">
+    </div>
+
+    <div class="border-bottom">
+        <label for="kcalPerGram" class="d-block fs-3 my-3">Kcal Per Gram</label>
+        <input type="number" min="0" step="any" id="kcalPerGram" name="ingredient[kcalPerGram]" class="w-50 mb-3">
+    </div>
+
+    <div class="border-bottom">
+        <label for="category" class="d-block fs-3 my-3">Category</label>
+        <select id="category" name="ingredient[category]" class="w-50 mb-3">
+            <% for (let category of allCategories) { %>
+                <option value="<%= category %>"><%= category[0].toUpperCase() + category.slice(1) %></option>
+            <% } %>
+        </select>
+    </div>
+
+    <button type="submit" class="btn btn-success mt-3">Save Ingredient</button>
+
+</form>
+
+<form action="/kcalog/db/ingredients">
+    <button class="btn btn-danger mt-3">Return to Ingredients</button>
+</form>

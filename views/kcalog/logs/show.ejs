@@ -1,0 +1,64 @@
+<% layout('layouts/boilerplate') %>
+
+<a href="http://localhost:8080/kcalog/logs" class="btn btn-light">All Daily Logs</a>
+
+<h2 class="display-6 fw-semibold my-3"><%= dailyLog.calendarDate %></h2>
+
+<section class="border d-flex justify-content-around align-items-center p-3">
+    <div class="col-4">
+        <h3 class="display-5"><%= dailyLog.totalMealKcal %></h3>
+        <p class="fw-bold text-muted">Meal Kcal</p>
+    </div>
+
+    <div class="col-4">
+        <h3 class="display-5"><%= dailyLog.totalExerciseKcal %></h3>
+        <p class="fw-bold text-muted">Exercise Kcal</p>
+    </div>
+
+    <div class="col-4">
+        <h3 class="display-5"><%= dailyLog.kcalBalance %></h3>
+        <p class="fw-bold text-muted">Kcal Balance</p>
+    </div>
+</section>
+
+<% if (dailyLog.mealLogs.length) { %>
+    <h2 class="mt-3 pt-3">Meal Logs</h3>
+    <div class="d-flex flex-wrap justify-content-center">
+        <% for (let mealLog of dailyLog.mealLogs) { %>
+            <section class="border border-secondary m-4 p-3 text-start col-8 col-lg-4">
+                <h3 class="fs-3"><%= mealLog.name %></h3>
+                <div class="row">
+                    <div class="col">
+                        <p>Kcal: <%= mealLog.kcal %></p>
+                        <p>Date: <%= mealLog.date.toDateString() %></p>
+                        <a href="http://localhost:8080/kcalog/logs/meals/<%= mealLog._id %>" class="btn btn-secondary">View</a>
+                    </div>
+                    <img src="<%= mealLog.image %>" alt="<%= mealLog.name %>" class="img-fluid m-0 col-5">
+                </div>
+            </section>
+        <% } %>
+    </div>
+<% } %>
+
+<% if (dailyLog.exerciseLogs.length) { %>
+    <h2 class="mt-3 pt-3">Exercise Logs</h3>
+    <div class="d-flex flex-wrap justify-content-center">
+        <% for (let exerciseLog of dailyLog.exerciseLogs) { %>
+            <section class="border border-secondary m-4 p-3 text-start col-8 col-lg-4">
+                <h3 class="fs-3"><%= exerciseLog.name %></h3>
+                <div class="row">
+                    <div class="col">
+                        <p>Kcal: <%= exerciseLog.kcal %></p>
+                        <p>Date: <%= exerciseLog.date.toDateString() %></p>
+                        <a href="http://localhost:8080/kcalog/logs/exercises/<%= exerciseLog._id %>" class="btn btn-secondary">View</a>
+                    </div>
+                    <img src="<%= exerciseLog.image %>" alt="<%= exerciseLog.name %>" class="img-fluid m-0 col-5">
+                </div>
+            </section>
+        <% } %>
+    </div>
+<% } %>
+
+<form action="/kcalog/logs/<%= dailyLog._id %>?_method=DELETE" method="post">
+    <button type="submit" class="btn btn-danger mt-3">Delete</button>
+</form>

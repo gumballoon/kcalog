@@ -1,0 +1,41 @@
+<% layout('layouts/boilerplate') %>
+
+<a href="http://localhost:8080/kcalog/db/meals" class="btn btn-light">All Meals</a>
+
+<h2 class="display-3 fw-semibold my-3"><%= meal.name %></h2>
+
+<img src="<%= meal.image %>" alt="Image for <%= meal.name %>" class="img-fluid my-3">
+
+
+<section class="border d-flex justify-content-around align-items-center p-3">
+    <div>
+        <h3 class="display-5"><%= meal.totalGrams%></h3>
+        <p class="fw-bold text-muted">Grams</p>
+    </div>
+    
+    <div>
+        <h3 class="display-5"><%= meal.totalKcal%></h3>
+        <p class="fw-bold text-muted">Kcal</p>
+    </div>
+
+    <div>
+        <h3 class="display-5"><%= meal.kcalPerGram%></h3>
+        <p class="fw-bold text-muted">Kcal Per Gram</p>
+    </div>
+</section>
+
+<section>
+    <h3 class="display-4 fw-normal mt-4 mb-3">Ingredients</h3>
+    <% for (ing of meal.ingredients) {%>
+        <h4 class="fs-4"><%= ing.name %> <span class="fs-5 text-muted fw-normal"><%= ing.grams %>g (<%= ing.kcal %>kcal)</span></h4>
+    <% } %>
+</section>
+
+<h3 class="display-4 fw-normal mt-4 mb-3">Notes</h3>
+<p><%= meal.notes %></p>
+
+<a href= "http://localhost:8080/kcalog/db/meals/<%= meal._id %>/edit"   class="btn btn-warning my-4">Edit</a>
+
+<form action="/kcalog/db/meals/<%= meal._id %>?_method=DELETE" method="post">
+    <button type="submit" class="btn btn-danger">Delete</button>
+</form>

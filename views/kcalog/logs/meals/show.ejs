@@ -1,0 +1,37 @@
+<% layout('layouts/boilerplate') %>
+
+<a href="http://localhost:8080/kcalog/logs/meals" class="btn btn-light">All Meal Logs</a>
+
+<h2 class="display-3 fw-semibold my-3"><%= mealLog.name %></h2>
+
+<h2 class="display-6 fw-light my-3"><%= mealLog.date.toDateString() %></h2>
+
+<img src="<%= mealLog.image %>" alt="Image for <%= mealLog.name %>" class="img-fluid my-3">
+
+<section class="border d-flex justify-content-around align-items-center p-3">
+    <div class="col-4">
+        <h3 class="display-5"><%= mealLog.quantity.dosage%></h3>
+        <p class="fw-bold text-muted">Dosage</p>
+    </div>
+
+    <div class="col-4">
+        <h3 class="display-5"><%= mealLog.quantity.grams%></h3>
+        <p class="fw-bold text-muted">Grams</p>
+    </div>
+    
+    <div class="col-4">
+        <h3 class="display-5"><%= mealLog.kcal%></h3>
+        <p class="fw-bold text-muted">Kcal</p>
+    </div>
+</section>
+
+<% if (mealLog.notes) { %>
+    <h3 class="display-5 fw-normal mt-4 mb-3">Notes</h3>
+    <p><%= mealLog.notes %></p>
+<% } %>
+
+<a href= "http://localhost:8080/kcalog/logs/meals/<%= mealLog._id %>/edit"   class="btn btn-warning my-4">Edit</a>
+
+<form action="/kcalog/logs/meals/<%= mealLog._id %>?_method=DELETE" method="post">
+    <button type="submit" class="btn btn-danger">Delete</button>
+</form>
