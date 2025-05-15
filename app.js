@@ -34,9 +34,20 @@ const AppError = require('./utilities/AppError')
 
 // // // // // // // // // // // // // // // //
 
+const Daily = require('./models/dailyLog');
+// populate the Daily Log to get the total Meal & Exercise kcal
+const getTotalKcal = require('./utilities/getTotalKcal');
+
 // HOME route (1. New Log, 2. Daily Log, 3. Food DB)
-app.get('/kcalog', (req, res) => {
-    res.render('kcalog/home', { title: 'Home'});
+app.get('/kcalog', async (req, res) => {
+    const today = new Date().toDateString();
+    const daily = await Daily.findOne({ calendarDate: today })
+    if (daily) {
+        const dailyStats = await getTotalKcal(daily);
+        res.render('kcalog/home', { title: 'Home', today, dailyStats });
+    } else {
+        res.render('kcalog/home', { title: 'Home', today, dailyStats: 0});
+    }
 })
 
 // // M E A L  L O G S // //

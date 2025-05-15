@@ -14,7 +14,7 @@ router.get('/', async (req, res, next) => {
     const { category } = req.query;
     const allCategories = await Ingredient.getAllCategories();
     if (category && allCategories.includes(category)){
-        await Ingredient.find({category})
+        await Ingredient.find({ category })
             .then(allIngredients => res.render('kcalog/db/ingredients/index', { title:'Ingredients', allIngredients, category }))
             .catch(e => next(mongoError(e)))   
     } else {

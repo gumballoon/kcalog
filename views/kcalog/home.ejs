@@ -1,13 +1,58 @@
 <% layout('layouts/boilerplate') %>
 
-<a href="/kcalog/logs" class="display-5 d-block text-decoration-none text-dark fw-semibold my-3">Daily Logs</a>
+<p class="border-bottom pb-3">losing weight is already hard enough</p>
 
-<a href="/kcalog/logs/meals" class="btn btn-primary btn-lg">Meal Logs</a>
+<h2 class="fs-5 alert alert-secondary col-6 offset-3 p-2"><%= today %></h2>
 
-<a href="/kcalog/logs/exercises" class="btn btn-info btn-lg">Exercise Logs</a>
+<div class="d-flex my-5 col-10 offset-1">
+    <div class="col">
+        <h3 class="display-5 fw-semibold mb-0"><%= dailyStats ? dailyStats.totalMealKcal : '0' %></h3>
+        <p class="mt-0">kcal</p>
+        <img src="/images/meal.png" alt="Meal Logo" class="img-fluid">
+    </div>
 
-<a href="/kcalog/db" class="display-5 d-block text-decoration-none text-dark fw-semibold my-3">Database</a>
+    <div class="col border-start border-end">
+        <h3 class="display-5 fw-semibold mb-0"><%= dailyStats ? dailyStats.totalExerciseKcal : '0' %></h3>
+        <p class="mt-0">kcal</p>
+        <img src="/images/exercise.png" alt="Exercise Logo" class="img-fluid">
+    </div>
+    
+    <div class="col">
+        <h3 class="display-5 fw-semibold mb-0"><%= dailyStats ? dailyStats.kcalBalance : '0' %></h3>
+        <p class="mt-0">kcal</p>
+        <img src="/images/title.png" alt="Balance" class="img-fluid">
+    </div>
+</div>
 
-<a href="/kcalog/db/ingredients" class="btn btn-primary btn-lg">Ingredients</a>
+<section class="mb-2">
+    <h2 class="fs-3">add a new log</h2>
+    <form action="/kcalog/logs/meals/new">
+        <button class="btn btn-secondary btn-lg col-10 mb-3">Meal Log</button>
+    </form>
+    
+    <form action="/kcalog/logs/exercises/new">
+        <button class="btn btn-secondary btn-lg col-10 mb-3">Exercise Log</button>
+    </form>
+</section>
 
-<a href="/kcalog/db/meals" class="btn btn-info btn-lg">Meals</a>
+<section class="mb-2">
+    <h2 class="fs-3">check your progress</h2>
+    <form action="/kcalog/logs/today">
+        <button class="btn btn-secondary btn-lg col-10 mb-3">Daily Log</button>
+    </form>
+    
+    <form action="/kcalog/logs/">
+        <button class="btn btn-secondary btn-lg col-10 mb-3">Weekly Progress</button>
+    </form>
+</section>
+
+<section>
+    <h2 class="fs-3">manage the database</h2>
+    <form action="/kcalog/db/meals">
+        <button class="btn btn-secondary btn-lg col-10 mb-3">Meals</button>
+    </form>
+    
+    <form action="/kcalog/db/ingredients">
+        <button class="btn btn-secondary btn-lg col-10 mb-3">Ingredients</button>
+    </form>
+</section>

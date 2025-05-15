@@ -10,29 +10,7 @@ function mongoError(e) {
 } 
 
 // populate the Daily Log to get the total Meal & Exercise kcal
-async function getTotalKcal(daily){
-        let totalMealKcal = 0;
-        await daily.populate('mealLogs')
-        .then(res => {
-            for (m of res.mealLogs){
-                totalMealKcal += m.kcal;
-            }
-        })
-        daily.totalMealKcal = totalMealKcal;
-
-        let totalExerciseKcal = 0;
-        await daily.populate('exerciseLogs')
-        .then(res => {
-            for (e of res.exerciseLogs){
-                totalExerciseKcal += e.kcal;
-            }
-        })
-        daily.totalExerciseKcal = totalExerciseKcal;
-
-        daily.kcalBalance = totalMealKcal - totalExerciseKcal;
-
-        return daily;
-}
+const getTotalKcal = require('../utilities/getTotalKcal');
 
 // INDEX route
 router.get('/', async (req, res, next) => {
@@ -49,6 +27,21 @@ router.get('/', async (req, res, next) => {
         res.render('kcalog/logs/index', { title: 'Daily Logs', allDailyLogs })
     }
 })
+
+// SHOW route w/ today's log
+router.get('/today', async (req, res, next) => {
+    const today = new Date().toDateString();
+    const log = await DailyLog.findOne({ calendarDate: today })
+        .catch(e => next(mongoError(e)));
+    // new var to hold the modified log
+    if (log) {
+        const dailyLog = await getTotalKcal(log);
+        res.render('kcalog/logs/show', { title: dailyLog.calendarDate, dailyLog })
+    } else {
+        res.redirect('/kcalog/logs/')
+    }
+})
+
 
 // SHOW route
 router.get('/:id', async (req, res, next) => {
