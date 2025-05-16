@@ -12,6 +12,8 @@ app.set('views', path.join(__dirname, '/views')); // to associate the VIEWS dir 
 const methodOverride = require('method-override'); // to 'fake' put/patch/delete requests
 app.use(methodOverride('_method')); // query string parameter for the HTTP verb
 
+const date = require('date-and-time');
+
 app.use(express.urlencoded({ extended: true })) // to parse form data in POST request body
 app.use(express.json()) // to parse incoming JSON in POST request body
 
@@ -40,8 +42,10 @@ const getTotalKcal = require('./utilities/getTotalKcal');
 
 // HOME route (1. New Log, 2. Daily Log, 3. Food DB)
 app.get('/kcalog', async (req, res) => {
-    const today = new Date().toDateString();
-    const daily = await Daily.findOne({ calendarDate: today })
+    const now = new Date();
+    const today = date.format(now, 'ddd DD MMMM')
+
+    const daily = await Daily.findOne({ calendarDate: now.toDateString() })
     if (daily) {
         const dailyStats = await getTotalKcal(daily);
         res.render('kcalog/home', { title: 'Home', today, dailyStats });

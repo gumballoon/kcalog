@@ -13,7 +13,7 @@ function mongoError(e) {
 // INDEX route
 router.get('/', async (req, res, next) => {
     await Meal.find({})
-        .then(allMeals => res.render('kcalog/db/meals/index', { title:'Meals', allMeals }))
+        .then(allMeals => res.render('kcalog/db/meals/index', { title: 'Meals', allMeals }))
         .catch(e => next(mongoError(e)))
 })
 

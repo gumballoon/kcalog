@@ -35,9 +35,10 @@ router.get('/new', async (req, res) => {
 router.post('/', async (req, res, next) => {
     const newLog = new ExerciseLog(req.body.exerciseLog);
     newLog.image = `https://picsum.photos/400?random=${Math.random()}`;
-    newLog.dailyLog = await updateDailyLogs('exercise', newLog);
+    const { duration} = req.body.exerciseLog;
+    newLog.minutes = duration.slice(0,2) * 60 + parseInt(duration.slice(3,5));
 
-    console.log(newLog.dailyLog)
+    newLog.dailyLog = await updateDailyLogs('exercise', newLog);
 
     await newLog.save()
         .then(() => res.redirect(`/kcalog/logs/exercises/${newLog._id}`))
