@@ -28,63 +28,55 @@ function getRandomDate(){
 }
 
 // // INGREDIENT // //
-const Ingredient = require('../models/ingredient');
-const ingredientData = require('./data/ingredients');
-const ingredientNames = ingredientData.map(i => i.name.toLowerCase());;
+const { Ingredient } = require('../models/ingredient');
+const ingredients = require('./data/ingredients');
 
 async function seedIngredient(){
     await Ingredient.deleteMany({})
-        .then(() => console.log('INGREDIENT has been reset.'))
+        .then(() => console.log('INGREDIENTS has been reset.'))
 
-    const allIngredients = []
-    for (i of ingredientData){
-        let { name, calories_per_100g, category } = i;
-        // to get the ratio per gram
-        const kcalPerGram = calories_per_100g / 100;
-        allIngredients.push({name, kcalPerGram, category})
-    }
-
-    await Ingredient.insertMany(allIngredients)
+    await Ingredient.insertMany(ingredients)
         .catch(e => console.log(e))
 }
 
 // // MEAL // //
-const Meal = require('../models/meal');
+const { Meal } = require('../models/meal');
 const { adjectives, terms } = require('./data/meals');
 
 async function seedMeal(){
     await Meal.deleteMany({})
-        .then(() => console.log('MEAL has been reset.'))
+        .then(() => console.log('MEALS has been reset.'))
 
-    const allIngredients = await Ingredient.find();
+    const allIngredients = await Ingredient.find({});
 
-    let randomMeals = [];
     for (let i = 0; i < 50; i++){
-        let meal = {};
-        meal.name = `${getRandomElement(adjectives)} ${getRandomElement(terms)}`;
-        meal.image = getRandomImage();
-        meal.notes = getRandomElement(['So tasty!', 'Love it.', 'Yummy, what a treat!'])
+        const newMeal = new Meal({
+            name: `${getRandomElement(adjectives)} ${getRandomElement(terms)}`,
+            image: getRandomImage(),
+            notes: getRandomElement(['So tasty!', 'Love it.', 'Yummy, what a treat!']),
+            serving: getRandomElement(['single', 'multi'])
+        });
 
-        meal.ingredients = []
+        if (newMeal.serving === 'multi') {
+            newMeal.totalGrams = Math.round(Math.random() * 600) + 200
+        }
+
+        newMeal.ingredients = []
         for (let i = 0; i < 8; i++){
             const randomIng = getRandomElement(allIngredients);
             let ing = {};
             ing.ingredient = randomIng;
-            ing.name = randomIng.name;
-            ing.grams = Math.round(Math.random() * 30) + 10;
-            ing.kcal = Math.round(ing.grams * randomIng.kcalPerGram);
-            meal.ingredients.push(ing);
+            ing.quantity = Math.round(Math.random() * 30) + 10;
+            newMeal.ingredients.push(ing);
         }
 
-        randomMeals.push(meal);
+        await newMeal.save()
+            .catch(e => console.log(e))
     }
-
-    await Meal.insertMany(randomMeals)
-        .catch(e => console.log(e))
 }
 
 // // MEAL LOG // // 
-const MealLog = require('../models/mealLog');
+const { MealLog } = require('../models/mealLog');
 
 async function seedMealLog(){
     await MealLog.deleteMany({})
@@ -94,9 +86,19 @@ async function seedMealLog(){
 
     // 60 random logs
     for (let i = 0; i < 60; i++){
-        const date = getRandomDate();
-        const meal = getRandomElement(allMeals);
-        const name = meal.name;
+        const randomMeal = getRandomElement(allMeals);
+        if (randomMeal.serving === ''){
+
+        }
+        const newMealLog = new MealLog({
+            date: getRandomDate(), 
+            meal: randomMeal, 
+            name: randomMeal.name,
+            ingredients: randomMeal.ingredients,
+            image, 
+            notes
+        });
+
         let quantity = {};
         let kcal = 0;
         if (Math.random() > 0.5){
@@ -114,7 +116,7 @@ async function seedMealLog(){
         const image = getRandomImage();
         const notes = getRandomElement(['Nice meal!', "Why don't I eat this more often? I love it!", "Great post-workout meal."])
 
-        const newMealLog = MealLog({date, meal, name, quantity, kcal, image, notes});
+
         newMealLog.dailyLog = await updateDailyLogs('meal', newMealLog);
 
         await newMealLog.save()
@@ -123,7 +125,7 @@ async function seedMealLog(){
 }
 
 // // EXERCISE LOG // //
-const ExerciseLog = require('../models/exerciseLog');
+const { ExerciseLog } = require('../models/exerciseLog');
 const exercises = require('./data/exercises');
 
 async function seedExerciseLogs(){
@@ -153,7 +155,7 @@ async function seedExerciseLogs(){
 
 
 // // // // // // //
-const DailyLog = require('../models/dailyLog');
+const { DailyLog } = require('../models/dailyLog');
 
 async function updateDailyLogs(type, log){
     const date = log.date.toDateString();
@@ -227,49 +229,49 @@ Kcal Per Gram: ${randomMeal.kcalPerGram}`)
     
     console.log('// // // // // // //')
     
-    await seedMealLog()
-        .then(() => console.log('MEAL LOG has been seeded.'))
-        .catch(e => console.log(e))
+//     await seedMealLog()
+//         .then(() => console.log('MEAL LOG has been seeded.'))
+//         .catch(e => console.log(e))
 
-    const randomMealLog = await MealLog.findOne({});
-    console.log(`// MEAL LOG: Random Sample //
-${randomMealLog}`);
+//     const randomMealLog = await MealLog.findOne({});
+//     console.log(`// MEAL LOG: Random Sample //
+// ${randomMealLog}`);
     
-    console.log('// // // // // // //')
+//     console.log('// // // // // // //')
     
-    await seedExerciseLogs()
-        .then(() => console.log('ExerciseLogs has been seeded.'))
-        .catch(e => console.log(e))
+//     await seedExerciseLogs()
+//         .then(() => console.log('ExerciseLogs has been seeded.'))
+//         .catch(e => console.log(e))
 
-    const randomExerciseLog = await ExerciseLog.findOne({});
-    console.log(`// EXERCISE LOG: Random Sample //
-${randomExerciseLog}
-Kcal Per Hour: ${randomExerciseLog.kcalPerHour}`);
+//     const randomExerciseLog = await ExerciseLog.findOne({});
+//     console.log(`// EXERCISE LOG: Random Sample //
+// ${randomExerciseLog}
+// Kcal Per Hour: ${randomExerciseLog.kcalPerHour}`);
 
-    console.log('// // // // // // //')
+//     console.log('// // // // // // //')
 
-    const randomDailyLog =  await DailyLog.findOne({});
-    let totalMealKcal = 0;
-    await randomDailyLog.populate('mealLogs')
-        .then(res => {
-            for (m of res.mealLogs){
-                totalMealKcal += m.kcal;
-            }
-        })
-    let totalExerciseKcal = 0;
-    await randomDailyLog.populate('exerciseLogs')
-        .then(res => {
-            for (e of res.exerciseLogs){
-                totalExerciseKcal += e.kcal;
-            }
-    })
+//     const randomDailyLog =  await DailyLog.findOne({});
+//     let totalMealKcal = 0;
+//     await randomDailyLog.populate('mealLogs')
+//         .then(res => {
+//             for (m of res.mealLogs){
+//                 totalMealKcal += m.kcal;
+//             }
+//         })
+//     let totalExerciseKcal = 0;
+//     await randomDailyLog.populate('exerciseLogs')
+//         .then(res => {
+//             for (e of res.exerciseLogs){
+//                 totalExerciseKcal += e.kcal;
+//             }
+//     })
         
-    console.log(`// // DAILY LOG: Random Sample // //
-${randomDailyLog}
-Total Meal Kcal: ${totalMealKcal}
-Total Exercise Kcal: ${totalExerciseKcal}
-Daily Balance: ${totalMealKcal - totalExerciseKcal}
-}`)
+//     console.log(`// // DAILY LOG: Random Sample // //
+// ${randomDailyLog}
+// Total Meal Kcal: ${totalMealKcal}
+// Total Exercise Kcal: ${totalExerciseKcal}
+// Daily Balance: ${totalMealKcal - totalExerciseKcal}
+// }`)
 }
 
 // to close the connection to MongoDB after execution, so the terminal won't stay on hold

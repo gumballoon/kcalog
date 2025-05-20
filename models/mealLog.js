@@ -1,7 +1,10 @@
 const mongoose = require('mongoose'); // import MONGOOSE
 const { Schema } = mongoose;
+const { Meal, mealSchema } = require('./meal');
 
+// when created, MealLog will use Meal as a template on which it adds-on
 const mealLogSchema = new Schema({
+    mealSchema,
     date: {
         type: Date,
         required: true,
@@ -12,33 +15,12 @@ const mealLogSchema = new Schema({
         ref: 'DailyLog',
         required: [true, 'DAILY LOG cannot be blank']
     },
-    meal: {
-        type: Schema.Types.ObjectId,
-        ref: 'Meal'
-        // not required since it can be deleted afterwards
-    },
-    name: {
+    category: {
         type: String,
-        required: [true, 'NAME cannot be blank'],
-        lowcase: true
-    },
-    quantity: {
-        dosage: {
-            type: Number,
-            min: 0
-        },
-        grams: {
-            type: Number,
-            min: 0
-        }
-    },
-    kcal: {
-        type: Number,
-        required: [true, 'KCAL cannot be blank']
+        enum: ['breakfast', 'lunch', 'snack', 'dinner']
     },
     image: String,
     notes: String
 })
 
-const MealLog = mongoose.model('MealLog', mealLogSchema);
-module.exports = MealLog;
+module.exports.MealLog = mongoose.model('MealLog', mealLogSchema);

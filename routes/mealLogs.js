@@ -1,8 +1,8 @@
 const express = require('express');
 const router = express.Router();
-const MealLog = require('../models/mealLog');
-const Meal = require('../models/meal');
-const DailyLog = require('../models/dailyLog');
+const { MealLog } = require('../models/mealLog');
+const { Meal } = require('../models/meal');
+const { DailyLog } = require('../models/dailyLog');
 
 // custom Error class (title, status, message)
 const AppError = require('../utilities/AppError');

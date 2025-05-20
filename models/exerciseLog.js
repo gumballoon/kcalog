@@ -40,5 +40,4 @@ exerciseLogSchema.virtual('kcalPerHour').get(function(){
     }
 })
 
-const ExerciseLog = mongoose.model('ExerciseLog', exerciseLogSchema);
-module.exports = ExerciseLog;
+module.exports.ExerciseLog = mongoose.model('ExerciseLog', exerciseLogSchema);

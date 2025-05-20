@@ -3,18 +3,25 @@ const mongoose = require('mongoose'); // import MONGOOSE
 const ingredientSchema = new mongoose.Schema({
     name: {
         type: String,
-        required: [true, 'NAME cannot be blank'],
-        lowcase: true
-    },
-    kcalPerGram: {
-        type: Number,
-        required: [true, 'KCAL PER GRAM cannot be blank'],
-        min: 0
+        lowcase: true,
+        unique: true,
+        required: [true, 'NAME cannot be blank']
     },
     category: {
         type: String,
-        required: [true, 'CATEGORY cannot be blank'],
-        lowcase: true
+        lowcase: true,
+        required: [true, 'CATEGORY cannot be blank']
+    },
+    unit: {
+        type: String,
+        lowcase: true,
+        enum: ['gram', 'millilitre', 'piece'],
+        required: [true, 'UNIT cannot be blank']
+    },
+    kcalPerUnit: {
+        type: Number,
+        min: 0,
+        required: [true, 'KCAL PER GRAM cannot be blank']
     }
 })
 
@@ -28,6 +35,4 @@ ingredientSchema.statics.getAllCategories = async function(){
     return allCategories;
 }
 
-const Ingredient = mongoose.model('Ingredient', ingredientSchema)
-
-module.exports = Ingredient;
+module.exports.Ingredient = mongoose.model('Ingredient', ingredientSchema);

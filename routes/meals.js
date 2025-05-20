@@ -1,7 +1,7 @@
 const express = require('express');
 const router = express.Router();
-const Meal = require('../models/meal');
-const Ingredient = require('../models/ingredient');
+const { Meal } = require('../models/meal');
+const { Ingredient } = require('../models/ingredient');
 
 // custom Error class (title, status, message)
 const AppError = require('../utilities/AppError')

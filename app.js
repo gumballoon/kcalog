@@ -36,7 +36,7 @@ const AppError = require('./utilities/AppError')
 
 // // // // // // // // // // // // // // // //
 
-const Daily = require('./models/dailyLog');
+const { DailyLog } = require('./models/dailyLog');
 // populate the Daily Log to get the total Meal & Exercise kcal
 const getTotalKcal = require('./utilities/getTotalKcal');
 
@@ -45,7 +45,7 @@ app.get('/kcalog', async (req, res) => {
     const now = new Date();
     const today = date.format(now, 'ddd DD MMMM')
 
-    const daily = await Daily.findOne({ calendarDate: now.toDateString() })
+    const daily = await DailyLog.findOne({ calendarDate: now.toDateString() })
     if (daily) {
         const dailyStats = await getTotalKcal(daily);
         res.render('kcalog/home', { title: 'Home', today, dailyStats });

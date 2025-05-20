@@ -3,23 +3,33 @@
 <h2 class="display-5 fw-semibold">New Ingredient</h2>
 
 <form action="/kcalog/db/ingredients" method="post">
-    <div class="border-bottom">
+    <div>
         <label for="name" class="d-block fs-3 my-3">Name</label>
-        <input type="text" id="name" name="ingredient[name]" required class="w-50 mb-3">
+        <input type="text" id="name" name="ingredient[name]" required class="w-50 mb-3 text-capitalize">
     </div>
 
-    <div class="border-bottom">
-        <label for="kcalPerGram" class="d-block fs-3 my-3">Kcal Per Gram</label>
-        <input type="number" min="0" step="any" id="kcalPerGram" name="ingredient[kcalPerGram]" class="w-50 mb-3">
-    </div>
-
-    <div class="border-bottom">
+    <div>
         <label for="category" class="d-block fs-3 my-3">Category</label>
-        <select id="category" name="ingredient[category]" class="w-50 mb-3">
+        <select id="category" name="ingredient[category]" class="w-50 mb-3 text-capitalize">
             <% for (let category of allCategories) { %>
-                <option value="<%= category %>"><%= category[0].toUpperCase() + category.slice(1) %></option>
+                <option value="<%= category %>"><%= category %></option>
             <% } %>
         </select>
+    </div>
+
+    <div>
+        <label for="unit" class="d-block fs-3 my-3">Unit</label>
+        <select id="unit" name="ingredient[unit]" class="w-50 mb-3 text-capitalize">
+            <% for (let unit of ['gram', 'millilitre', 'piece']) { %>
+                <option value="<%= unit %>"><%= unit %></option>
+            <% } %>
+        </select>
+    </div>
+
+
+    <div>
+        <label for="kcalPerUnit" class="d-block fs-3 my-3">Kcal Per Gram</label>
+        <input type="number" min="0" step="any" id="kcalPerUnit" name="ingredient[kcalPerUnit]" class="w-50 mb-3" required>
     </div>
 
     <button type="submit" class="btn btn-success mt-3">Save Ingredient</button>

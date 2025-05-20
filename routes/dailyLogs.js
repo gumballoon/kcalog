@@ -1,6 +1,6 @@
 const express = require('express');
 const router = express.Router();
-const DailyLog = require('../models/dailyLog');
+const { DailyLog } = require('../models/dailyLog');
 
 // custom Error class (title, status, message)
 const AppError = require('../utilities/AppError')

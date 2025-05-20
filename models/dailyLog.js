@@ -30,5 +30,4 @@ dailyLogSchema.post('findOneAndDelete', async function(daily){ // daily holds th
     }
 })
 
-const DailyLog = mongoose.model('DailyLog', dailyLogSchema);
-module.exports = DailyLog;
+module.exports.DailyLog = mongoose.model('DailyLog', dailyLogSchema);
