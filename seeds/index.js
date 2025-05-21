@@ -41,7 +41,7 @@ async function seedIngredient(){
 
 // // MEAL // //
 const { Meal } = require('../models/meal');
-const { adjectives, terms } = require('./data/meals');
+const { adjectives, terms, tags } = require('./data/meals');
 
 async function seedMeal(){
     await Meal.deleteMany({})
@@ -49,11 +49,12 @@ async function seedMeal(){
 
     const allIngredients = await Ingredient.find({});
 
-    for (let i = 0; i < 50; i++){
+    for (let i = 0; i < 20; i++){
         const newMeal = new Meal({
             name: `${getRandomElement(adjectives)} ${getRandomElement(terms)}`,
             image: getRandomImage(),
             notes: getRandomElement(['So tasty!', 'Love it.', 'Yummy, what a treat!']),
+            tags: [getRandomElement(tags), getRandomElement(tags)],
             serving: getRandomElement(['single', 'multi'])
         });
 
@@ -71,6 +72,7 @@ async function seedMeal(){
         }
 
         await newMeal.save()
+            .then(res => console.log(res))
             .catch(e => console.log(e))
     }
 }
@@ -152,8 +154,6 @@ async function seedExerciseLogs(){
 // // // // // // //
 
 
-
-
 // // // // // // //
 const { DailyLog } = require('../models/dailyLog');
 
@@ -223,11 +223,10 @@ ${randomIngredient}`)
     const randomMeal = await Meal.findOne({});
     console.log(`// MEAL: Random Sample //
 ${randomMeal}
-Total Grams: ${randomMeal.totalGrams}
-Total Kcal: ${randomMeal.totalKcal}
-Kcal Per Gram: ${randomMeal.kcalPerGram}`)
+Total Kcal: ${randomMeal.getTotalKcal}
+Kcal Per Gram: ${randomMeal.getKcalPerGram}`)
     
-    console.log('// // // // // // //')
+//    console.log('// // // // // // //')
     
 //     await seedMealLog()
 //         .then(() => console.log('MEAL LOG has been seeded.'))

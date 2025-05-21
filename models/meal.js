@@ -28,7 +28,13 @@ const mealSchema = new Schema({
         enum: ['single', 'multi'],
         required: [true, 'SERVING cannot be blank']
     },
-    totalGrams: Number,
+    totalKcal: Number,
+    totalGrams: {
+        type: Number,
+        required: [function () {
+          return this.serving === 'multi';
+        }, 'TOTAL GRAMS is required when SERVING is multi']
+    },
     tags: [ String ],
     notes: String,
     image: String
@@ -43,17 +49,37 @@ mealSchema.pre('save', async function() {
     }
 })
 
-mealSchema.virtual('totalKcal').get(function(){
-    let totalKcal = 0;
-    for (let i of this.ingredients){
-        totalKcal += i.kcal;
+mealSchema.virtual('getTotalKcal').get(function(){
+    if (!this.totalKcal) {
+        let totalKcal = 0;
+        for (let i of this.ingredients){
+            totalKcal += i.kcal;
+        }
+        return Math.round(totalKcal);
+    } else {
+        return this.totalKcal;
     }
-    return Math.round(totalKcal);
 })
 
-mealSchema.virtual('kcalPerGram').get(function(){
-    return Math.round(this.totalKcal / this.totalGrams * 100) / 100;
+mealSchema.virtual('getKcalPerGram').get(function(){
+    if (this.totalGrams){
+        return Math.round(this.getTotalKcal / this.totalGrams * 100) / 100;
+    }
 })
+
+mealSchema.statics.getAllTags = async function(){
+    const allInstances = await this.find({});
+    let allTags = [];
+    allInstances.map(i => {
+        if (i.tags) {
+            for (tag of i.tags) {
+                if (!allTags.includes(tag))
+                    allTags.push(tag)
+            }
+        }
+    });
+    return allTags;
+}
 
 module.exports.mealSchema = mealSchema;
 module.exports.Meal = mongoose.model('Meal', mealSchema);;

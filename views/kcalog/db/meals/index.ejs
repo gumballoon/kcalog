@@ -2,18 +2,41 @@
 
 <a href="http://localhost:8080/kcalog/db/meals/new" class="btn btn-warning btn-lg">New Meal</a>
 
-<h2 class="display-5 fw-semibold my-3">All Meals</h2>
+<% if (tag === 'all' && serving === 'all') { %>
+    <h2 class="display-5 fw-semibold my-3">All Meals</h2>
+<% } else { %>
+    <% if (serving === 'all') { %>
+        <h2 class="display-3 fw-semibold my-3 text-capitalize"><%= tag %></h2>
+    <% } else { %>
+        <h2 class="display-3 fw-semibold my-3 text-capitalize"><%= serving %></h2>
+    <% } %>
+
+    <a href="/kcalog/db/meals" class="btn btn-light">All Meals</a>
+<% } %>
+
 
 <div class="d-flex flex-wrap justify-content-center">
     <% for (let meal of allMeals) { %>
-        <section class="border border-secondary m-4 p-3 text-start col-8 col-lg-4">
+        <section class="border border-secondary m-4 p-3 text-start col-10 col-lg-5">
             <h3 class="fs-3"><%= meal.name %></h3>
             <div class="row">
-                <div class="col">
-                    <p>Total Kcal: <%= meal.totalKcal %></p>
-                    <p>Total Grams: <%= meal.totalGrams %></p>
-                    <p>Kcal Per Gram: <%= meal.kcalPerGram %></p>
-                    <a href="http://localhost:8080/kcalog/db/meals/<%= meal._id %>" class="btn btn-secondary">View</a>
+                <div class="col d-flex flex-column justify-content-between">
+                    <div class="d-flex flex-column justify-content between py-2">
+                        <p>Serving: <a  href="/kcalog/db/meals?serving=<%= meal.serving %>" class="text-capitalize btn btn-light"><%= meal.serving %></a></p>
+                        <p>Total Kcal: <span class="fw-semibold"><%= meal.getTotalKcal %></span></p>
+                        <% if (meal.serving === 'multi') { %>
+                            <p>Kcal Per 100g: <span class="fw-semibold"><%= meal.getKcalPerGram * 100 %> </span></p>
+                        <% } %>
+                        <p>
+                            <% if (meal.tags) { %>
+                                <% for (tag of meal.tags) { %>
+                                    <a href="/kcalog/db/meals?tag=<%= tag %>" class="btn btn-sm btn-light"><%= tag %></a>
+                                <% } %>
+                            <% } %>
+                        </p>
+                    </div>
+
+                    <a href="/kcalog/db/meals/<%= meal._id %>" class="btn btn-secondary">View</a>
                 </div>
                 <img src="<%= meal.image %>" alt="<%= meal.name %>" class="img-fluid m-0 col-5">
             </div>

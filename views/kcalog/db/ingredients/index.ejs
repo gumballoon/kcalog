@@ -7,10 +7,9 @@
 <% if (category === 'all') { %>
     <h2 class="display-5 fw-semibold my-3">All Ingredients</h2>
 <% } else { %>
-    <h2 class="display-3 fw-semibold my-3"><%= category[0].toUpperCase() + category.slice(1) %></h2>
+    <h2 class="display-3 fw-semibold my-3 text-capitalize"><%= category %></h2>
 
     <a href="/kcalog/db/ingredients" class="btn btn-light">All Ingredients</a>
-
 <% } %>
 
 <div class="d-flex flex-wrap justify-content-center">
