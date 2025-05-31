@@ -5,16 +5,37 @@ const { Schema } = mongoose;
 const mealSchema = new Schema({
     name: {
         type: String,
-        lowcase: true,
-        unique: true,
+        lowercase: true,
         required: [true, 'NAME cannot be blank']
+    },
+    serving: {
+        type: String,
+        lowercase: true,
+        enum: ['single', 'multi'],
+        required: [true, 'SERVING cannot be blank']
     },
     ingredients: [ {
         _id: {_id: false},
-        ingredient: {
-            type: Schema.Types.ObjectId,
-            ref: 'Ingredient',
-            required: true
+        name: {
+            type: String,
+            lowercase: true,
+            unique: false,
+            required: [true, 'Ingredients: NAME cannot be blank']
+        },
+        category: {
+            type: String,
+            lowercase: true
+        },
+        unit: {
+            type: String,
+            lowercase: true,
+            enum: ['gram', 'millilitre', 'piece'],
+            required: [true, 'Ingredients: UNIT cannot be blank']
+        },
+        kcalPerUnit: {
+            type: Number,
+            min: 0,
+            required: [true, 'Ingredients: KCAL PER GRAM cannot be blank']
         },
         quantity: {
             type: Number,
@@ -22,12 +43,6 @@ const mealSchema = new Schema({
         },
         kcal: Number
     } ],
-    serving: {
-        type: String,
-        lowercase: true,
-        enum: ['single', 'multi'],
-        required: [true, 'SERVING cannot be blank']
-    },
     totalKcal: Number,
     totalGrams: {
         type: Number,
@@ -43,8 +58,7 @@ const mealSchema = new Schema({
 mealSchema.pre('save', async function() {
     for (let i of this.ingredients) {
         if (!i.kcal) {
-            const ing = await Ingredient.findById(i.ingredient);
-            i.kcal = Math.round(i.quantity * ing.kcalPerUnit);
+            i.kcal = Math.round(i.quantity * i.kcalPerUnit);
         }
     }
 })
@@ -64,17 +78,31 @@ mealSchema.virtual('getTotalKcal').get(function(){
 mealSchema.virtual('getKcalPerGram').get(function(){
     if (this.totalGrams){
         return Math.round(this.getTotalKcal / this.totalGrams * 100) / 100;
+    } else {
+        return 'n/a';
     }
 })
+
+mealSchema.statics.getAllNames = async function(){
+    const allInstances = await this.find({});
+    const allNames = [];
+    allInstances.map(i => {
+        if (!allNames.includes(i.name)) {
+            allNames.push(i.name.toLowerCase())
+        }
+    })
+    return allNames;
+}
 
 mealSchema.statics.getAllTags = async function(){
     const allInstances = await this.find({});
     let allTags = [];
     allInstances.map(i => {
         if (i.tags) {
-            for (tag of i.tags) {
-                if (!allTags.includes(tag))
-                    allTags.push(tag)
+            for (let tag of i.tags) {
+                if (!allTags.includes(tag)) {
+                    allTags.push(tag.toLowerCase())
+                }
             }
         }
     });

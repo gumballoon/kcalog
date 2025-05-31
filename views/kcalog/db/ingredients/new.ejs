@@ -1,38 +1,53 @@
 <% layout('layouts/boilerplate') %>
 
+<a href="/kcalog/db/ingredients" class="btn btn-light btn-lg my-3">All Ingredients</a>
+
 <h2 class="display-5 fw-semibold">New Ingredient</h2>
 
-<form action="/kcalog/db/ingredients" method="post">
+<form action="/kcalog/db/ingredients" method="post" class="col-lg-10 mx-auto">
+    <!-- NAME -->
     <div>
-        <label for="name" class="d-block fs-3 my-3">Name</label>
-        <input type="text" id="name" name="ingredient[name]" required class="w-50 mb-3 text-capitalize">
+        <label for="name" class="d-block fs-3 mt-4 mb-3 form-label">Name</label>
+        <input type="text" id="name" name="ingredient[name]" class="mx-auto text-center form-control" required>
+        <p class="text-danger d-none mb-0" id="not-unique">an ingredient with this name already exists</p>
     </div>
 
-    <div>
-        <label for="category" class="d-block fs-3 my-3">Category</label>
-        <select id="category" name="ingredient[category]" class="w-50 mb-3 text-capitalize">
-            <% for (let category of allCategories) { %>
-                <option value="<%= category %>"><%= category %></option>
-            <% } %>
-        </select>
+    <div class="mx-auto d-lg-flex">
+        <!-- CATEGORY -->
+        <div class="col mx-lg-2">
+            <label for="category" class="d-block fs-3 mt-4 mb-3 form-label">Category</label>
+            <select id="category" name="ingredient[category]" class="mx-auto text-center form-control" required>
+                <% for (let category of allCategories) { %>
+                    <option value="<%= category %>"><%= category %></option>
+                <% } %>
+            </select>
+        </div>
+        
+        <!-- UNIT -->
+        <div class="col mx-lg-2">
+            <label for="unit" class="d-block fs-3 mt-4 mb-3 form-label">Unit</label>
+            <select id="unit" name="ingredient[unit]" class="mx-auto text-center form-control" required>
+                <% for (let unit of ['gram', 'millilitre', 'piece']) { %>
+                    <option value="<%= unit %>"><%= unit %></option>
+                <% } %>
+            </select>
+        </div>
     </div>
 
+    <!-- KCAL PER UNIT -->
     <div>
-        <label for="unit" class="d-block fs-3 my-3">Unit</label>
-        <select id="unit" name="ingredient[unit]" class="w-50 mb-3 text-capitalize">
-            <% for (let unit of ['gram', 'millilitre', 'piece']) { %>
-                <option value="<%= unit %>"><%= unit %></option>
-            <% } %>
-        </select>
+        <label for="kcalPerUnit" class="d-block fs-3 mt-4 mb-3 form-label">Kcal Per Unit</label>
+        <input type="number" min="0.01" step="any" id="kcalPerUnit" name="ingredient[kcalPerUnit]" class="mx-auto text-center form-control" required>
     </div>
 
-
-    <div>
-        <label for="kcalPerUnit" class="d-block fs-3 my-3">Kcal Per Gram</label>
-        <input type="number" min="0" step="any" id="kcalPerUnit" name="ingredient[kcalPerUnit]" class="w-50 mb-3" required>
-    </div>
-
-    <button type="submit" class="btn btn-success mt-3">Save Ingredient</button>
+    <button type="submit" class="btn btn-secondary mt-4" id="submit" disabled>Save Ingredient</button>
 </form>
 
-<a href="/kcalog/db/ingredients" class="btn btn-danger mt-3">All Ingredients</a>
+<!-- to share w/ meal.js the allNames array -->
+<script>
+    const allNames = <%- JSON.stringify(allNames) %>;
+    const allCategories = <%- JSON.stringify(allCategories) %>;
+</script>
+
+<script src="/scripts/verifyIngredients.js"></script>
+

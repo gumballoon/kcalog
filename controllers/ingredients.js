@@ -22,14 +22,16 @@ module.exports.index = async (req, res, next) => {
 }
 
 module.exports.renderNewForm = async (req, res, next) => {
-    await Ingredient.getAllCategories()
-        .then(allCategories => res.render('kcalog/db/ingredients/new', { title: "New Ingredient", allCategories }))
+    const allNames = await Ingredient.getAllNames()
         .catch(e => next(mongoError(e)))
+    const allCategories = await Ingredient.getAllCategories()
+        .catch(e => next(mongoError(e)))
+    
+    res.render('kcalog/db/ingredients/new', { title: "New Ingredient", allNames, allCategories })
 }
 
 module.exports.createIngredient = async (req, res, next) => {
     const newIng = new Ingredient(req.body.ingredient);
-    const { _id: id } = newIng;
     await newIng.save()
         .then(() => res.redirect(`/kcalog/db/ingredients`))
         .catch(e => next(mongoError(e)))
@@ -37,10 +39,13 @@ module.exports.createIngredient = async (req, res, next) => {
 
 module.exports.renderEditForm = async (req, res, next) => {
     const { id } = req.params;
-    const allCategories = await Ingredient.getAllCategories();
-    await Ingredient.findById(id)
-        .then(ingredient => res.render('kcalog/db/ingredients/edit', { title: 'Edit Ingredient', ingredient, allCategories }))
+    const allNames = await Ingredient.getAllNames()
         .catch(e => next(mongoError(e)))
+    const allCategories = await Ingredient.getAllCategories()
+        .catch(e => next(mongoError(e)))
+    const foundIngredient = await Ingredient.findById(id)
+        .catch(e => next(mongoError(e)))
+    res.render('kcalog/db/ingredients/edit', { title: 'Edit Ingredient', foundIngredient, allNames, allCategories })
 }
 
 module.exports.updateIngredient = async (req, res, next) => {

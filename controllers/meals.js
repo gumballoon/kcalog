@@ -28,8 +28,10 @@ module.exports.index = async (req, res, next) => {
 }
 
 module.exports.renderNewForm = async (req, res, next) => {
+    const allNames = await Meal.getAllNames();
+    const allTags = await Meal.getAllTags();
     await Ingredient.find({})
-        .then(allIngredients => res.render('kcalog/db/meals/new', { title: "New Meal", allIngredients }))
+        .then(allIngredients => res.render('kcalog/db/meals/new', { title: "New Meal", allIngredients, allNames, allTags }))
         .catch(e => next(mongoError(e)))
 }
 
@@ -80,17 +82,10 @@ module.exports.updateMeal = async (req, res, next) => {
 
 module.exports.showMeal = async (req, res, next) => {
     const { id } = req.params;
-    await Meal.findById(id).populate({
-        path: 'ingredients',
-        populate: {
-            path: 'ingredient'
-        }
-    })
-        .then(meal => {
-            console.log(meal);
-            res.render('kcalog/db/meals/show', { title: meal.name, meal})
-        })
+    const foundMeal = await Meal.findById(id)
         .catch(e => next(mongoError(e)))
+    console.log(foundMeal)
+    res.render('kcalog/db/meals/show', { title: foundMeal.name, foundMeal})
 }
 
 module.exports.destroyMeal = async (req, res, next) => {

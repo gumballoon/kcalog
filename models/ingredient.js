@@ -3,18 +3,18 @@ const mongoose = require('mongoose'); // import MONGOOSE
 const ingredientSchema = new mongoose.Schema({
     name: {
         type: String,
-        lowcase: true,
+        lowercase: true,
         unique: true,
         required: [true, 'NAME cannot be blank']
     },
     category: {
         type: String,
-        lowcase: true,
+        lowercase: true,
         required: [true, 'CATEGORY cannot be blank']
     },
     unit: {
         type: String,
-        lowcase: true,
+        lowercase: true,
         enum: ['gram', 'millilitre', 'piece'],
         required: [true, 'UNIT cannot be blank']
     },
@@ -24,6 +24,12 @@ const ingredientSchema = new mongoose.Schema({
         required: [true, 'KCAL PER GRAM cannot be blank']
     }
 })
+
+ingredientSchema.statics.getAllNames = async function(){
+    const allInstances = await this.find({});
+    const allNames = allInstances.map(i => i.name);
+    return allNames;
+}
 
 ingredientSchema.statics.getAllCategories = async function(){
     const allInstances = await this.find({});

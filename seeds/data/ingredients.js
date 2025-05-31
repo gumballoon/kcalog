@@ -120,19 +120,5 @@ module.exports = [
     { name: "bulgur (cooked)", category: "grain", unit: "gram", kcalPerUnit: 1.1 },
     { name: "quinoa (cooked)", category: "grain", unit: "gram", kcalPerUnit: 1.2 },
     { name: "barley (cooked)", category: "grain", unit: "gram", kcalPerUnit: 1.23 },
-    { name: "freekeh (cooked)", category: "grain", unit: "gram", kcalPerUnit: 1.35 },
-
-    
-    { name: "black beans", category: "legume", unit: "gram", kcalPerUnit: 1.32 },
-    { name: "green peas", category: "legume", unit: "gram", kcalPerUnit: 0.81 },
-    { name: "broad beans (boiled)", category: "legume", unit: "gram", kcalPerUnit: 1.1 },
-    { name: "lentils (boiled)", category: "legume", unit: "gram", kcalPerUnit: 1.16 },
-    { name: "chickpeas (boiled)", category: "legume", unit: "gram", kcalPerUnit: 1.64 },
-    { name: "white beans (boiled)", category: "legume", unit: "gram", kcalPerUnit: 1.33 },
-    { name: "kidney beans (boiled)", category: "legume", unit: "gram", kcalPerUnit: 1.27 },
-    { name: "soybeans (boiled)", category: "legume", unit: "gram", kcalPerUnit: 1.73 },
-    { name: "split peas (boiled)", category: "legume", unit: "gram", kcalPerUnit: 1.18 },
-    { name: "lupini beans (pickled)", category: "legume", unit: "gram", kcalPerUnit: 1.19 }
-      
+    { name: "freekeh (cooked)", category: "grain", unit: "gram", kcalPerUnit: 1.35 }
 ]
-  

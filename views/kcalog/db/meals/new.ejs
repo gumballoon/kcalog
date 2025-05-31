@@ -1,51 +1,122 @@
 <% layout('layouts/boilerplate') %>
-
+ <!-- for Input:SEARCH -->
 <datalist id="ingredients-list">
     <% for (let ingredient of allIngredients) { %>
-        <option value="<%= ingredient.name[0].toUpperCase() + ingredient.name.slice(1) %>"></option>
+        <option class="text-capitalize" value="<%= ingredient.name %>"></option>
     <% } %>
 </datalist>
 
+<datalist id="tags-list">
+    <% for (let tag of allTags) { %>
+        <option class="text-capitalize" value="<%= tag %>"></option>
+    <% } %>
+</datalist>
+
+
+<a href="http://localhost:8080/kcalog/db/meals" class="btn btn-light btn-lg my-3">All Meals</a>
+
 <h2 class="display-5 fw-semibold">New Meal</h2>
 
-<form id="meal-form" action="/kcalog/db/meals" method="post">
-    <div class="border-bottom mx-auto pb-3">
-        <label for="name" class="d-block fs-3 fw-semibold my-3">Name</label>
-        <input type="text" id="name" name="meal[name]" class="col-8 text-center" required>
+<form id="meal-form" action="/kcalog/db/meals" method="post" class="col-lg-10 mx-auto">
+    <!-- NAME -->
+    <div>
+        <label for="name" class="d-block fs-3 mt-4 mb-3 form-label">Name</label>
+        <input type="text" id="name" name="meal[name]" class="mx-auto text-center form-control" required>
+        <p class="text-danger d-none mb-0" id="not-unique">a meal with this name already exists</p>
     </div>
 
-    <div class="border-bottom col-10 mx-auto pb-3 mb-3">
-        <h3 class="fw-semibold fs-3 my-3">Ingredients</h3>
+    <!-- INGREDIENTS -->
+    <div>
+        <h3 class="d-block fs-3 mt-4 mb-3 fw-normal">Ingredients</h3>
         <p id="no-ingredient" class="text-danger d-none">Please insert at least one ingredient</p>
 
         <div id="meal-ingredients">
-            <div class="ingredient border row align-items-center px-2 py-3 mb-3" data-index="0">
-                <div class="btn btn-danger col-1 remove-ingredient">X</div>
+            <div class="ingredient border rounded-2 row align-items-center px-2 py-3 mb-3" data-index="0">
+                <div class="d-flex px-0 col-lg">
+                    <div class="btn btn-light col mx-2 remove-ingredient">X</div>
 
-                <div class="d-flex text-start col-7">
-                    <label for="ingredient-0" class="mx-2">Name</label>
-                    <input type="search" id="ingredient-0" name="meal[ingredients][0][name]" list="ingredients-list" class="col-10" required>
+                    <div class="d-flex align-items-center text-start col-10">
+                        <label for="ingredient-0" class="mx-2 my-0 form-label ingredient-label">Name</label>
+                        <input type="search" id="ingredient-0" name="meal[ingredients][0][name]" list="ingredients-list" class="form-control ingredient-input" required>
+                    </div>
                 </div>
 
-                <div class="d-flex text-start col-4">
-                    <label for="grams-0" class="mx-2">Grams</label>
-                    <input type="number" id="grams-0" name="meal[ingredients][0][grams]" class="w-50" required>
+                <div class="d-flex px-0 mt-4 mt-lg-0 col-lg">
+                    <div class="d-flex align-items-center text-start col">
+                        <label for="unit-0" class="mx-2 my-0 unit-label">Unit</label>
+                        <select id="unit-0" name="meal[ingredients][0][unit]" class="form-control unit-input">
+                            <option value="gram">Gram</option>
+                            <option value="millilitre">Millilitre</option>
+                            <option value="piece">Piece</option>
+                        </select>
+                    </div>
+    
+                    <div class="d-flex align-items-center text-start col">
+                        <label for="quantity-0" class="mx-2 my-0 form-label quantity-label">Quantity</label>
+                        <input type="number" id="quantity-0" name="meal[ingredients][0][quantity]" class="form-control quantity-input" required>
+                    </div>
+    
+                    <div class="d-flex align-items-center text-start col">
+                        <label for="kcal-0" class="mx-2 my-0 form-label kcal-label">Kcal</label>
+                        <input type="number" id="kcal-0" name="meal[ingredients][0][kcal]" class="form-control kcal-input" required>
+                    </div>
                 </div>
             </div>
         </div>
         
-        <div id="add-ingredient" class="btn btn-light">Add Ingredient</div>
+        <div id="new-ingredient" class="btn btn-light">New Ingredient</div>
     </div>
 
-    <div class="border-bottom col-10 mx-auto pb-3 mb-3">
-        <label for="notes" class="d-block fs-3 fw-semibold my-3">Notes</label>
-        <textarea id="notes" name="meal[notes]" class="col-12"></textarea>
+    <!-- SERVING -->
+    <div class="mt-5 d-flex justify-content-center align-items-center">
+        <h3 class="fs-3 fw-normal">Serving</h3>
+        <div class="d-flex py-3 mx-3 border rounded-3">
+            <div class="mx-3">
+                <input type="radio" class="btn-check" name="serving" id="single" checked>
+                <label class="btn btn-light" for="single" title="one portion only">Single</label>
+            </div>
+    
+            <div class="mx-3">
+                <input type="radio" class="btn-check" name="serving" id="multi">
+                <label class="btn btn-light" for="multi" title="multiple portions">Multi</label>
+            </div>
+        </div>
     </div>
 
-    <button type="submit" class="btn btn-success">Save Meal</button>
+    <div class="d-flex mx-auto">
+        <!-- TOTAL GRAMS -->
+        <div class="col mx-2">
+            <label for="totalGrams" class="d-block fs-3 mt-4 mb-3 form-label">Total Grams</label>
+            <input type="number" id="totalGrams" name="meal[totalGrams]" class="col-8 text-center form-control" disabled required>
+        </div>
+
+        <!-- TOTAL KCAL -->
+        <div class="col mx-2">
+            <label for="totalKcal" class="d-block fs-3 mt-4 mb-3 form-label">Total Kcal</label>
+            <input type="number" id="totalKcal" name="meal[totalKcal]" class="col-8 text-center form-control">
+        </div>
+    </div>
+
+    <!-- NOTES -->
+    <div>
+        <label for="notes" class="d-block fs-3 mt-4 mb-3 form-label">Notes</label>
+        <textarea id="notes" name="meal[notes]" class="mx-auto text-center form-control"></textarea>
+    </div>
+
+    <!-- TAGS -->
+    <div>
+        <label for="totalKcal" class="d-block fs-3 mt-4 mb-3 form-label">Tags</label>
+        <input type="search" id="tags" class="mx-auto text-center form-control" list="tags-list">
+    </div>
+
+    <button type="submit" class="btn btn-secondary mt-4" id="submit" disabled>Save Meal</button>
 
 </form>
 
-<a href="http://localhost:8080/kcalog/db/meals" class="btn btn-danger mt-3">Return to Meals</a>
+<!-- to share w/ meal.js the allNames array -->
+<script>
+    const allIngredients = <%- JSON.stringify(allIngredients) %>;
+    const allNames = <%- JSON.stringify(allNames) %>;
+</script>
 
-<script src="/scripts/meal.js"></script>
+<script src="/scripts/verifyMeals.js"></script>

@@ -49,7 +49,7 @@ async function seedMeal(){
 
     const allIngredients = await Ingredient.find({});
 
-    for (let i = 0; i < 20; i++){
+    for (let i = 0; i < 10; i++){
         const newMeal = new Meal({
             name: `${getRandomElement(adjectives)} ${getRandomElement(terms)}`,
             image: getRandomImage(),
@@ -64,15 +64,13 @@ async function seedMeal(){
 
         newMeal.ingredients = []
         for (let i = 0; i < 8; i++){
-            const randomIng = getRandomElement(allIngredients);
-            let ing = {};
-            ing.ingredient = randomIng;
-            ing.quantity = Math.round(Math.random() * 30) + 10;
-            newMeal.ingredients.push(ing);
+            // to add a copy of a Mongo doc WITHOUT the schema validation (so it won't block new properties)
+            const randomIng = getRandomElement(allIngredients).toObject();
+            randomIng.quantity = Math.round(Math.random() * 30) + 10;
+            newMeal.ingredients.push(randomIng);
         }
 
         await newMeal.save()
-            .then(res => console.log(res))
             .catch(e => console.log(e))
     }
 }

@@ -18,7 +18,7 @@ const exerciseLogSchema = new Schema({
     name: {
         type: String,
         required: [true, 'NAME cannot be blank'],
-        lowcase: true,
+        lowercase: true,
         enum: exercises
     },
     kcal: {
