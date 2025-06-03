@@ -1,8 +1,8 @@
 <% layout('layouts/boilerplate') %>
  <!-- for Input:SEARCH -->
 <datalist id="ingredients-list">
-    <% for (let ingredient of allIngredients) { %>
-        <option class="text-capitalize" value="<%= ingredient.name %>"></option>
+    <% for (let name of allIngNames) { %>
+        <option class="text-capitalize" value="<%= name %>"></option>
     <% } %>
 </datalist>
 
@@ -35,28 +35,29 @@
                 <div class="d-flex px-0 col-lg">
                     <div class="btn btn-light col mx-2 remove-ingredient">X</div>
 
+                    <!-- ING NAME -->
                     <div class="d-flex align-items-center text-start col-10">
-                        <label for="ingredient-0" class="mx-2 my-0 form-label ingredient-label">Name</label>
-                        <input type="search" id="ingredient-0" name="meal[ingredients][0][name]" list="ingredients-list" class="form-control ingredient-input" required>
+                        <label for="name-0" class="mx-2 my-0 form-label name-label">Name</label>
+                        <input type="search" id="name-0" name="meal[ingredients][0][name]" list="ingredients-list" class="form-control name-input" required>
                     </div>
                 </div>
 
                 <div class="d-flex px-0 mt-4 mt-lg-0 col-lg">
-                    <div class="d-flex align-items-center text-start col">
+                    <div class="d-flex align-items-center text-start col mx-1">
                         <label for="unit-0" class="mx-2 my-0 unit-label">Unit</label>
                         <select id="unit-0" name="meal[ingredients][0][unit]" class="form-control unit-input">
-                            <option value="gram">Gram</option>
-                            <option value="millilitre">Millilitre</option>
-                            <option value="piece">Piece</option>
+                            <option value="gram">gram</option>
+                            <option value="millilitre">millilitre</option>
+                            <option value="piece">piece</option>
                         </select>
                     </div>
     
-                    <div class="d-flex align-items-center text-start col">
+                    <div class="d-flex align-items-center text-start col mx-1">
                         <label for="quantity-0" class="mx-2 my-0 form-label quantity-label">Quantity</label>
                         <input type="number" id="quantity-0" name="meal[ingredients][0][quantity]" class="form-control quantity-input" required>
                     </div>
     
-                    <div class="d-flex align-items-center text-start col">
+                    <div class="d-flex align-items-center text-start col mx-1">
                         <label for="kcal-0" class="mx-2 my-0 form-label kcal-label">Kcal</label>
                         <input type="number" id="kcal-0" name="meal[ingredients][0][kcal]" class="form-control kcal-input" required>
                     </div>
@@ -86,14 +87,14 @@
     <div class="d-flex mx-auto">
         <!-- TOTAL GRAMS -->
         <div class="col mx-2">
-            <label for="totalGrams" class="d-block fs-3 mt-4 mb-3 form-label">Total Grams</label>
-            <input type="number" id="totalGrams" name="meal[totalGrams]" class="col-8 text-center form-control" disabled required>
+            <label for="total-grams" class="d-block fs-3 mt-4 mb-3 form-label">Total Grams</label>
+            <input type="number" id="total-grams" name="meal[totalGrams]" class="col-8 text-center form-control" disabled required>
         </div>
 
         <!-- TOTAL KCAL -->
         <div class="col mx-2">
-            <label for="totalKcal" class="d-block fs-3 mt-4 mb-3 form-label">Total Kcal</label>
-            <input type="number" id="totalKcal" name="meal[totalKcal]" class="col-8 text-center form-control">
+            <label for="total-kcal" class="d-block fs-3 mt-4 mb-3 form-label">Total Kcal</label>
+            <input type="number" id="total-kcal" name="meal[totalKcal]" class="col-8 text-center form-control">
         </div>
     </div>
 
@@ -116,7 +117,8 @@
 <!-- to share w/ meal.js the allNames array -->
 <script>
     const allIngredients = <%- JSON.stringify(allIngredients) %>;
-    const allNames = <%- JSON.stringify(allNames) %>;
+    const allIngNames = <%- JSON.stringify(allIngNames) %>;
+    const allMealNames = <%- JSON.stringify(allMealNames) %>;
 </script>
 
 <script src="/scripts/verifyMeals.js"></script>

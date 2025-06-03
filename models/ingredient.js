@@ -41,4 +41,16 @@ ingredientSchema.statics.getAllCategories = async function(){
     return allCategories;
 }
 
+ingredientSchema.statics.getFormattedIngredientData = async function(){
+    const allInstances = await this.find({});
+    const data = {};
+    for (let i of allInstances) {
+        data[i.name] = {
+            unit: i.unit,
+            kcalPerUnit: i.kcalPerUnit
+        }
+    }
+    return data;
+}
+
 module.exports.Ingredient = mongoose.model('Ingredient', ingredientSchema);

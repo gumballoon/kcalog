@@ -10,7 +10,8 @@ function mongoError(e) {
 
 module.exports.index = async (req, res, next) => {
     const { tag, serving } = req.query;
-    const allTags = await Meal.getAllTags();
+    const allTags = await Meal.getAllTags()
+        .catch(e => next(mongoError(e)));
     if (tag && allTags.includes(tag)){
         // if the TAGS array contain the passed-in tag
         await Meal.find({ tags: { $all: [ tag ] } })
@@ -28,11 +29,15 @@ module.exports.index = async (req, res, next) => {
 }
 
 module.exports.renderNewForm = async (req, res, next) => {
-    const allNames = await Meal.getAllNames();
-    const allTags = await Meal.getAllTags();
-    await Ingredient.find({})
-        .then(allIngredients => res.render('kcalog/db/meals/new', { title: "New Meal", allIngredients, allNames, allTags }))
-        .catch(e => next(mongoError(e)))
+    const allIngredients = await Ingredient.getFormattedIngredientData()
+        .catch(e => next(mongoError(e)));
+    const allIngNames = await Ingredient.getAllNames()
+        .catch(e => next(mongoError(e)));
+    const allMealNames = await Meal.getAllNames()
+        .catch(e => next(mongoError(e)));
+    const allTags = await Meal.getAllTags()
+        .catch(e => next(mongoError(e)));
+    res.render('kcalog/db/meals/new', { title: "New Meal", allIngredients, allIngNames, allMealNames, allTags })
 }
 
 module.exports.createMeal = async (req, res, next) => {

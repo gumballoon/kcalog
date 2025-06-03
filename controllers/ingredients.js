@@ -9,7 +9,8 @@ function mongoError(e) {
 
 module.exports.index = async (req, res, next) => {
     const { category } = req.query;
-    const allCategories = await Ingredient.getAllCategories();
+    const allCategories = await Ingredient.getAllCategories()
+        .catch(e => next(mongoError(e)));
     if (category && allCategories.includes(category)){
         await Ingredient.find({ category })
             .then(allIngredients => res.render('kcalog/db/ingredients/index', { title:'Ingredients', allIngredients, category }))
