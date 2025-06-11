@@ -14,7 +14,7 @@ router.get('/new', meals.renderNewForm)
 // SHOW, UPDATE & DESTROY routes
 router.route('/:id')
     .get(meals.showMeal)
-    .post(meals.updateMeal)
+    .put(meals.updateMeal)
     .delete(meals.destroyMeal)
 
 // EDIT route

@@ -1,52 +1,151 @@
 <% layout('layouts/boilerplate') %>
 
-<datalist id="ingredients-list">
-    <% for (let ingredient of allIngredients) { %>
-        <option value="<%= ingredient.name[0].toUpperCase() + ingredient.name.slice(1) %>"></option>
+ <!-- for Input:SEARCH -->
+ <datalist id="ingredients-list">
+    <% for (let name of allIngNames) { %>
+        <option class="text-capitalize" value="<%= name %>"></option>
     <% } %>
 </datalist>
 
+<datalist id="tags-list">
+    <% for (let tag of allTags) { %>
+        <option class="text-capitalize" value="<%= tag %>"></option>
+    <% } %>
+</datalist>
+
+<a href="http://localhost:8080/kcalog/db/meals" class="btn btn-light btn-lg my-3">All Meals</a>
+
 <h2 class="display-5 fw-semibold">Edit Meal</h2>
 
-<form id="meal-form" action="/kcalog/db/meals/<%= meal._id %>?_method=PUT" method="post">
-    <div class="border-bottom mx-auto pb-3">
-        <label for="name" class="d-block fs-3 fw-semibold my-3">Name</label>
-        <input type="text" id="name" name="meal[name]" class="col-8" required value="<%= meal.name %>">
+<form id="meal-form"  action="/kcalog/db/meals/<%= foundMeal._id %>?_method=PUT" method="post" class="col-lg-10 mx-auto">
+
+    <!-- NAME -->
+    <div>
+        <label for="name" class="d-block fs-3 mt-4 mb-3 form-label">Name</label>
+        <input type="text" id="name" name="meal[name]" class="mx-auto text-center form-control" placeholder="choose a unique name for this meal" required value="<%= foundMeal.name %>">
+        <p class="text-danger d-none mb-0" id="not-unique">a meal with this name already exists</p>
     </div>
 
-    <div class="border-bottom col-10 mx-auto pb-3 mb-3">
-        <h3 class="fs-3 my-3">Ingredients</h3>
+    <!-- INGREDIENTS -->
+    <div>
+        <h3 class="d-block fs-3 mt-4 mb-3 fw-normal">Ingredients</h3>
         <p id="no-ingredient" class="text-danger d-none">Please insert at least one ingredient</p>
 
         <div id="meal-ingredients">
-            <% for (let i = 0; i < meal.ingredients.length; i++) { %>
-                <div class="ingredient border row align-items-center px-2 py-3 mb-3" data-index="<%= i %>">
-                    <div class="btn btn-danger col-1 remove-ingredient">X</div>
+            <% foundMeal.ingredients.forEach((i, index) => { %>          
+                <div class="ingredient border rounded-2 row align-items-center px-2 py-3 mb-3" data-index="<%= index %>">
+                    <div class="d-flex px-0 col-xl">
+                        <div class="btn btn-light col mx-2 remove-ingredient">X</div>
                     
-                    <div class="d-flex text-start col-7">
-                        <label for="ingredient-<%= i %>" class="mx-2">Name</label>
-                        <input type="search" id="ingredient-<%= i %>" name="meal[ingredients][<%= i %>][name]" list="ingredients-list" class="col-10" required value="<%= meal.ingredients[i].name %>">
-                    </div>
-    
-                    <div class="d-flex text-start col-4">
-                        <label for="grams-<%= i %>" class="mx-2">Grams</label>
-                        <input type="number" id="grams-<%= i %>" name="meal[ingredients][<%= i %>][grams]" class="w-50" required value="<%= meal.ingredients[i].grams %>">
+                    <!-- ING NAME -->
+                    <div class="d-flex align-items-center text-start col-10">
+                        <label for="name-0" class="mx-2 my-0 form-label name-label">Name</label>
+                        <input type="search" id="name-0" name="meal[ingredients][<%= index %>][name]" list="ingredients-list" class="form-control name-input" placeholder="type to search or create a new ingredient" required value="<%= i.name %>">
                     </div>
                 </div>
+    
+
+                <div class="d-flex px-0 mt-4 mt-xl-0 col-xl">
+                    <!-- ING UNIT -->
+                    <div class="d-flex align-items-center text-start col mx-1">
+                        <label for="unit-0" class="mx-2 my-0 unit-label">Unit</label>
+                        <select id="unit-0" name="meal[ingredients][<%= index %>][unit]" class="form-select unit-input">
+                            <% for (let unit of ['gram', 'millilitre', 'piece']) { %>
+                                <option value="<%= unit %>" <%= i.unit === unit ? 'selected' : '' %>>
+                                    <%= unit %>
+                                </option>
+                            <% } %>
+                        </select>
+                    </div>
+
+                    <!-- ING QUANTITY -->
+                    <div class="d-flex align-items-center text-start col mx-1">
+                        <label for="quantity-0" class="mx-2 my-0 form-label quantity-label">Qty</label>
+                        <input type="number" id="quantity-0" name="meal[ingredients][<%= index %>][quantity]" class="form-control quantity-input" required value="<%= i.quantity %>">
+                    </div>
+    
+                    <!-- ING KCAL -->
+                    <div class="d-flex align-items-center text-start col mx-1">
+                        <label for="kcal-0" class="mx-2 my-0 form-label kcal-label">Kcal</label>
+                        <input type="number" id="kcal-0" name="meal[ingredients][<%= index %>][kcal]" class="form-control kcal-input" required value="<%= i.kcal %>">
+                    </div>
+                </div>
+            </div>
+            <% }) %>
+        </div>
+        
+        <div id="new-ingredient" class="btn btn-light">New Ingredient</div>
+    </div>
+
+    <!-- SERVING -->
+    <div class="mt-5 d-flex justify-content-center align-items-center">
+        <h3 class="fs-3 fw-normal">Serving</h3>
+        <div class="d-flex py-3 mx-3 border rounded-3">
+            <div class="mx-3">
+                <input type="radio" class="btn-check" name="meal[serving]" value="single" id="single" <%= foundMeal.serving === 'single' ? 'checked' : ''%>>
+                <label class="btn btn-light" for="single" title="one portion only">Single</label>
+            </div>
+    
+            <div class="mx-3">
+                <input type="radio" class="btn-check" name="meal[serving]" value="full" id="full" <%= foundMeal.serving === 'full' ? 'checked' : ''%>>
+                <label class="btn btn-light" for="full" title="multiple portions">Full</label>
+            </div>
+        </div>
+    </div>
+
+    <div class="d-flex mx-auto">
+        <!-- TOTAL GRAMS -->
+        <div class="col mx-2">
+            <label for="total-grams" class="d-block fs-3 mt-4 mb-3 form-label">Total Grams</label>
+            <% if (foundMeal.serving === 'full') { %>
+                <input type="number" id="total-grams" name="meal[totalGrams]" class="col-8 text-center form-control" required value="<%= foundMeal.totalGrams %>">
+            <% } else { %>
+                <input type="number" id="total-grams" name="meal[totalGrams]" class="col-8 text-center form-control" required disabled>
+            <% } %>
+
+        </div>
+
+        <!-- TOTAL KCAL -->
+        <div class="col mx-2">
+            <label for="total-kcal" class="d-block fs-3 mt-4 mb-3 form-label">Total Kcal</label>
+            <input type="number" id="total-kcal" name="meal[totalKcal]" class="col-8 text-center form-control">
+        </div>
+    </div>
+
+    <!-- NOTES -->
+    <div>
+        <label for="notes" class="d-block fs-3 mt-4 mb-3 form-label">Notes</label>
+        <textarea id="notes" name="meal[notes]" class="mx-auto text-center form-control" placeholder="add tips, changes, or reminders"><%= foundMeal.notes %></textarea>
+    </div>
+
+    <!-- TAGS -->
+    <div>
+        <label for="tag-input" class="d-block fs-3 mt-4 mb-3 form-label">Tags</label>
+        <input type="search" id="tag-input" class="mx-auto text-center form-control" list="tags-list" placeholder="click outside to add your tag, or click the tag to undo">
+        <input type="hidden" id="tags" name="meal[tags]" value="<%= foundMeal.tags ? foundMeal.tags.join('+++') : '' %>">
+        <div class="d-flex justify-content-center flex-wrap" id="inserted-tags">
+            <% if (foundMeal.tags) { %>
+                <% for (let tag of foundMeal.tags) { %>
+                    <% if (tag) { %>
+                        <small class="btn btn-sm btn-light m-3 position-relative tag">
+                            <span class="tag-name"><%= tag %></span>
+                            <span class="badge text-bg-light text-muted position-absolute top-0 start-100 translate-middle d-none">X</span>
+                        </small>
+                    <% } %>
+                <% } %>
             <% } %>
         </div>
-        <div id="add-ingredient" class="btn btn-light">Add Ingredient</div>
     </div>
 
-    <div class="border-bottom col-10 mx-auto pb-3 mb-3">
-        <label for="notes" class="d-block fs-3 fw-semibold my-3">Notes</label>
-        <textarea id="notes" name="meal[notes]" class="col-12"><%= meal.notes %></textarea>
-    </div>
-
-    <button type="submit" class="btn btn-success">Update Meal</button>
-
+    <button type="submit" class="btn btn-secondary mt-5" id="submit" disabled>Update Meal</button>
 </form>
 
-<a href="http://localhost:8080/kcalog/db/meals" class="btn btn-danger mt-3">Return to Meals</a>
+<!-- to share w/ meal.js the allNames array -->
 
-<script src="/scripts/meal.js"></script>
+<script>
+    const allIngredients = <%- JSON.stringify(allIngredients) %>;
+    const allIngNames = <%- JSON.stringify(allIngNames) %>;
+    const allMealNames = <%- JSON.stringify(allMealNames) %>;
+</script>
+
+<script src="/scripts/verifyMeals.js"></script>

@@ -1,5 +1,6 @@
 const mongoose = require('mongoose'); // import MONGOOSE
 const { Ingredient } = require('./ingredient');
+const { func } = require('joi');
 const { Schema } = mongoose;
 
 const mealSchema = new Schema({
@@ -11,7 +12,7 @@ const mealSchema = new Schema({
     serving: {
         type: String,
         lowercase: true,
-        enum: ['single', 'multi'],
+        enum: ['single', 'full'],
         required: [true, 'SERVING cannot be blank']
     },
     ingredients: [ {
@@ -32,33 +33,49 @@ const mealSchema = new Schema({
             enum: ['gram', 'millilitre', 'piece'],
             required: [true, 'Ingredients: UNIT cannot be blank']
         },
-        kcalPerUnit: {
-            type: Number,
-            min: 0,
-            required: [true, 'Ingredients: KCAL PER GRAM cannot be blank']
-        },
         quantity: {
             type: Number,
             required: [true, 'Ingredients: QUANTITY cannot be blank']
         },
-        kcal: Number
+        kcal: Number,
+        kcalPerUnit: Number
     } ],
     totalKcal: Number,
     totalGrams: {
         type: Number,
         required: [function () {
-          return this.serving === 'multi';
-        }, 'TOTAL GRAMS is required when SERVING is multi']
+          return this.serving === 'full';
+        }, 'TOTAL GRAMS is required when SERVING is full']
     },
     tags: [ String ],
     notes: String,
     image: String
 })
 
-mealSchema.pre('save', async function() {
+// to ignore any empty TAGS (i.e. "")
+mealSchema.pre('save', function() {
+    const filteredTags = this.tags.filter(t => t !== '');
+    this.tags = filteredTags;
+})
+mealSchema.pre('updateOne', function() {
+    const filteredTags = this.tags.filter(t => t !== '');
+    this.tags = filteredTags;
+})
+
+// to calculate the KCAL of each ingredient (where it wasn't provided)
+mealSchema.pre('save', function() {
     for (let i of this.ingredients) {
         if (!i.kcal) {
             i.kcal = Math.round(i.quantity * i.kcalPerUnit);
+        }
+    }
+})
+
+// to calculate the KCAL PER UNIT of each ingredient (where it wasn't provided)
+mealSchema.pre('save', function() {
+    for (let i of this.ingredients) {
+        if (!i.kcalPerUnit) {
+            i.kcalPerUnit = Math.round(i.kcal / i.quantity);
         }
     }
 })

@@ -1,5 +1,6 @@
 const mealForm = document.querySelector('#meal-form');
 
+// NAME //
 const mealName = document.querySelector('#name');
 const notUnique = document.querySelector('#not-unique')
 mealName.addEventListener('input', function(){
@@ -10,16 +11,25 @@ mealName.addEventListener('input', function(){
     }
 })
 
+// SERVING //
 const single = document.querySelector('#single');
-const multi = document.querySelector('#multi');
+const full = document.querySelector('#full');
 const totalGrams = document.querySelector('#total-grams');
-
-for (let serving of [single, multi]) {
+// to recover the previously inserted TotalGrams (on EDIT)
+const storedTotalGrams = totalGrams.value || 0;
+for (let serving of [single, full]) {
     serving.addEventListener('change', function(){
-        totalGrams.disabled = !multi.checked;
+        if (!full.checked) {
+            totalGrams.disabled = true;
+            totalGrams.value = '';
+        } else {
+            totalGrams.disabled = false;
+            totalGrams.value = storedTotalGrams;
+        }
     })
 }
 
+// INGREDIENTS //
 const mealIngredients = document.querySelector('#meal-ingredients');
 const mealIngredientTemplate = mealIngredients.querySelector('.ingredient').outerHTML;
 const newIngredient = document.querySelector('#new-ingredient');
@@ -35,23 +45,29 @@ function autoFillTotalKcal() {
     const allKcalInputs = document.querySelectorAll('.kcal-input');
     let total = 0;
     for (let k of allKcalInputs) {
-        total += parseInt(k.value);
+        if (k.value) {
+            total += parseInt(k.value);
+        } else {
+            total += 0;
+        }
     }
     totalKcal.value = total;
 }
+// to calculate the TotalKcal of the default ingredients
+autoFillTotalKcal();
 
-// to give a unique ID/name to the inputs & labels of an Ingredient Box
-function indexBoxElements(box, index) {
-    box.setAttribute('data-index', index)
+// to give a unique ID/name to the inputs & labels of an ingredient
+function indexIngredientElements(ing, index) {
+    ing.setAttribute('data-index', index)
     
-    const name = box.querySelector('.name-input');
-    const nameLabel = box.querySelector(`.name-label`);
-    const unit = box.querySelector('.unit-input');
-    const unitLabel = box.querySelector(`.unit-label`);
-    const quantity = box.querySelector('.quantity-input');
-    const quantityLabel = box.querySelector(`.quantity-label`);
-    const kcal = box.querySelector('.kcal-input');
-    const kcalLabel = box.querySelector(`.kcal-label`);
+    const name = ing.querySelector('.name-input');
+    const nameLabel = ing.querySelector(`.name-label`);
+    const unit = ing.querySelector('.unit-input');
+    const unitLabel = ing.querySelector(`.unit-label`);
+    const quantity = ing.querySelector('.quantity-input');
+    const quantityLabel = ing.querySelector(`.quantity-label`);
+    const kcal = ing.querySelector('.kcal-input');
+    const kcalLabel = ing.querySelector(`.kcal-label`);
 
     name.id = `ingredient-${index}`;
     name.name = `meal[ingredients][${index}][name]`;
@@ -67,82 +83,83 @@ function indexBoxElements(box, index) {
     kcalLabel.setAttribute('for', kcal.id);
 }
 
+// to add functionalities like auto-fill & remove ingredient
+function addIngredientEvents(ing) {
+    const name = ing.querySelector('.name-input');
+    const unit = ing.querySelector('.unit-input');
+    const quantity = ing.querySelector('.quantity-input');
+    const kcal = ing.querySelector('.kcal-input');
 
-const defaultIngName = document.querySelector('#name-0');
-defaultIngName.addEventListener('change', function() {
-    const ingBox = this.parentElement.parentElement.parentElement;
-    const ingName = this.value.toLowerCase().trim();
-    if (allIngredients[ingName]) {
-        ingBox.querySelector('.unit-input').value = allIngredients[ingName].unit;
-    }
-})  
-const defaultIngQuantity = document.querySelector('#quantity-0');
-defaultIngQuantity.addEventListener('change', function() {
-    const ingBox = this.parentElement.parentElement.parentElement;
-    const ingName = ingBox.querySelector('.name-input').value.toLowerCase().trim();
-    if (allIngredients[ingName]) {
-        const kcal = Math.round(this.value * allIngredients[ingName].kcalPerUnit);
-        ingBox.querySelector('.kcal-input').value = kcal;
-    }
-    autoFillTotalKcal();
-})  
+    // to auto-fill the fields UNIT & KCAL if the ingredient exists in the DB
+    name.addEventListener('change', function() {
+        const ingName = name.value.toLowerCase().trim();
+        if (allIngredients[ingName]) {
+            unit.value = allIngredients[ingName].unit;
+        }
+        // reset QUANTITY, KCAL & TOTAL KCAL if the ingredient is changed
+        quantity.value = 0;
+        kcal.value = 0;
+        autoFillTotalKcal();
+    })
+    quantity.addEventListener('change', function() {
+        const ingName = name.value.toLowerCase().trim();
+        if (allIngredients[ingName]) {
+            kcal.value = Math.round(this.value * allIngredients[ingName].kcalPerUnit);
+        }
+        if (!this.value) this.value = 0;
+        autoFillTotalKcal();
+    }) 
 
-// to activate all Remove-Ingredient [X]
-function activateRemoveIngredient(){
-    const allButtons = document.querySelectorAll('.remove-ingredient');
-    for (let button of allButtons){
-        button.addEventListener('click', function(){
-            button.parentElement.parentElement.remove();
+    // to auto-fill KCAL if the value is deleted (0) & update TotalKcal w/ every KCAL change
+    kcal.addEventListener('change', function() {
+        if (!this.value) {
+            this.value = 0;
+        }
+        autoFillTotalKcal();
+    })
 
-            // to re-index all Ingredient Boxes
-            const allIngBoxes = document.querySelectorAll('.ingredient');
-            for (let i = 0; i < getIngredientCount(); i++) {
-                indexBoxElements(allIngBoxes[i], i);
-            }
+    // to activate the remove-ingredient [X]
+    const button = ing.querySelector('.remove-ingredient');
+    button.addEventListener('click', function(){
+        ing.remove();
+        autoFillTotalKcal();
 
-            // to show the "no ingredient selected" message if there are no ingredients
-            if (getIngredientCount() === 0){
-                noIngredient.classList.remove('d-none');
-            }
-        })
-    }
+        // to re-index all Ingredient Boxes
+        const allIngs = document.querySelectorAll('.ingredient');
+        for (let i = 0; i < getIngredientCount(); i++) {
+            indexIngredientElements(allIngs[i], i);
+        }
+
+        // to show the "no ingredient selected" message if there are no ingredients
+        if (getIngredientCount() === 0){
+            noIngredient.classList.remove('d-none');
+        }
+    })
 }
-// to apply it on the starting ingredient box
-activateRemoveIngredient();
 
-// to add a new ingredient box (identical to the starting box)
+const defaultIngredients = document.querySelectorAll('.ingredient');
+for (let ing of defaultIngredients) {
+    addIngredientEvents(ing);
+}
+
+// to add a new ingredient
 newIngredient.addEventListener('click', function(){
-    let newIngredient = document.createElement('div');
-    mealIngredients.appendChild(newIngredient);
-    newIngredient.outerHTML = mealIngredientTemplate;
-    activateRemoveIngredient();
-
+    let ing = document.createElement('div');
+    mealIngredients.appendChild(ing);
+    ing.outerHTML = mealIngredientTemplate;
     // to get the complete div w/ all the child elements
-    newIngredient = mealIngredients.lastElementChild;
+    ing = mealIngredients.lastElementChild;
+    // to reset all input values of the template (for EDIT)
+    const allInputs = ing.querySelectorAll('input');
+    for (let i of allInputs) {
+        i.value = '';
+    }
+    addIngredientEvents(ing);
+
     // to get a unique index
     const index = getIngredientCount() - 1;
     // to give a unique ID/name to the inputs + labels
-    indexBoxElements(newIngredient, index)
-
-    // to auto-fill the fields if the ingredient exists in the DB
-    const name = newIngredient.querySelector('.name-input');
-    name.addEventListener('change', function() {
-        const ingBox = this.parentElement.parentElement.parentElement;
-        const ingName = this.value.toLowerCase().trim();
-        if (allIngredients[ingName]) {
-            ingBox.querySelector('.unit-input').value = allIngredients[ingName].unit;
-        }
-    })
-    const quantity = newIngredient.querySelector('.quantity-input');
-    quantity.addEventListener('change', function() {
-        const ingBox = this.parentElement.parentElement.parentElement;
-        const ingName = ingBox.querySelector('.name-input').value.toLowerCase().trim();
-        if (allIngredients[ingName]) {
-            const kcal = Math.round(this.value * allIngredients[ingName].kcalPerUnit);
-            ingBox.querySelector('.kcal-input').value = kcal;
-        }
-        autoFillTotalKcal();
-})  
+    indexIngredientElements(ing, index)
 
     // to hide the "no ingredient selected" message (if it was displayed)
     if(!noIngredient.classList.contains('d-none')){
@@ -150,9 +167,60 @@ newIngredient.addEventListener('click', function(){
     }
 })
 
-// to prevent the form submition if there are no ingredients
+// TAGS //
+const tagInput = document.querySelector('#tag-input');
+// hidden input to store the inserted tags
+const tags = document.querySelector('#tags');
+const insertedTags = document.querySelector('#inserted-tags');
+let tagsArray = []
+if (tags.value) {
+    tagsArray = tags.value.split('+++');
+}
+
+// to remove the tag when clicked-on
+function removeTag(tag) {
+    tag.addEventListener('click', function() {
+        const tagName = this.querySelector('.tag-name').textContent;
+        this.remove();
+        tagsArray = tagsArray.filter(t => ( t !== tagName ));
+    })
+}
+
+// to add the remove feature on the default tags (on EDIT)
+const defaultTags = document.querySelectorAll('.tag');
+for (let tag of defaultTags) {
+    removeTag(tag);
+}
+
+// to display the inserted tags & store them on tagsArray
+tagInput.addEventListener('focusout', function() {
+    const tagName = this.value.toLowerCase().trim();
+    if (tagName) {
+        if (!tagsArray.includes(tagName)) {
+            tagsArray.push(tagName);
+    
+            const newTag = document.createElement('small');
+            newTag.classList.add('btn', 'btn-sm', 'btn-light', 'm-3', 'position-relative', 'tag')
+            newTag.innerHTML = `<span class="tag-name">${tagName}</span>
+            <span class="badge text-bg-light text-muted position-absolute top-0 start-100 translate-middle d-none">X</span>
+            `
+
+            removeTag(newTag);
+
+            // to show the added tag & reset the input
+            insertedTags.appendChild(newTag);
+        }
+    }
+    this.value = null;
+})
+
+// to prevent the form submition if there are no ingredients & pass-in the tagsArray
 mealForm.addEventListener('submit', function(e){
-    if(getIngredientCount() === 0) {
+    if (getIngredientCount() === 0) {
         e.preventDefault();
+    } else {
+        if (tagsArray) {
+            tags.value = tagsArray.join('+++'); // to convert the array into a string w/ a custom separator
+        }
     }
 })

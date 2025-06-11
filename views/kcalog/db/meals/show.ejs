@@ -22,15 +22,15 @@
         <p class="fw-bold text-muted">Kcal</p>
     </div>
 
-    <% if (foundMeal.serving === 'multi') { %>
+    <% if (foundMeal.serving === 'full') { %>
         <div>
             <h3 class="display-5"><%= foundMeal.totalGrams %></h3>
             <p class="fw-bold text-muted">Total Grams</p>
         </div>
 
         <div>
-            <h3 class="display-5"><%= foundMeal.getKcalPerGram * 100%></h3>
-            <p class="fw-bold text-muted">Kcal Per 100g</p>
+            <h3 class="display-5"><%= foundMeal.getKcalPerGram %></h3>
+            <p class="fw-bold text-muted">Kcal Per Gram</p>
         </div>
     <% } %>
 
@@ -51,11 +51,16 @@
     <% } %>
 </section>
 
-<% if (foundMeal.tags) { %>
+<!-- if TAGS isn't "empty" (i.e. [ "" ] )-->
+<% if (foundMeal.tags && foundMeal.tags[0]) { %>
     <h3 class="display-4 fw-normal mt-4 mb-3">Tags</h3>
-        <% for (tag of foundMeal.tags) { %>
-            <a href="/kcalog/db/meals?tag=<%= tag %>" class="btn btn-light"><%= tag %></a>
+    <div>
+        <% for (let tag of foundMeal.tags) { %>
+            <% if (tag !== '') { %>
+                <a href="/kcalog/db/meals?tag=<%= tag %>" class="btn btn-light"><%= tag %></a>
+            <% } %>
         <% } %>
+    </div>
 <% } %>
 
 <% if (foundMeal.notes) { %>

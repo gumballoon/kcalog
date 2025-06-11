@@ -12,7 +12,6 @@
     <% } %>
 </datalist>
 
-
 <a href="http://localhost:8080/kcalog/db/meals" class="btn btn-light btn-lg my-3">All Meals</a>
 
 <h2 class="display-5 fw-semibold">New Meal</h2>
@@ -21,7 +20,7 @@
     <!-- NAME -->
     <div>
         <label for="name" class="d-block fs-3 mt-4 mb-3 form-label">Name</label>
-        <input type="text" id="name" name="meal[name]" class="mx-auto text-center form-control" required>
+        <input type="text" id="name" name="meal[name]" class="mx-auto text-center form-control" placeholder="choose a unique name for this meal" required>
         <p class="text-danger d-none mb-0" id="not-unique">a meal with this name already exists</p>
     </div>
 
@@ -32,34 +31,37 @@
 
         <div id="meal-ingredients">
             <div class="ingredient border rounded-2 row align-items-center px-2 py-3 mb-3" data-index="0">
-                <div class="d-flex px-0 col-lg">
+                <div class="d-flex px-0 col-xl">
                     <div class="btn btn-light col mx-2 remove-ingredient">X</div>
 
                     <!-- ING NAME -->
                     <div class="d-flex align-items-center text-start col-10">
                         <label for="name-0" class="mx-2 my-0 form-label name-label">Name</label>
-                        <input type="search" id="name-0" name="meal[ingredients][0][name]" list="ingredients-list" class="form-control name-input" required>
+                        <input type="search" id="name-0" name="meal[ingredients][0][name]" list="ingredients-list" class="form-control name-input" placeholder="type to search or create a new ingredient" required>
                     </div>
                 </div>
 
-                <div class="d-flex px-0 mt-4 mt-lg-0 col-lg">
+                <div class="d-flex px-0 mt-4 mt-xl-0 col-xl">
+                    <!-- ING UNIT -->
                     <div class="d-flex align-items-center text-start col mx-1">
                         <label for="unit-0" class="mx-2 my-0 unit-label">Unit</label>
-                        <select id="unit-0" name="meal[ingredients][0][unit]" class="form-control unit-input">
+                        <select id="unit-0" name="meal[ingredients][0][unit]" class="form-select unit-input">
                             <option value="gram">gram</option>
                             <option value="millilitre">millilitre</option>
                             <option value="piece">piece</option>
                         </select>
                     </div>
-    
+
+                    <!-- ING QUANTITY -->
                     <div class="d-flex align-items-center text-start col mx-1">
-                        <label for="quantity-0" class="mx-2 my-0 form-label quantity-label">Quantity</label>
-                        <input type="number" id="quantity-0" name="meal[ingredients][0][quantity]" class="form-control quantity-input" required>
+                        <label for="quantity-0" class="mx-2 my-0 form-label quantity-label">Qty</label>
+                        <input type="number" id="quantity-0" name="meal[ingredients][0][quantity]" class="form-control quantity-input" required value="0">
                     </div>
     
+                    <!-- ING KCAL -->
                     <div class="d-flex align-items-center text-start col mx-1">
                         <label for="kcal-0" class="mx-2 my-0 form-label kcal-label">Kcal</label>
-                        <input type="number" id="kcal-0" name="meal[ingredients][0][kcal]" class="form-control kcal-input" required>
+                        <input type="number" id="kcal-0" name="meal[ingredients][0][kcal]" class="form-control kcal-input" required value="0">
                     </div>
                 </div>
             </div>
@@ -73,13 +75,13 @@
         <h3 class="fs-3 fw-normal">Serving</h3>
         <div class="d-flex py-3 mx-3 border rounded-3">
             <div class="mx-3">
-                <input type="radio" class="btn-check" name="serving" id="single" checked>
+                <input type="radio" class="btn-check" name="meal[serving]" value="single" id="single" checked>
                 <label class="btn btn-light" for="single" title="one portion only">Single</label>
             </div>
     
             <div class="mx-3">
-                <input type="radio" class="btn-check" name="serving" id="multi">
-                <label class="btn btn-light" for="multi" title="multiple portions">Multi</label>
+                <input type="radio" class="btn-check" name="meal[serving]" value="full" id="full">
+                <label class="btn btn-light" for="full" title="multiple portions">Full</label>
             </div>
         </div>
     </div>
@@ -94,23 +96,26 @@
         <!-- TOTAL KCAL -->
         <div class="col mx-2">
             <label for="total-kcal" class="d-block fs-3 mt-4 mb-3 form-label">Total Kcal</label>
-            <input type="number" id="total-kcal" name="meal[totalKcal]" class="col-8 text-center form-control">
+            <input type="number" id="total-kcal" name="meal[totalKcal]" class="col-8 text-center form-control" value="0">
         </div>
     </div>
 
     <!-- NOTES -->
     <div>
         <label for="notes" class="d-block fs-3 mt-4 mb-3 form-label">Notes</label>
-        <textarea id="notes" name="meal[notes]" class="mx-auto text-center form-control"></textarea>
+        <textarea id="notes" name="meal[notes]" class="mx-auto text-center form-control" placeholder="add tips, changes, or reminders"></textarea>
     </div>
 
     <!-- TAGS -->
     <div>
-        <label for="totalKcal" class="d-block fs-3 mt-4 mb-3 form-label">Tags</label>
-        <input type="search" id="tags" class="mx-auto text-center form-control" list="tags-list">
+        <label for="tag-input" class="d-block fs-3 mt-4 mb-3 form-label">Tags</label>
+        <input type="search" id="tag-input" class="mx-auto text-center form-control" list="tags-list" placeholder="click outside to add your tag, or click the tag to undo">
+        <input type="hidden" id="tags" name="meal[tags]">
+        <div class="d-flex justify-content-center flex-wrap" id="inserted-tags">
+        </div>
     </div>
 
-    <button type="submit" class="btn btn-secondary mt-4" id="submit" disabled>Save Meal</button>
+    <button type="submit" class="btn btn-secondary mt-5" id="submit" disabled>Save Meal</button>
 
 </form>
 
