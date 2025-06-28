@@ -12,11 +12,11 @@
         <p class="text-danger d-none mb-0" id="not-unique">an ingredient with this name already exists</p>
     </div>
 
-    <div class="mx-auto d-lg-flex">
+    <div class="row">
         <!-- CATEGORY -->
-        <div class="col mx-lg-2">
+        <div class="col">
             <label for="category" class="d-block fs-3 mt-4 mb-3 form-label">Category</label>
-            <select id="category" name="ingredient[category]" class="mx-auto text-center form-control" required>
+            <select id="category" name="ingredient[category]" class="mx-auto text-center form-control pointer" required>
                 <% for (let category of allCategories) { %>
                     <option value="<%= category %>"><%= category %></option>
                 <% } %>
@@ -24,9 +24,9 @@
         </div>
         
         <!-- UNIT -->
-        <div class="col mx-lg-2">
+        <div class="col">
             <label for="unit" class="d-block fs-3 mt-4 mb-3 form-label">Unit</label>
-            <select id="unit" name="ingredient[unit]" class="mx-auto text-center form-control" required>
+            <select id="unit" name="ingredient[unit]" class="mx-auto text-center form-control pointer" required>
                 <% for (let unit of ['gram', 'millilitre', 'piece']) { %>
                     <option value="<%= unit %>"><%= unit %></option>
                 <% } %>
@@ -49,5 +49,5 @@
     const allCategories = <%- JSON.stringify(allCategories) %>;
 </script>
 
-<script src="/scripts/verifyIngredients.js"></script>
+<script src="/scripts/ingredients.js"></script>
 

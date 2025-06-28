@@ -1,46 +1,145 @@
 <% layout('layouts/boilerplate') %>
 
 <datalist id="meals-list">
-    <% for (let meal of allMeals) { %>
-        <option value="<%= meal.name %>"></option>
+    <% for (let name of allMealNames) { %>
+        <option class="text-capitalize" value="<%= name %>"></option>
     <% } %>
 </datalist>
 
+<datalist id="ingredients-list">
+    <% for (let name of allIngNames) { %>
+        <option class="text-capitalize" value="<%= name %>"></option>
+    <% } %>
+</datalist>
+
+<a href="http://localhost:8080/kcalog/logs/meals" class="btn btn-light btn-lg my-3">All Meal Logs</a>
+
 <h2 class="display-5 fw-semibold">New Meal Log</h2>
 
-<form id="meal-log-form" action="/kcalog/logs/meals" method="post">
-    <div class="border-bottom mx-auto pb-3">
-        <label for="date" class="d-block fs-3 fw-semibold my-3">Date</label>
-        <input type="date" id="date" name="mealLog[date]" value="<%= today %>">
+<form id="meal-log-form" action="/kcalog/logs/meals" method="post" class="col-lg-10 mx-auto">
+    <!-- DATE -->
+    <div class="col-6 mx-auto">
+        <label for="date" class="d-block fs-3 mt-4 mb-3 form-label">Date&ast;</label>
+        <input type="date" id="date" name="mealLog[date]" class="mx-auto text-center form-control" required min="2025-01-01" max="<%= today %>" value="<%= today %>">
     </div>
 
-    <div class="border-bottom mx-auto pb-3">
-        <label for="name" class="d-block fs-3 fw-semibold my-3">Meal</label>
-        <input type="search" id="name" name="mealLog[name]" list="meals-list" class="col-6" required>
+    <!-- CATEGORY -->
+    <div>
+        <p class="d-block fs-3 mt-4 mb-3 form-label">Category&ast;</p>
+        <div class="d-flex justify-content-around col-12 col-sm-10 col-md-8 col-lg-6 mx-auto">
+            <% for (let c of ['breakfast', 'lunch', 'snack', 'dinner']) { %>
+                <div>
+                    <% if (c === category) { %>
+                        <input type="radio" class="btn-check" id="<%= c %>" name="mealLog[category]" value="<%= c %>" checked>
+                    <% } else { %>
+                        <input type="radio" class="btn-check" id="<%= c %>" name="mealLog[category]" value="<%= c %>">
+                    <% } %>
+                    <label class="btn btn-outline-secondary btn-sm text-capitalize" for="<%= c %>"><%= c %></label>
+                </div>
+            <% } %>
     </div>
 
-    <div class="border-bottom mx-auto pb-3">
-        <h3 class="fw-semibold fs-3 my-3">Quantity</h3>
-        <div class="row">
-            <div class="col-4 offset-2">
-                <label for="dosage">Dosage</label>
-                <input type="number" id="dosage" name="mealLog[quantity][dosage]" step="any">
+    <!-- MEAL NAME -->
+    <div>
+        <label for="search" class="d-block fs-3 mt-4 mb-3 form-label">Meal Name&ast;</label>
+        <input type="search"  id="search" name="meal[name]" list="meals-list" class="form-control name-input text-center" placeholder="type to search or create a new meal" required>
+    </div>
+
+    <!-- MEAL INFO -->
+    <div id="meal-info" class="d-none">
+        <!-- SERVING (not shown) -->
+         <input type="hidden" name="meal[serving]" id="serving" required value="single">
+
+        <!-- INGREDIENTS -->
+        <div id="meal-ingredients">
+            <h3 class="d-block fs-3 mt-4 mb-3 fw-normal">Ingredients&ast;</h3>
+            <p id="no-ingredient" class="text-danger d-none">Please insert at least one ingredient</p>
+
+            <!-- NEW INGREDIENT: TEMPLATE -->
+            <div class="ingredient border rounded-2 row align-items-center px-2 py-3 mb-3" data-index="0">
+                <div class="d-flex px-0 col-xl">
+                    <div class="btn btn-light col mx-2 remove-ingredient">X</div>
+
+                    <!-- ING NAME -->
+                    <div class="d-flex align-items-center text-start col-10">
+                        <label for="name-0" class="mx-2 my-0 form-label name-label">Name</label>
+                        <input type="search" id="name-0" name="meal[ingredients][0][name]" list="ingredients-list" class="form-control name-input" placeholder="type to search or create a new ingredient" required>
+                    </div>
+                </div>
+
+                <div class="d-flex px-0 mt-4 mt-xl-0 col-xl">
+                    <!-- ING UNIT -->
+                    <div class="d-flex align-items-center text-start col mx-1">
+                        <label for="unit-0" class="mx-2 my-0 unit-label">Unit</label>
+                        <select id="unit-0" name="meal[ingredients][0][unit]" class="form-select unit-input" required>
+                            <option value="gram">gram</option>
+                            <option value="millilitre">millilitre</option>
+                            <option value="piece">piece</option>
+                        </select>
+                    </div>
+
+                    <!-- ING QUANTITY -->
+                    <div class="d-flex align-items-center text-start col mx-1">
+                        <label for="quantity-0" class="mx-2 my-0 form-label quantity-label">Qty</label>
+                        <input type="number" id="quantity-0" name="meal[ingredients][0][quantity]" class="form-control quantity-input" required value="0" min="0">
+                    </div>
+
+                    <!-- ING KCAL -->
+                    <div class="d-flex align-items-center text-start col mx-1">
+                        <label for="kcal-0" class="mx-2 my-0 form-label kcal-label">Kcal</label>
+                        <input type="number" id="kcal-0" name="meal[ingredients][0][kcal]" class="form-control kcal-input" required value="0" min="0">
+                    </div>
+                </div>
             </div>
+        </div>
+
+        <div id="new-ingredient" class="btn btn-light">New Ingredient</div>
             
-            <div class="col-4">
-                <label for="grams">Grams</label>
-                <input type="number" id="grams" name="mealLog[quantity][grams]">
+        <section id="full-section" class="border border-muted rounded-2 my-4 mx-auto p-3 text-start col-8 d-none">
+            <div class="row">
+                <div class="col d-flex flex-column">
+                    <h3 class="fs-3 text-capitalize" id="full-name"></h3>
+                    <p class="fw-semibold mb-1">Ingredients</p>
+                    <ul id="full-ingredients"></ul>
+                    <p class="fw-semibold">Kcal Per Gram: <span id="full-kcal-per-gram" class="fw-normal"></span></p>
+                </div>
+
+                <img id="full-image" alt="" class="img-fluid m-0 col-5">
             </div>
+        </section>
+
+        <div class="row">
+            <!-- GRAMS -->
+            <div class="col-5 mx-auto d-none" id="full-grams">
+                <label for="grams" class="d-block fs-3 mt-4 mb-3 form-label">Grams&ast;</label>
+                <input type="number" id="grams" name="mealLog[grams]" class="text-center form-control" placeholder="enter the grams of your portion" min="0" required>
+            </div>
+
+            <!-- TOTAL KCAL (SINGLE vs. FULL) -->
+            <div class="col-5 mx-auto">
+                <label for="total-kcal" class="d-block fs-3 mt-4 mb-3 form-label">Total Kcal</label>
+                <input type="number" id="total-kcal" name="meal[totalKcal]" class="text-center form-control d-none" value="0">
+                <input type="number" id="full-total-kcal" name="mealLog[fullTotalKcal]" class="text-center form-control d-none" value="0">
+            </div>
+        </div>
+
+        <!-- NOTES -->
+        <div>
+            <label for="notes" class="d-block fs-3 mt-4 mb-3 form-label">Notes</label>
+            <textarea id="notes" name="meal[notes]" class="mx-auto text-center form-control" placeholder="add tips, changes, or reminders"></textarea>
         </div>
     </div>
 
-    <div class="border-bottom col-10 mx-auto pb-3 mb-3">
-        <label for="notes" class="d-block fs-3 fw-semibold my-3">Notes</label>
-        <textarea id="notes" name="mealLog[notes]" class="col-12"></textarea>
-    </div>
-
-    <button type="submit" class="btn btn-success">Save Log</button>
-
+    <button type="submit" class="btn btn-secondary mt-4" id="submit" disabled>Save Log</button>
 </form>
 
-<a href="http://localhost:8080/kcalog/db/meals" class="btn btn-danger mt-3">All Meal Logs</a>
+<script>
+    const allMeals = <%- JSON.stringify(allMeals) %>;
+    const allMealNames = <%- JSON.stringify(allMealNames) %>;
+    const allIngredients = <%- JSON.stringify(allIngredients) %>;
+    const allIngNames = <%- JSON.stringify(allIngNames) %>;
+    const allTags = <%- JSON.stringify(allTags) %>;
+</script>
+
+<script src="/scripts/meals.js"></script>
+<script src="/scripts/mealLogs.js"></script>

@@ -1,46 +1,70 @@
-const mealForm = document.querySelector('#meal-form');
+const form = document.querySelector('form');
+const submit = document.querySelector('#submit');
 
-// NAME //
 const mealName = document.querySelector('#name');
-const notUnique = document.querySelector('#not-unique')
-mealName.addEventListener('input', function(){
-    if(allMealNames.includes(this.value.toLowerCase().trim())) {
-        notUnique.classList.remove('d-none');
-    } else {
-        notUnique.classList.add('d-none');
-    }
-})
+const notUnique = document.querySelector('#not-unique');
 
-// SERVING //
 const single = document.querySelector('#single');
 const full = document.querySelector('#full');
 const totalGrams = document.querySelector('#total-grams');
-// to recover the previously inserted TotalGrams (on EDIT)
-const storedTotalGrams = totalGrams.value || 0;
-for (let serving of [single, full]) {
-    serving.addEventListener('change', function(){
-        if (!full.checked) {
-            totalGrams.disabled = true;
-            totalGrams.value = '';
-        } else {
-            totalGrams.disabled = false;
-            totalGrams.value = storedTotalGrams;
-        }
-    })
-}
 
-// INGREDIENTS //
 const mealIngredients = document.querySelector('#meal-ingredients');
 const mealIngredientTemplate = mealIngredients.querySelector('.ingredient').outerHTML;
 const newIngredient = document.querySelector('#new-ingredient');
 const noIngredient = document.querySelector('#no-ingredient');
+const totalKcal = document.querySelector('#total-kcal');
 
+const defaultIngredients = document.querySelectorAll('.ingredient');
+const defaultTags = document.querySelectorAll('.tag');
+
+function isFormValid() {
+    submit.setAttribute('disabled', 'true');
+
+    const allRequired = document.querySelectorAll('input[required]');
+    const invalidInputs = Array.from(allRequired).filter(i => !i.checkValidity());
+
+    console.log(invalidInputs);
+
+    if (invalidInputs.length === 0) {
+        submit.removeAttribute('disabled');
+    }
+}
+
+// NAME //
+if (mealName) {
+    mealName.addEventListener('input', function(){
+        if(allMealNames.includes(this.value.toLowerCase().trim())) {
+            notUnique.classList.remove('d-none');
+        } else {
+            notUnique.classList.add('d-none');
+            isFormValid();
+        }
+    })
+}
+
+// SERVING //
+if (totalGrams) {
+    // to recover the previously inserted TotalGrams (on EDIT)
+    const storedTotalGrams = totalGrams.value || 0;
+    for (let serving of [single, full]) {
+        serving.addEventListener('change', function(){
+            if (!full.checked) {
+                totalGrams.disabled = true;
+                totalGrams.value = '';
+            } else {
+                totalGrams.disabled = false;
+                totalGrams.value = storedTotalGrams;
+            }
+        })
+    }
+}
+
+// INGREDIENTS //
 function getIngredientCount() {
     const allIngredients = document.querySelectorAll('.ingredient')
     return allIngredients.length;
 }
 
-const totalKcal = document.querySelector('#total-kcal');
 function autoFillTotalKcal() {
     const allKcalInputs = document.querySelectorAll('.kcal-input');
     let total = 0;
@@ -52,6 +76,7 @@ function autoFillTotalKcal() {
         }
     }
     totalKcal.value = total;
+    isFormValid();
 }
 // to calculate the TotalKcal of the default ingredients
 autoFillTotalKcal();
@@ -137,22 +162,24 @@ function addIngredientEvents(ing) {
     })
 }
 
-const defaultIngredients = document.querySelectorAll('.ingredient');
 for (let ing of defaultIngredients) {
     addIngredientEvents(ing);
 }
 
 // to add a new ingredient
-newIngredient.addEventListener('click', function(){
+function addNewIngredient() {
     let ing = document.createElement('div');
     mealIngredients.appendChild(ing);
     ing.outerHTML = mealIngredientTemplate;
+
     // to get the complete div w/ all the child elements
     ing = mealIngredients.lastElementChild;
+
     // to reset all input values of the template (for EDIT)
     const allInputs = ing.querySelectorAll('input');
     for (let i of allInputs) {
-        i.value = '';
+        if (i.type === 'search') i.value = ''
+        else if (i.type === 'number') i.value = '0';
     }
     addIngredientEvents(ing);
 
@@ -165,57 +192,65 @@ newIngredient.addEventListener('click', function(){
     if(!noIngredient.classList.contains('d-none')){
         noIngredient.classList.add('d-none')
     }
+
+    return ing;
+}
+
+newIngredient.addEventListener('click', function(){
+    addNewIngredient();
+    isFormValid();
 })
 
 // TAGS //
 const tagInput = document.querySelector('#tag-input');
 // hidden input to store the inserted tags
 const tags = document.querySelector('#tags');
-const insertedTags = document.querySelector('#inserted-tags');
+const insertedTags = document.querySelector('#inserted-tags')
 let tagsArray = []
-if (tags.value) {
-    tagsArray = tags.value.split('+++');
-}
-
-// to remove the tag when clicked-on
-function removeTag(tag) {
-    tag.addEventListener('click', function() {
-        const tagName = this.querySelector('.tag-name').textContent;
-        this.remove();
-        tagsArray = tagsArray.filter(t => ( t !== tagName ));
+if (tags) {
+    if (tags.value) {
+        tagsArray = tags.value.split('+++');
+    }
+    
+    // to remove the tag when clicked-on
+    function removeTag(tag) {
+        tag.addEventListener('click', function() {
+            const tagName = this.querySelector('.tag-name').textContent;
+            this.remove();
+            tagsArray = tagsArray.filter(t => ( t !== tagName ));
+        })
+    }
+    
+    // to add the remove feature on the default tags (on EDIT)
+    for (let tag of defaultTags) {
+        removeTag(tag);
+    }
+    
+    // to display the inserted tags & store them on tagsArray
+    tagInput.addEventListener('focusout', function() {
+        const tagName = this.value.toLowerCase().trim();
+        if (tagName) {
+            if (!tagsArray.includes(tagName)) {
+                tagsArray.push(tagName);
+        
+                const newTag = document.createElement('small');
+                newTag.classList.add('btn', 'btn-sm', 'btn-light', 'm-3', 'position-relative', 'tag')
+                newTag.innerHTML = `<span class="tag-name">${tagName}</span>
+                <span class="badge text-bg-light text-muted position-absolute top-0 start-100 translate-middle d-none">X</span>
+                `
+    
+                removeTag(newTag);
+    
+                // to show the added tag & reset the input
+                insertedTags.appendChild(newTag);
+            }
+        }
+        this.value = null;
     })
 }
 
-// to add the remove feature on the default tags (on EDIT)
-const defaultTags = document.querySelectorAll('.tag');
-for (let tag of defaultTags) {
-    removeTag(tag);
-}
-
-// to display the inserted tags & store them on tagsArray
-tagInput.addEventListener('focusout', function() {
-    const tagName = this.value.toLowerCase().trim();
-    if (tagName) {
-        if (!tagsArray.includes(tagName)) {
-            tagsArray.push(tagName);
-    
-            const newTag = document.createElement('small');
-            newTag.classList.add('btn', 'btn-sm', 'btn-light', 'm-3', 'position-relative', 'tag')
-            newTag.innerHTML = `<span class="tag-name">${tagName}</span>
-            <span class="badge text-bg-light text-muted position-absolute top-0 start-100 translate-middle d-none">X</span>
-            `
-
-            removeTag(newTag);
-
-            // to show the added tag & reset the input
-            insertedTags.appendChild(newTag);
-        }
-    }
-    this.value = null;
-})
-
 // to prevent the form submition if there are no ingredients & pass-in the tagsArray
-mealForm.addEventListener('submit', function(e){
+form.addEventListener('submit', function(e){
     if (getIngredientCount() === 0) {
         e.preventDefault();
     } else {

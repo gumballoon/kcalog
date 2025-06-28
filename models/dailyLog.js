@@ -1,11 +1,11 @@
 const mongoose = require('mongoose'); // import MONGOOSE
 
 const MealLog = require('./mealLog');
-const ExerciseLog = require('./exerciseLog');
+const WorkoutLog = require('./workoutLog');
 
 const { Schema } = mongoose;
 
-// to be added/updated automatically w/ the food & exercise logs
+// to be added/updated automatically w/ the Meal & Workout logs
 const dailyLogSchema = new mongoose.Schema({
     calendarDate: {
         type: String,
@@ -15,18 +15,18 @@ const dailyLogSchema = new mongoose.Schema({
         type: Schema.Types.ObjectId,
         ref: 'MealLog'
     }],
-    exerciseLogs: [{
+    workoutLogs: [{
         type: Schema.Types.ObjectId,
-        ref: 'ExerciseLog'
+        ref: 'WorkoutLog'
     }]
 })
 
 dailyLogSchema.post('findOneAndDelete', async function(daily){ // daily holds the deleted instance
     // if something was succefully deleted...
     if(daily) {
-        // to delete any meal log or exercise log which _id is included in the parent array
+        // to delete any Meal/Workout log which _id is included in the parent array
         await MealLog.deleteMany({_id: {$in: daily.mealLogs}});
-        await ExerciseLog.deleteMany({_id: {$in: daily.exerciseLogs}});
+        await WorkoutLog.deleteMany({_id: {$in: daily.workoutLogs}});
     }
 })
 

@@ -1,0 +1,102 @@
+const search = document.querySelector('#search');
+const mealInfo = document.querySelector('#meal-info');
+
+const fullSection = document.querySelector('#full-section');
+const fullName = document.querySelector('#full-name');
+const fullIngredients = document.querySelector('#full-ingredients');
+const fullKcalPerGram = document.querySelector('#full-kcal-per-gram');
+const fullImage = document.querySelector('#full-image');
+
+const fullGrams = document.querySelector('#full-grams');
+const fullTotalKcal = document.querySelector('#full-total-kcal');
+
+search.addEventListener('change', function() {
+    // to reset the mealInfo
+    const allIngs = document.querySelectorAll('.ingredient');
+    for (let i of allIngs) i.remove();
+    mealIngredients.classList.remove('d-none');
+    serving.value = 'single';
+    newIngredient.classList.remove('d-none');
+
+    fullSection.classList.add('d-none');
+    fullGrams.classList.add('d-none');
+    grams.value = '';
+    grams.removeAttribute('required');
+    fullName.textContent = '';
+    fullImage.src = '';
+    fullIngredients.innerHTML = '';
+    fullKcalPerGram.textContent = '';
+    
+    totalKcal.classList.remove('d-none');
+    totalKcal.value = 0;
+    fullTotalKcal.classList.add('d-none');
+    fullTotalKcal.value = 0;
+    notes.value = '';
+
+    const mealName = search.value.toLowerCase().trim();
+    if (!mealName) {
+        mealInfo.classList.add('d-none');
+    } else if (allMealNames.includes(mealName)) {
+        populateMealInfo(mealName);
+        mealInfo.classList.remove('d-none');
+    } else {
+        addNewIngredient();
+        mealInfo.classList.remove('d-none');
+    }
+
+    isFormValid();
+})
+
+function populateMealInfo(mealName) {
+    const meal = allMeals.filter(m => m.name === mealName)[0];
+    if (meal.serving === 'single') {
+        for (let i of meal.ingredients) {
+            const ing = addNewIngredient();
+            const name = ing.querySelector('.name-input');
+            name.value = i.name;
+            const unit = ing.querySelector('.unit-input');
+            unit.value = i.unit;
+            const quantity = ing.querySelector('.quantity-input');
+            quantity.value = i.quantity;
+            const kcal = ing.querySelector('.kcal-input');
+            kcal.value = i.quantity;
+        };
+        autoFillTotalKcal();
+    } else if (meal.serving === 'full') {
+        fullSection.classList.remove('d-none');
+        fullName.textContent = meal.name;
+        fullImage.src = meal.image;
+        for (let i of meal.ingredients) {
+            const listItem = document.createElement('li');
+            listItem.textContent = i.name;
+            fullIngredients.appendChild(listItem);
+        }
+        fullKcalPerGram.textContent = meal.kcalPerGram;
+
+        mealIngredients.classList.add('d-none');
+        serving.value = 'full';
+        newIngredient.classList.add('d-none');
+        fullGrams.classList.remove('d-none');
+        grams.setAttribute('required', 'true');
+        totalKcal.classList.add('d-none');
+        fullTotalKcal.classList.remove('d-none');
+    }
+
+    grams.addEventListener('change', function(){
+        if (this.value) {
+            fullTotalKcal.value = Math.round(this.value * meal.kcalPerGram);
+        }
+        isFormValid();
+    })
+
+    fullTotalKcal.addEventListener('change', function(){
+        if (!this.value) {
+            if (grams.value) {
+                this.value = Math.round(grams.value * meal.kcalPerGram);
+            } else {
+                this.value = 0;
+            }
+        }
+        isFormValid();
+    })
+}

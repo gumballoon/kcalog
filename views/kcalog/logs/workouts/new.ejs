@@ -1,0 +1,52 @@
+<% layout('layouts/boilerplate') %>
+
+ <!-- for Input:SEARCH -->
+<datalist id="workouts-list">
+    <% for (let workout of allWorkouts) { %>
+        <option value="<%= workout %>"></option>
+    <% } %>
+</datalist>
+
+<a href="http://localhost:8080/kcalog/logs/workouts" class="btn btn-light btn-lg my-3">All Workout Logs</a>
+
+<h2 class="display-5 fw-semibold">New Workout Log</h2>
+
+<form id="workout-log-form" action="/kcalog/logs/workouts" method="post" class="col-lg-10 mx-auto">
+
+    <!-- DATE -->
+    <div class="col-6 mx-auto">
+        <label for="date" class="d-block fs-3 mt-4 mb-3 form-label">Date&ast;</label>
+        <input type="date" id="date" name="workoutLog[date]" class="mx-auto text-center form-control" required min="2025-01-01" max="<%= today %>" value="<%= today %>">
+    </div>
+
+    <!-- WORKOUT -->
+    <div>
+        <label for="name" class="d-block fs-3 mt-4 mb-3 form-label">Workout&ast;</label>
+        <input type="search" id="name" name="workoutLog[name]" list="workouts-list" class="mx-auto text-center form-control" placeholder="type to search or create a new workout" required>
+    </div>
+
+
+    <div class="row">
+        <!-- KCAL -->
+        <div class="col">
+            <label for="kcal" class="d-block fs-3 mt-4 mb-3 form-label">Kcal</label>
+            <input type="number" id="kcal" name="workoutLog[kcal]" min="0" class="mx-auto text-center form-control" value="0">
+        </div>
+        
+        <!-- DURATION -->
+        <div class="col">
+            <label for="duration" class="d-block fs-3 mt-4 mb-3 form-label">Duration</label>
+            <input type="time" id="duration" name="workoutLog[duration]" min="1" class="mx-auto text-center form-control" value="00:00">
+        </div>
+    </div>
+
+    <div>
+        <label for="notes" class="d-block fs-3 mt-4 mb-3 form-label">Notes</label>
+        <textarea id="notes" name="workoutLog[notes]" class="mx-auto text-center form-control" placeholder="add wins, limits, or adjustments"></textarea>
+    </div>
+
+    <button type="submit" class="btn btn-secondary mt-5" id="submit" disabled>Save Log</button>
+
+</form>
+
+<script src="/scripts/workoutLogs.js"></script>

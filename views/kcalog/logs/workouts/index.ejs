@@ -1,0 +1,24 @@
+<% layout('layouts/boilerplate') %>
+
+<a href="http://localhost:8080/kcalog/logs/workouts/new" class="btn btn-light btn-lg">New Workout Log</a>
+
+<h2 class="display-5 fw-semibold my-3">All Workout Logs</h2>
+
+<div class="d-flex flex-wrap justify-content-center">
+    <% for (let workoutLog of allWorkoutLogs) { %>
+        <section class="border border-secondary m-4 p-3 text-start col-10 col-lg-5">
+            <h3 class="fs-3 text-capitalize" ><%= workoutLog.name %></h3>
+            <div class="row">
+                <div class="col d-flex flex-column justify-content-between">
+                    <div class="d-flex flex-column justify-content between py-2">
+                        <p><%= workoutLog.longDate %></p>
+                        <p>Kcal Burned: <span class="fw-semibold"><%= workoutLog.kcal %></span></p>
+                    </div>
+
+                    <a href="http://localhost:8080/kcalog/logs/workouts/<%= workoutLog._id %>" class="btn btn-secondary">View</a>
+                </div>
+                <img src="<%= workoutLog.image %>" alt="<%= workoutLog.name %>" class="img-fluid m-0 col-5">
+            </div>
+        </section>
+    <% } %>
+</div>

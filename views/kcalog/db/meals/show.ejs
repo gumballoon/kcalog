@@ -2,34 +2,32 @@
 
 <a href="http://localhost:8080/kcalog/db/meals" class="btn btn-light">All Meals</a>
 
-<h2 class="display-3 fw-semibold my-3 text-capitalize"><%= foundMeal.name %></h2>
+<h2 class="display-3 fw-semibold my-3 text-capitalize"><%= meal.name %></h2>
 
-
-
-<img src="<%= foundMeal.image %>" alt="Image for <%= foundMeal.name %>" class="img-fluid my-3">
+<img src="<%= meal.image %>" alt="Image for <%= meal.name %>" class="img-fluid my-3">
 
 
 <section class="border d-flex justify-content-around align-items-center p-3">
     <div>
-        <a  href="/kcalog/db/meals?serving=<%= foundMeal.serving %>" class="btn btn-light btn-lg mb-2"> 
-            <h3><%= foundMeal.serving %></h3>
+        <a  href="/kcalog/db/meals?serving=<%= meal.serving %>" class="btn btn-light btn-lg mb-2"> 
+            <h3><%= meal.serving %></h3>
         </a>
         <p class="fw-bold text-muted">Serving</p>
     </div>
     
     <div>
-        <h3 class="display-5"><%= foundMeal.getTotalKcal%></h3>
+        <h3 class="display-5"><%= meal.totalKcal%></h3>
         <p class="fw-bold text-muted">Kcal</p>
     </div>
 
-    <% if (foundMeal.serving === 'full') { %>
+    <% if (meal.serving === 'full') { %>
         <div>
-            <h3 class="display-5"><%= foundMeal.totalGrams %></h3>
+            <h3 class="display-5"><%= meal.totalGrams %></h3>
             <p class="fw-bold text-muted">Total Grams</p>
         </div>
 
         <div>
-            <h3 class="display-5"><%= foundMeal.getKcalPerGram %></h3>
+            <h3 class="display-5"><%= meal.kcalPerGram %></h3>
             <p class="fw-bold text-muted">Kcal Per Gram</p>
         </div>
     <% } %>
@@ -38,7 +36,7 @@
 
 <section>
     <h3 class="display-4 fw-normal mt-4 mb-3">Ingredients</h3>
-    <% for (let i of foundMeal.ingredients) { %>
+    <% for (let i of meal.ingredients) { %>
         <h4 class="fs-4">
             <%= i.name %>
             <span class="fs-5 text-muted fw-normal border px-1 mx-2">
@@ -52,10 +50,10 @@
 </section>
 
 <!-- if TAGS isn't "empty" (i.e. [ "" ] )-->
-<% if (foundMeal.tags && foundMeal.tags[0]) { %>
+<% if (meal.tags && meal.tags[0]) { %>
     <h3 class="display-4 fw-normal mt-4 mb-3">Tags</h3>
     <div>
-        <% for (let tag of foundMeal.tags) { %>
+        <% for (let tag of meal.tags) { %>
             <% if (tag !== '') { %>
                 <a href="/kcalog/db/meals?tag=<%= tag %>" class="btn btn-light"><%= tag %></a>
             <% } %>
@@ -63,13 +61,13 @@
     </div>
 <% } %>
 
-<% if (foundMeal.notes) { %>
+<% if (meal.notes) { %>
     <h3 class="display-4 fw-normal mt-4 mb-3">Notes</h3>
-    <p><%= foundMeal.notes %></p>
+    <p><%= meal.notes %></p>
 <% } %>
 
-<a href= "http://localhost:8080/kcalog/db/meals/<%= foundMeal._id %>/edit" class="btn btn-secondary my-4">Edit</a>
+<a href= "http://localhost:8080/kcalog/db/meals/<%= meal._id %>/edit" class="btn btn-secondary my-4">Edit</a>
 
-<form action="/kcalog/db/meals/<%= foundMeal._id %>?_method=DELETE" method="post">
+<form action="/kcalog/db/meals/<%= meal._id %>?_method=DELETE" method="post">
     <button type="submit" class="btn btn-secondary">Delete</button>
 </form>

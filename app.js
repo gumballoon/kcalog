@@ -12,7 +12,7 @@ app.set('views', path.join(__dirname, '/views')); // to associate the VIEWS dir 
 const methodOverride = require('method-override'); // to 'fake' put/patch/delete requests
 app.use(methodOverride('_method')); // query string parameter for the HTTP verb
 
-const date = require('date-and-time');
+const dateTime = require('date-and-time'); // to format dates/times
 
 app.use(express.urlencoded({ extended: true })) // to parse form data in POST request body
 app.use(express.json()) // to parse incoming JSON in POST request body
@@ -21,6 +21,7 @@ app.listen(8080, () => console.log('Listening on port 8080...')); // to set the 
 app.use(express.static(path.join(__dirname, '/public'))); // to share the directory w/ the public assets (CSS, JS, images)
 
 const mongoose = require('mongoose'); // import MONGOOSE
+mongoose.set('strictQuery', true); // to surpress a Mongoose 7 warning
 mongoose.connect('mongodb://127.0.0.1:27017/kcalog') // to connect to a specific db
     .then(() => {
         console.log("Connection: Open")
@@ -29,7 +30,6 @@ mongoose.connect('mongodb://127.0.0.1:27017/kcalog') // to connect to a specific
         console.log("Connection: Error")
         console.log(err)
     })
-mongoose.set('strictQuery', true); // to surpress a Mongoose 7 warning
 
 // custom Error class (title, status, message)
 const AppError = require('./utilities/AppError')
@@ -37,17 +37,17 @@ const AppError = require('./utilities/AppError')
 // // // // // // // // // // // // // // // //
 
 const { DailyLog } = require('./models/dailyLog');
-// populate the Daily Log to get the total Meal & Exercise kcal
-const getTotalKcal = require('./utilities/getTotalKcal');
+// populate the Daily Log to get the total Meal & Workout kcal
+const { getDailyKcalBalance} = require('./utilities/dailyLogs');
 
 // HOME route (1. New Log, 2. Daily Log, 3. Food DB)
 app.get('/kcalog', async (req, res) => {
     const now = new Date();
-    const today = date.format(now, 'ddd DD MMMM')
+    const today = dateTime.format(now, 'ddd DD MMMM') // Mon Jan 01
 
     const daily = await DailyLog.findOne({ calendarDate: now.toDateString() })
     if (daily) {
-        const dailyStats = await getTotalKcal(daily);
+        const dailyStats = await getDailyKcalBalance(daily);
         res.render('kcalog/home', { title: 'Home', today, dailyStats });
     } else {
         res.render('kcalog/home', { title: 'Home', today, dailyStats: 0});
@@ -59,8 +59,8 @@ const mealLogRoutes = require('./routes/mealLogs');
 app.use('/kcalog/logs/meals', mealLogRoutes);
 
 // // E X E R C I S E  L O G S // //
-const exerciseLogRoutes = require('./routes/exerciseLogs');
-app.use('/kcalog/logs/exercises', exerciseLogRoutes);
+const workoutLogRoutes = require('./routes/workoutLogs');
+app.use('/kcalog/logs/workouts', workoutLogRoutes);
 
 // // D A I L Y  L O G S // //
 const dailyLogRoutes = require('./routes/dailyLogs');

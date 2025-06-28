@@ -1,3 +1,7 @@
 .tag:hover .badge {
     display: inline-block !important;
 }
+
+.pointer {
+    cursor: pointer;
+}

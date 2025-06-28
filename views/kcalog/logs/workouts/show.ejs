@@ -1,0 +1,45 @@
+<% layout('layouts/boilerplate') %>
+
+<a href="http://localhost:8080/kcalog/logs/workouts" class="btn btn-light">All Workout Logs</a>
+
+<h2 class="display-3 fw-semibold my-3 text-capitalize"><%= workoutLog.name %></h2>
+
+<a href="http://localhost:8080/kcalog/logs/<%= workoutLog.dailyLog %>" class="btn btn-light btn-lg border fw-normal my-3"><%= workoutLog.longDate %></a>
+
+<img src="<%= workoutLog.image %>" alt="Image for <%= workoutLog.name %>" class="img-fluid my-3 d-block mx-auto">
+
+<section class="border d-flex justify-content-around align-items-center p-3">
+    <div class="col-4">
+        <h3 class="display-5"><%= workoutLog.kcal %></h3>
+        <p class="fw-bold text-muted">Kcal</p>
+    </div>
+
+    <div class="col-4">
+        <% if (workoutLog.duration) { %>
+            <h3 class="display-5"><%= workoutLog.duration %></h3>
+        <% } else { %>
+            <h3 class="display-5">-</h3>
+        <% } %>
+        <p class="fw-bold text-muted">Duration</p>
+    </div>
+
+    <div class="col-4">
+        <% if (workoutLog.duration) { %>
+            <h3 class="display-5"><%= workoutLog.kcalPerHour %></h3>
+        <% } else { %>
+            <h3 class="display-5">-</h3>
+        <% } %>
+        <p class="fw-bold text-muted">Kcal Per Hour</p>
+    </div>
+</section>
+
+<% if (workoutLog.notes) { %>
+    <h3 class="display-5 fw-normal mt-4 mb-3">Notes</h3>
+    <p><%= workoutLog.notes %></p>
+<% } %>
+
+<a href= "http://localhost:8080/kcalog/logs/workouts/<%= workoutLog._id %>/edit"   class="btn btn-secondary my-4">Edit</a>
+
+<form action="/kcalog/logs/workouts/<%= workoutLog._id %>?_method=DELETE" method="post">
+    <button type="submit" class="btn btn-secondary">Delete</button>
+</form>

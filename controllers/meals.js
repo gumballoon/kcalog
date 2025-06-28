@@ -1,5 +1,6 @@
 const { Meal } = require('../models/meal');
 const { Ingredient } = require('../models/ingredient');
+const { capitalize } = require('../utilities/capitalize'); 
 
 // custom Error class (title, status, message)
 const AppError = require('../utilities/AppError')
@@ -26,7 +27,7 @@ module.exports.index = async (req, res, next) => {
             .then(allMeals => res.render('kcalog/db/meals/index', { title:'Meals', allMeals, tag: "all", serving: "all" }))
             .catch(e => next(mongoError(e)))
     }
-}
+};
 
 module.exports.renderNewForm = async (req, res, next) => {
     const allIngredients = await Ingredient.getFormattedIngredientData()
@@ -38,7 +39,7 @@ module.exports.renderNewForm = async (req, res, next) => {
     const allTags = await Meal.getAllTags()
         .catch(e => next(mongoError(e)));
     res.render('kcalog/db/meals/new', { title: "New Meal", allIngredients, allIngNames, allMealNames, allTags })
-}
+};
 
 module.exports.createMeal = async (req, res, next) => {
     const newMeal = new Meal(req.body.meal);
@@ -52,7 +53,7 @@ module.exports.createMeal = async (req, res, next) => {
     await newMeal.save()
         .then(() => res.redirect(`/kcalog/db/meals/${id}`))
         .catch(e => next(mongoError(e)))
-}
+};
 
 module.exports.renderEditForm = async (req, res, next) => {
     const { id } = req.params;
@@ -64,10 +65,10 @@ module.exports.renderEditForm = async (req, res, next) => {
         .catch(e => next(mongoError(e)));
     const allTags = await Meal.getAllTags()
         .catch(e => next(mongoError(e)));
-    const foundMeal = await Meal.findById(id).populate('ingredients')
+    const meal = await Meal.findById(id).populate('ingredients')
         .catch(e => next(mongoError(e)));
-    res.render('kcalog/db/meals/edit', { title: 'Edit Meal', foundMeal, allIngredients, allIngNames, allMealNames, allTags })
-}
+    res.render('kcalog/db/meals/edit', { title: 'Edit Meal', meal, allIngredients, allIngNames, allMealNames, allTags })
+};
 
 module.exports.updateMeal = async (req, res, next) => {
     const { id } = req.params;
@@ -80,19 +81,19 @@ module.exports.updateMeal = async (req, res, next) => {
     await Meal.findByIdAndUpdate(id, updatedMeal, {runValidators:true})
         .then(() => res.redirect(`/kcalog/db/meals/${id}`))
         .catch(e => next(mongoError(e)))
-}
+};
 
 module.exports.showMeal = async (req, res, next) => {
     const { id } = req.params;
-    const foundMeal = await Meal.findById(id)
+    const meal = await Meal.findById(id)
         .catch(e => next(mongoError(e)))
-    console.log(foundMeal)
-    res.render('kcalog/db/meals/show', { title: foundMeal.name, foundMeal})
-}
+    console.log(meal)
+    res.render('kcalog/db/meals/show', { title: capitalize(meal.name), meal})
+};
 
 module.exports.destroyMeal = async (req, res, next) => {
     const { id } = req.params;
     await Meal.findByIdAndDelete(id)
         .then(() => res.redirect(`/kcalog/db/meals`))
         .catch(e => next(mongoError(e)))
-}
+};

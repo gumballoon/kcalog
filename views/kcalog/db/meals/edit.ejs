@@ -17,12 +17,12 @@
 
 <h2 class="display-5 fw-semibold">Edit Meal</h2>
 
-<form id="meal-form"  action="/kcalog/db/meals/<%= foundMeal._id %>?_method=PUT" method="post" class="col-lg-10 mx-auto">
+<form id="meal-form"  action="/kcalog/db/meals/<%= meal._id %>?_method=PUT" method="post" class="col-lg-10 mx-auto">
 
     <!-- NAME -->
     <div>
         <label for="name" class="d-block fs-3 mt-4 mb-3 form-label">Name</label>
-        <input type="text" id="name" name="meal[name]" class="mx-auto text-center form-control" placeholder="choose a unique name for this meal" required value="<%= foundMeal.name %>">
+        <input type="text" id="name" name="meal[name]" class="mx-auto text-center form-control" placeholder="choose a unique name for this meal" required value="<%= meal.name %>">
         <p class="text-danger d-none mb-0" id="not-unique">a meal with this name already exists</p>
     </div>
 
@@ -32,7 +32,7 @@
         <p id="no-ingredient" class="text-danger d-none">Please insert at least one ingredient</p>
 
         <div id="meal-ingredients">
-            <% foundMeal.ingredients.forEach((i, index) => { %>          
+            <% meal.ingredients.forEach((i, index) => { %>          
                 <div class="ingredient border rounded-2 row align-items-center px-2 py-3 mb-3" data-index="<%= index %>">
                     <div class="d-flex px-0 col-xl">
                         <div class="btn btn-light col mx-2 remove-ingredient">X</div>
@@ -82,23 +82,23 @@
         <h3 class="fs-3 fw-normal">Serving</h3>
         <div class="d-flex py-3 mx-3 border rounded-3">
             <div class="mx-3">
-                <input type="radio" class="btn-check" name="meal[serving]" value="single" id="single" <%= foundMeal.serving === 'single' ? 'checked' : ''%>>
+                <input type="radio" class="btn-check" name="meal[serving]" value="single" id="single" <%= meal.serving === 'single' ? 'checked' : ''%>>
                 <label class="btn btn-light" for="single" title="one portion only">Single</label>
             </div>
     
             <div class="mx-3">
-                <input type="radio" class="btn-check" name="meal[serving]" value="full" id="full" <%= foundMeal.serving === 'full' ? 'checked' : ''%>>
+                <input type="radio" class="btn-check" name="meal[serving]" value="full" id="full" <%= meal.serving === 'full' ? 'checked' : ''%>>
                 <label class="btn btn-light" for="full" title="multiple portions">Full</label>
             </div>
         </div>
     </div>
 
-    <div class="d-flex mx-auto">
+    <div class="row">
         <!-- TOTAL GRAMS -->
-        <div class="col mx-2">
+        <div class="col">
             <label for="total-grams" class="d-block fs-3 mt-4 mb-3 form-label">Total Grams</label>
-            <% if (foundMeal.serving === 'full') { %>
-                <input type="number" id="total-grams" name="meal[totalGrams]" class="col-8 text-center form-control" required value="<%= foundMeal.totalGrams %>">
+            <% if (meal.serving === 'full') { %>
+                <input type="number" id="total-grams" name="meal[totalGrams]" class="col-8 text-center form-control" required value="<%= meal.totalGrams %>">
             <% } else { %>
                 <input type="number" id="total-grams" name="meal[totalGrams]" class="col-8 text-center form-control" required disabled>
             <% } %>
@@ -106,7 +106,7 @@
         </div>
 
         <!-- TOTAL KCAL -->
-        <div class="col mx-2">
+        <div class="col">
             <label for="total-kcal" class="d-block fs-3 mt-4 mb-3 form-label">Total Kcal</label>
             <input type="number" id="total-kcal" name="meal[totalKcal]" class="col-8 text-center form-control">
         </div>
@@ -115,17 +115,17 @@
     <!-- NOTES -->
     <div>
         <label for="notes" class="d-block fs-3 mt-4 mb-3 form-label">Notes</label>
-        <textarea id="notes" name="meal[notes]" class="mx-auto text-center form-control" placeholder="add tips, changes, or reminders"><%= foundMeal.notes %></textarea>
+        <textarea id="notes" name="meal[notes]" class="mx-auto text-center form-control" placeholder="add tips, changes, or reminders"><%= meal.notes %></textarea>
     </div>
 
     <!-- TAGS -->
     <div>
         <label for="tag-input" class="d-block fs-3 mt-4 mb-3 form-label">Tags</label>
         <input type="search" id="tag-input" class="mx-auto text-center form-control" list="tags-list" placeholder="click outside to add your tag, or click the tag to undo">
-        <input type="hidden" id="tags" name="meal[tags]" value="<%= foundMeal.tags ? foundMeal.tags.join('+++') : '' %>">
+        <input type="hidden" id="tags" name="meal[tags]" value="<%= meal.tags ? meal.tags.join('+++') : '' %>">
         <div class="d-flex justify-content-center flex-wrap" id="inserted-tags">
-            <% if (foundMeal.tags) { %>
-                <% for (let tag of foundMeal.tags) { %>
+            <% if (meal.tags) { %>
+                <% for (let tag of meal.tags) { %>
                     <% if (tag) { %>
                         <small class="btn btn-sm btn-light m-3 position-relative tag">
                             <span class="tag-name"><%= tag %></span>
@@ -137,10 +137,8 @@
         </div>
     </div>
 
-    <button type="submit" class="btn btn-secondary mt-5" id="submit" disabled>Update Meal</button>
+    <button type="submit" class="btn btn-secondary mt-5" id="submit">Update Meal</button>
 </form>
-
-<!-- to share w/ meal.js the allNames array -->
 
 <script>
     const allIngredients = <%- JSON.stringify(allIngredients) %>;
@@ -148,4 +146,4 @@
     const allMealNames = <%- JSON.stringify(allMealNames) %>;
 </script>
 
-<script src="/scripts/verifyMeals.js"></script>
+<script src="/scripts/meals.js"></script>

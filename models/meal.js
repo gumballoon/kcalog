@@ -1,6 +1,5 @@
 const mongoose = require('mongoose'); // import MONGOOSE
 const { Ingredient } = require('./ingredient');
-const { func } = require('joi');
 const { Schema } = mongoose;
 
 const mealSchema = new Schema({
@@ -47,57 +46,81 @@ const mealSchema = new Schema({
           return this.serving === 'full';
         }, 'TOTAL GRAMS is required when SERVING is full']
     },
+    kcalPerGram: Number,
     tags: [ String ],
     notes: String,
     image: String
 })
 
 // to ignore any empty TAGS (i.e. "")
-mealSchema.pre('save', function() {
+mealSchema.pre('save', function(next) {
     const filteredTags = this.tags.filter(t => t !== '');
     this.tags = filteredTags;
+    return next();
 })
-mealSchema.pre('updateOne', function() {
+mealSchema.pre('updateOne', function(next) {
     const filteredTags = this.tags.filter(t => t !== '');
     this.tags = filteredTags;
+    return next();
 })
 
 // to calculate the KCAL of each ingredient (where it wasn't provided)
-mealSchema.pre('save', function() {
+mealSchema.pre('save', function(next) {
     for (let i of this.ingredients) {
         if (!i.kcal) {
             i.kcal = Math.round(i.quantity * i.kcalPerUnit);
         }
-    }
+    };
+    return next();
 })
 
 // to calculate the KCAL PER UNIT of each ingredient (where it wasn't provided)
-mealSchema.pre('save', function() {
+mealSchema.pre('save', function(next) {
     for (let i of this.ingredients) {
         if (!i.kcalPerUnit) {
             i.kcalPerUnit = Math.round(i.kcal / i.quantity);
         }
     }
+    return next();
 })
 
-mealSchema.virtual('getTotalKcal').get(function(){
+// to calculate the TOTAL KCAL (if it wasn't provided)
+mealSchema.pre('save', function(next) {
     if (!this.totalKcal) {
         let totalKcal = 0;
         for (let i of this.ingredients){
             totalKcal += i.kcal;
         }
-        return Math.round(totalKcal);
-    } else {
-        return this.totalKcal;
+        this.totalKcal = Math.round(totalKcal);
     }
+    return next();
+})
+mealSchema.pre('updateOne', function(next) {
+    if (!this.totalKcal) {
+        let totalKcal = 0;
+        for (let i of this.ingredients){
+            totalKcal += i.kcal;
+        }
+        this.totalKcal = Math.round(totalKcal);
+    }
+    return next();
 })
 
-mealSchema.virtual('getKcalPerGram').get(function(){
+mealSchema.pre('save', function(next){
     if (this.totalGrams){
-        return Math.round(this.getTotalKcal / this.totalGrams * 100) / 100;
+        this.kcalPerGram = Math.round(this.totalKcal / this.totalGrams * 100) / 100;
     } else {
-        return 'n/a';
-    }
+        this.kcalPerGram = null;
+    };
+    return next();
+})
+mealSchema.pre('updateOne', function(next){
+    if (this.totalGrams){
+        this.kcalPerGram = Math.round(this.totalKcal / this.totalGrams * 100) / 100;
+    } else {
+        this.kcalPerGram = null;
+    };
+    return next();
 })
 
 mealSchema.statics.getAllNames = async function(){

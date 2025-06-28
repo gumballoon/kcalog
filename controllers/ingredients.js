@@ -44,9 +44,9 @@ module.exports.renderEditForm = async (req, res, next) => {
         .catch(e => next(mongoError(e)))
     const allCategories = await Ingredient.getAllCategories()
         .catch(e => next(mongoError(e)))
-    const foundIngredient = await Ingredient.findById(id)
+    const ingredient = await Ingredient.findById(id)
         .catch(e => next(mongoError(e)))
-    res.render('kcalog/db/ingredients/edit', { title: 'Edit Ingredient', foundIngredient, allNames, allCategories })
+    res.render('kcalog/db/ingredients/edit', { title: 'Edit Ingredient', ingredient, allNames, allCategories })
 }
 
 module.exports.updateIngredient = async (req, res, next) => {
