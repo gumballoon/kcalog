@@ -17,6 +17,7 @@ const totalKcal = document.querySelector('#total-kcal');
 const defaultIngredients = document.querySelectorAll('.ingredient');
 const defaultTags = document.querySelectorAll('.tag');
 
+// to enable/disable the submit button
 function isFormValid() {
     submit.setAttribute('disabled', 'true');
 
@@ -155,9 +156,10 @@ function addIngredientEvents(ing) {
             indexIngredientElements(allIngs[i], i);
         }
 
-        // to show the "no ingredient selected" message if there are no ingredients
+        // to show the "no ingredient selected" message if there are no ingredients + disable the submit button
         if (getIngredientCount() === 0){
-            noIngredient.classList.remove('d-none');
+            noIngredient.classList.remove('d-none');    
+            submit.setAttribute('disabled', 'true');
         }
     })
 }

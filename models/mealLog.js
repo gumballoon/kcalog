@@ -22,7 +22,7 @@ const mealLogSchema = new Schema({
     grams: {
         type: Number,
         required: [function () {
-            return this.meal.serving === 'full';
+            return this.meal && this.meal.serving === 'full';
         }, 'GRAMS is required when SERVING is full']
     },
     fullTotalKcal: Number,

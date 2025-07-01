@@ -16,16 +16,16 @@
 
 <h2 class="display-5 fw-semibold">New Meal Log</h2>
 
-<form id="meal-log-form" action="/kcalog/logs/meals" method="post" class="col-lg-10 mx-auto">
+<form action="/kcalog/logs/meals" method="post" class="col-lg-10 mx-auto">
     <!-- DATE -->
     <div class="col-6 mx-auto">
-        <label for="date" class="d-block fs-3 mt-4 mb-3 form-label">Date&ast;</label>
+        <label for="date" class="d-block fs-3 mt-4 mb-3 form-label">Date</label>
         <input type="date" id="date" name="mealLog[date]" class="mx-auto text-center form-control" required min="2025-01-01" max="<%= today %>" value="<%= today %>">
     </div>
 
     <!-- CATEGORY -->
     <div>
-        <p class="d-block fs-3 mt-4 mb-3 form-label">Category&ast;</p>
+        <p class="d-block fs-3 mt-4 mb-3 form-label">Category</p>
         <div class="d-flex justify-content-around col-12 col-sm-10 col-md-8 col-lg-6 mx-auto">
             <% for (let c of ['breakfast', 'lunch', 'snack', 'dinner']) { %>
                 <div>
@@ -41,7 +41,7 @@
 
     <!-- MEAL NAME -->
     <div>
-        <label for="search" class="d-block fs-3 mt-4 mb-3 form-label">Meal Name&ast;</label>
+        <label for="search" class="d-block fs-3 mt-4 mb-3 form-label">Meal Name</label>
         <input type="search"  id="search" name="meal[name]" list="meals-list" class="form-control name-input text-center" placeholder="type to search or create a new meal" required>
     </div>
 
@@ -52,7 +52,7 @@
 
         <!-- INGREDIENTS -->
         <div id="meal-ingredients">
-            <h3 class="d-block fs-3 mt-4 mb-3 fw-normal">Ingredients&ast;</h3>
+            <h3 class="d-block fs-3 mt-4 mb-3 fw-normal">Ingredients</h3>
             <p id="no-ingredient" class="text-danger d-none">Please insert at least one ingredient</p>
 
             <!-- NEW INGREDIENT: TEMPLATE -->
@@ -126,8 +126,11 @@
         <!-- NOTES -->
         <div>
             <label for="notes" class="d-block fs-3 mt-4 mb-3 form-label">Notes</label>
-            <textarea id="notes" name="meal[notes]" class="mx-auto text-center form-control" placeholder="add tips, changes, or reminders"></textarea>
+            <textarea id="notes" name="mealLog[notes]"  class="mx-auto text-center form-control" placeholder="add tips, changes, or reminders"></textarea>
         </div>
+
+        <!-- MEAL DATA (hidden) -->
+        <input type="hidden" id="meal-data" name="mealData">
     </div>
 
     <button type="submit" class="btn btn-secondary mt-4" id="submit" disabled>Save Log</button>
@@ -139,6 +142,7 @@
     const allIngredients = <%- JSON.stringify(allIngredients) %>;
     const allIngNames = <%- JSON.stringify(allIngNames) %>;
     const allTags = <%- JSON.stringify(allTags) %>;
+    const mealLog = null;
 </script>
 
 <script src="/scripts/meals.js"></script>

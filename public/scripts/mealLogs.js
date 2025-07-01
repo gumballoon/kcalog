@@ -1,5 +1,6 @@
 const search = document.querySelector('#search');
 const mealInfo = document.querySelector('#meal-info');
+const mealData = document.querySelector('#meal-data');
 
 const fullSection = document.querySelector('#full-section');
 const fullName = document.querySelector('#full-name');
@@ -10,45 +11,13 @@ const fullImage = document.querySelector('#full-image');
 const fullGrams = document.querySelector('#full-grams');
 const fullTotalKcal = document.querySelector('#full-total-kcal');
 
-search.addEventListener('change', function() {
-    // to reset the mealInfo
-    const allIngs = document.querySelectorAll('.ingredient');
-    for (let i of allIngs) i.remove();
-    mealIngredients.classList.remove('d-none');
-    serving.value = 'single';
-    newIngredient.classList.remove('d-none');
+// to remove the ingredient template (which outlinerHTML has already been stored)
+mealIngredients.querySelector('.ingredient').remove()
 
-    fullSection.classList.add('d-none');
-    fullGrams.classList.add('d-none');
-    grams.value = '';
-    grams.removeAttribute('required');
-    fullName.textContent = '';
-    fullImage.src = '';
-    fullIngredients.innerHTML = '';
-    fullKcalPerGram.textContent = '';
-    
-    totalKcal.classList.remove('d-none');
-    totalKcal.value = 0;
-    fullTotalKcal.classList.add('d-none');
-    fullTotalKcal.value = 0;
-    notes.value = '';
+// to populate the mealInfo when a DB meal is selected + pass-in the full Meal object
+function populateMealInfo(meal) {
+    mealData.value = JSON.stringify(meal);
 
-    const mealName = search.value.toLowerCase().trim();
-    if (!mealName) {
-        mealInfo.classList.add('d-none');
-    } else if (allMealNames.includes(mealName)) {
-        populateMealInfo(mealName);
-        mealInfo.classList.remove('d-none');
-    } else {
-        addNewIngredient();
-        mealInfo.classList.remove('d-none');
-    }
-
-    isFormValid();
-})
-
-function populateMealInfo(mealName) {
-    const meal = allMeals.filter(m => m.name === mealName)[0];
     if (meal.serving === 'single') {
         for (let i of meal.ingredients) {
             const ing = addNewIngredient();
@@ -62,6 +31,7 @@ function populateMealInfo(mealName) {
             kcal.value = i.quantity;
         };
         autoFillTotalKcal();
+        
     } else if (meal.serving === 'full') {
         fullSection.classList.remove('d-none');
         fullName.textContent = meal.name;
@@ -99,4 +69,54 @@ function populateMealInfo(mealName) {
         }
         isFormValid();
     })
+}
+
+function resetMealInfo() {
+    const allIngs = document.querySelectorAll('.ingredient');
+    for (let i of allIngs) i.remove();
+    mealIngredients.classList.remove('d-none');
+    serving.value = 'single';
+    newIngredient.classList.remove('d-none');
+
+    fullSection.classList.add('d-none');
+    fullGrams.classList.add('d-none');
+    grams.value = '';
+    grams.removeAttribute('required');
+    fullName.textContent = '';
+    fullImage.src = '';
+    fullIngredients.innerHTML = '';
+    fullKcalPerGram.textContent = '';
+    
+    totalKcal.classList.remove('d-none');
+    totalKcal.value = 0;
+    fullTotalKcal.classList.add('d-none');
+    fullTotalKcal.value = 0;
+}
+
+search.addEventListener('change', function() {
+    resetMealInfo();
+    notes.textContent = '';
+    const mealName = search.value.toLowerCase().trim();
+    if (!mealName) {
+        mealInfo.classList.add('d-none');
+    } else if (allMealNames.includes(mealName)) {
+        const meal = allMeals.filter(m => m.name === mealName)[0];
+        populateMealInfo(meal);
+        mealInfo.classList.remove('d-none');
+    } else {
+        addNewIngredient();
+        mealInfo.classList.remove('d-none');
+    }
+
+    isFormValid();
+})
+
+// to populate the mealInfo w/ the mealLog info on the EDIT view
+if(mealLog) {
+    resetMealInfo();
+    populateMealInfo(mealLog.meal);
+    grams.value = mealLog.grams;
+    fullTotalKcal.value = mealLog.fullTotalKcal;
+    mealInfo.classList.remove('d-none');
+    submit.removeAttribute('disabled');
 }

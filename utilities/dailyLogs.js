@@ -2,6 +2,7 @@ const { DailyLog } = require('../models/dailyLog');
 
 // to create or update a Daily Log (after creating or updating a Meal/Exercise Log)
 module.exports.updateDailyLogs = async (type, log) => {
+    if (typeof log.date !== Date) log.date = new Date(log.date);
     const date = log.date.toDateString();
     const foundDailyLog = await DailyLog.findOne({calendarDate: date})
     let newDailyLog = '';
@@ -17,8 +18,7 @@ module.exports.updateDailyLogs = async (type, log) => {
         await foundDailyLog.save()
             .catch(e => console.log(e))
         
-        // console.log(foundDailyLog);
-        return foundDailyLog;
+        return foundDailyLog._id;
 
     } else {
         if (type === 'meal') {
@@ -37,8 +37,7 @@ module.exports.updateDailyLogs = async (type, log) => {
         await newDailyLog.save()
             .catch(e => console.log(e))
         
-        // console.log(newDailyLog);
-        return newDailyLog;
+        return newDailyLog._id;
     }
 }
 

@@ -64,8 +64,21 @@ module.exports.renderNewForm = async (req, res, next) => {
 };
 
 module.exports.createMealLog = async (req, res, next) => {
-    const newLog = new MealLog(req.body.mealLog);
-    newLog.meal = req.body.meal;
+    const { mealLog, meal } = req.body;
+    const newLog = new MealLog(mealLog);
+    newLog.meal = meal;
+    // if it's a DB Meal
+    if (req.body.mealData) {
+        mealData = JSON.parse(req.body.mealData);
+        if (meal.serving === 'single') {
+            newLog.meal._id = mealData._id;
+            newLog.meal.tags = mealData.tags;
+            newLog.meal.notes = mealData.notes;
+            newLog.meal.image = mealData.image;
+        } else {
+            newLog.meal = mealData;
+        }
+    }
     newLog.image = `https://picsum.photos/400?random=${Math.random()}`;
     newLog.dailyLog = await updateDailyLogs('meal', newLog);
     await newLog.save()
@@ -75,38 +88,57 @@ module.exports.createMealLog = async (req, res, next) => {
 
 module.exports.renderEditForm = async (req, res, next) => {
     const { id } = req.params;
+    // to set the current date as max date
+    const today = new Date().toISOString().split('T')[0];
+
     const mealLog = await MealLog.findById(id)
         .catch(e => next(mongoError(e)))
+    const allMeals = await Meal.find({ })
+        .catch(e => next(mongoError(e)));
+    const allMealNames = await Meal.getAllNames()
+        .catch(e => next(mongoError(e)));
     const allIngredients = await Ingredient.getFormattedIngredientData()
         .catch(e => next(mongoError(e)));
     const allIngNames = await Ingredient.getAllNames()
         .catch(e => next(mongoError(e)));
-    const allMealNames = await Meal.getAllNames()
-        .catch(e => next(mongoError(e)));
     const allTags = await Meal.getAllTags()
         .catch(e => next(mongoError(e)));
-    res.render('kcalog/logs/meals/edit', { title:'Edit Meal Log', mealLog, allIngredients, allIngNames, allMealNames, allTags })
 
+    res.render('kcalog/logs/meals/edit', { title:'Edit Meal Log', today, mealLog, allMeals, allMealNames, allIngredients, allIngNames, allTags })
 };
 
 module.exports.updateMealLog = async (req, res, next) => {
-    const updatedLog = req.body.mealLog;
-    updatedLog.meal = await Meal.findOne({ name: updatedLog.name })
-        .catch(e => next(mongoError(e)));
-    if (updatedLog.meal) {
-        updatedLog.kcal = 0;
-        if (updatedLog.quantity.dosage) {
-            updatedLog.kcal = Math.round(updatedLog.quantity.dosage * updatedLog.meal.totalKcal);
-            updatedLog.quantity.grams = Math.round(updatedLog.quantity.dosage * updatedLog.meal.totalGrams);
-        } else if (updatedLog.quantity.grams) {
-            updatedLog.kcal = Math.round(updatedLog.quantity.grams * updatedLog.meal.kcalPerGram);
-            updatedLog.quantity.dosage = Math.floor(updatedLog.quantity.grams / updatedLog.meal.totalGrams * 100) / 100;
-        }
-    } else {
-        next(new AppError('Meal Not Found', 400, e.message));
-    }
     const { id } = req.params;
-    await MealLog.findByIdAndUpdate(id, updatedLog, {runValidators:true}) 
+    const { mealLog, meal } = req.body;
+    const updatedLog = mealLog;
+    updatedLog.meal = meal;
+
+    const oldLog = await MealLog.findOne({ _id: id });
+    if (oldLog) {
+        // if the DATE was updated
+        if (oldLog.date !== updatedLog.date) {
+            const oldDaily = oldLog.dailyLog;
+            await DailyLog.findByIdAndUpdate(oldDaily, {$pull: {mealLogs: id}}, {new:true, runValidators:true});
+            updatedLog.dailyLog = await updateDailyLogs('meal', updatedLog);
+        } else {
+            updatedLog.meal.dailyLog = oldLog.dailyLog;
+        }            
+    }
+
+    // if it's a DB Meal
+    if (req.body.mealData) {
+        mealData = JSON.parse(req.body.mealData);
+        if (meal.serving === 'single') {
+            updatedLog.meal._id = mealData._id;
+            updatedLog.meal.tags = mealData.tags;
+            updatedLog.meal.notes = mealData.notes;
+
+        } else {
+            updatedLog.meal = mealData;
+        }
+    }
+
+    await MealLog.findByIdAndUpdate(id, updatedLog, {new:true, runValidators:true})
         .then(() => res.redirect(`/kcalog/logs/meals/${id}`))
         .catch(e => next(mongoError(e)));
 }
@@ -114,6 +146,7 @@ module.exports.updateMealLog = async (req, res, next) => {
 module.exports.showMealLog = async (req, res, next) => {
     const { id } = req.params;
     await MealLog.findById(id)
+        // .then(mealLog => res.send(mealLog))
         .then(mealLog => res.render('kcalog/logs/meals/show', { title: capitalize(mealLog.meal.name), mealLog}))
         .catch(e => next(mongoError(e)))
 };
