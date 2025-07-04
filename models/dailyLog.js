@@ -2,6 +2,8 @@ const mongoose = require('mongoose'); // import MONGOOSE
 
 const MealLog = require('./mealLog');
 const WorkoutLog = require('./workoutLog');
+const dateTime = require('date-and-time'); // to format dates/times
+const { func } = require('joi');
 
 const { Schema } = mongoose;
 
@@ -21,13 +23,12 @@ const dailyLogSchema = new mongoose.Schema({
     }]
 })
 
-dailyLogSchema.post('findOneAndDelete', async function(daily){ // daily holds the deleted instance
-    // if something was succefully deleted...
-    if(daily) {
-        // to delete any Meal/Workout log which _id is included in the parent array
-        await MealLog.deleteMany({_id: {$in: daily.mealLogs}});
-        await WorkoutLog.deleteMany({_id: {$in: daily.workoutLogs}});
-    }
-})
+dailyLogSchema.virtual('shortDate').get(function(){
+    return dateTime.format(new Date(this.calendarDate), 'ddd DD MMM'); // Mon Jan 11
+});
+
+dailyLogSchema.virtual('longDate').get(function(){
+    return dateTime.format(new Date(this.calendarDate), 'dddd, DD MMMM'); // Monday, January 11
+});
 
 module.exports.DailyLog = mongoose.model('DailyLog', dailyLogSchema);

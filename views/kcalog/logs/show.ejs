@@ -1,8 +1,8 @@
 <% layout('layouts/boilerplate') %>
 
-<a href="http://localhost:8080/kcalog/logs" class="btn btn-light">All Daily Logs</a>
+<a href="http://localhost:8080/kcalog/logs" class="btn btn-light btn-lg">All Daily Logs</a>
 
-<h2 class="display-6 fw-semibold my-3"><%= dailyLog.calendarDate %></h2>
+<h2 class="display-6 fw-semibold my-3"><%= dailyLog.longDate %></h2>
 
 <section class="border d-flex justify-content-around align-items-center p-3">
     <div class="col-4">
@@ -25,12 +25,16 @@
     <h2 class="mt-3 pt-3">Meal Logs</h3>
     <div class="d-flex flex-wrap justify-content-center">
         <% for (let mealLog of dailyLog.mealLogs) { %>
-            <section class="border border-secondary m-4 p-3 text-start col-8 col-lg-4">
-                <h3 class="fs-3"><%= mealLog.name %></h3>
+            <section class="border border-secondary m-4 p-3 text-start col-10 col-lg-5">
+                <h3 class="fs-3 text-capitalize"><%= mealLog.meal.name %></h3>
                 <div class="row">
-                    <div class="col">
-                        <p>Kcal: <%= mealLog.kcal %></p>
-                        <p>Date: <%= mealLog.date.toDateString() %></p>
+                    <div class="col d-flex flex-column justify-content-between">
+                        <div class="d-flex flex-column justify-content between py-2">
+                            <p>Total Kcal: <span class="fw-semibold"><%= mealLog.kcal %></span></p>
+                            <p>
+                                <a href="/kcalog/logs/meals/?category=<%= mealLog.category %>" class="text-capitalize btn btn-light"><%= mealLog.category %></a>
+                            </p>
+                        </div>
                         <a href="http://localhost:8080/kcalog/logs/meals/<%= mealLog._id %>" class="btn btn-secondary">View</a>
                     </div>
                     <img src="<%= mealLog.image %>" alt="<%= mealLog.name %>" class="img-fluid m-0 col-5">
@@ -40,16 +44,21 @@
     </div>
 <% } %>
 
-<% if (dailyLog.WorkoutLogs.length) { %>
+<% if (dailyLog.workoutLogs.length) { %>
     <h2 class="mt-3 pt-3">Workout Logs</h3>
     <div class="d-flex flex-wrap justify-content-center">
         <% for (let workoutLog of dailyLog.workoutLogs) { %>
-            <section class="border border-secondary m-4 p-3 text-start col-8 col-lg-4">
-                <h3 class="fs-3"><%= workoutLog.name %></h3>
+            <section class="border border-secondary m-4 p-3 text-start col-10 col-lg-5">
+                <h3 class="fs-3 text-capitalize"><%= workoutLog.name %></h3>
                 <div class="row">
-                    <div class="col">
-                        <p>Kcal: <%= workoutLog.kcal %></p>
-                        <p>Date: <%= workoutLog.date.toDateString() %></p>
+                    <div class="col d-flex flex-column justify-content-between">
+                        <div class="d-flex flex-column justify-content between py-2">
+                            <p>Kcal Burned: <span class="fw-semibold"><%= workoutLog.kcal %></span></p>
+                            <% if (workoutLog.duration !== '00:00') { %>
+                                <p>Duration: <span class="fw-semibold"><%= workoutLog.duration %></span></p>
+                            <% } %>
+                        </div>
+                        
                         <a href="http://localhost:8080/kcalog/logs/workouts/<%= workoutLog._id %>" class="btn btn-secondary">View</a>
                     </div>
                     <img src="<%= workoutLog.image %>" alt="<%= workoutLog.name %>" class="img-fluid m-0 col-5">
@@ -58,7 +67,3 @@
         <% } %>
     </div>
 <% } %>
-
-<form action="/kcalog/logs/<%= dailyLog._id %>?_method=DELETE" method="post">
-    <button type="submit" class="btn btn-danger mt-3">Delete</button>
-</form>

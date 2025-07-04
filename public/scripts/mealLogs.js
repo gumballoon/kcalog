@@ -111,12 +111,16 @@ search.addEventListener('change', function() {
     isFormValid();
 })
 
-// to populate the mealInfo w/ the mealLog info on the EDIT view
+// (on EDIT view) to populate the mealInfo w/ the mealLog
 if(mealLog) {
     resetMealInfo();
     populateMealInfo(mealLog.meal);
     grams.value = mealLog.grams;
-    fullTotalKcal.value = mealLog.fullTotalKcal;
+    if (mealLog.meal.serving === 'single') {
+        totalKcal.value = mealLog.meal.totalKcal;
+    } else {
+        fullTotalKcal.value = mealLog.fullTotalKcal;
+    }
     mealInfo.classList.remove('d-none');
     submit.removeAttribute('disabled');
 }

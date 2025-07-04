@@ -50,9 +50,21 @@ module.exports.renderEditForm = async (req, res, next) => {
 
 module.exports.updateWorkoutLog = async (req, res, next) => {
     const { id } = req.params;
-    await WorkoutLog.findByIdAndUpdate(id, req.body.workoutLog, {runValidators:true})
+    const updatedLog = req.body.workoutLog;
+
+    const oldLog = await WorkoutLog.findById(id);
+    // if the DATE was updated
+    if (oldLog.date.toDateString() !== new Date(updatedLog.date).toDateString()) {
+        const oldDaily = oldLog.dailyLog;
+        await DailyLog.findByIdAndUpdate(oldDaily, {$pull: {workoutLogs: id}}, {new:true, runValidators:true});
+        updatedLog.dailyLog = await updateDailyLogs('workout', updatedLog);
+    } else {
+        updatedLog.dailyLog = oldLog.dailyLog;
+    }     
+
+    await WorkoutLog.findByIdAndUpdate(id, updatedLog, {new:true, runValidators:true})
+        .then(() => res.redirect(`/kcalog/logs/workouts/${id}`))
         .catch(e => next(mongoError(e)))
-    res.redirect(`/kcalog/logs/workouts/${id}`);
 };
 
 module.exports.showWorkoutLog = async (req, res, next) => {
@@ -69,7 +81,7 @@ module.exports.destroyWorkoutLog = async (req, res, next) => {
 
     // to update the associated DailyLog
     const dailyId = deletedLog.dailyLog;
-    const updatedLog = await DailyLog.findByIdAndUpdate(dailyId, {$pull: {mealLogs: deletedLog._id}}, {new:true, runValidators:true})
+    const updatedLog = await DailyLog.findByIdAndUpdate(dailyId, {$pull: {workoutLogs: deletedLog._id}}, {new:true, runValidators:true})
         .catch(e => next(mongoError(e)))
     // to delete the associated DailyLog if it's empty (no Meal/Workout logs)
     if (!updatedLog.mealLogs.length && !updatedLog.workoutLogs.length) {

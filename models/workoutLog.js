@@ -40,7 +40,7 @@ workoutLogSchema.virtual('longDate').get(function(){
 });
 
 workoutLogSchema.virtual('kcalPerHour').get(function(){
-    if (this.duration && this.kcal) {
+    if (this.duration !== '00:00' && this.kcal) {
         const minutes = this.duration.slice(0,2) * 60 + parseInt(this.duration.slice(3));
         return Math.round(this.kcal * 60 / minutes);
     } else {

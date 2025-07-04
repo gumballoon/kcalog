@@ -11,7 +11,7 @@ function mongoError(e) {
     return new AppError('MongoDB Error', 500, e.message)
 };
 
-// to create or update a Daily Log 
+// create or update a Daily Log 
 const { updateDailyLogs } = require('../utilities/dailyLogs')
 
 module.exports.index = async (req, res, next) => {
@@ -20,13 +20,13 @@ module.exports.index = async (req, res, next) => {
     if (category && allCategories.includes(category)) {
         let allMealLogs = await MealLog.find({ category })
             .catch(e => next(mongoError(e)));
-        // to order from newest to oldest
+        // order from newest to oldest
         allMealLogs = allMealLogs.sort((a,b) => b.date - a.date);
         res.render('kcalog/logs/meals/index', { title:'Meal Logs', allMealLogs, category })
     } else {
         let allMealLogs = await MealLog.find({ })
-        .catch(e => next(mongoError(e)));
-        // to order from newest to oldest
+            .catch(e => next(mongoError(e)));
+        // order from newest to oldest
         allMealLogs = allMealLogs.sort((a,b) => b.date - a.date);
         res.render('kcalog/logs/meals/index', { title:'Meal Logs', allMealLogs, category: "all" })
     }
@@ -113,18 +113,6 @@ module.exports.updateMealLog = async (req, res, next) => {
     const updatedLog = mealLog;
     updatedLog.meal = meal;
 
-    const oldLog = await MealLog.findOne({ _id: id });
-    if (oldLog) {
-        // if the DATE was updated
-        if (oldLog.date !== updatedLog.date) {
-            const oldDaily = oldLog.dailyLog;
-            await DailyLog.findByIdAndUpdate(oldDaily, {$pull: {mealLogs: id}}, {new:true, runValidators:true});
-            updatedLog.dailyLog = await updateDailyLogs('meal', updatedLog);
-        } else {
-            updatedLog.meal.dailyLog = oldLog.dailyLog;
-        }            
-    }
-
     // if it's a DB Meal
     if (req.body.mealData) {
         mealData = JSON.parse(req.body.mealData);
@@ -138,6 +126,16 @@ module.exports.updateMealLog = async (req, res, next) => {
         }
     }
 
+    const oldLog = await MealLog.findById(id);
+    // if the DATE was updated
+    if (oldLog.date.toDateString() !== new Date(updatedLog.date).toDateString()) {
+        const oldDaily = oldLog.dailyLog;
+        await DailyLog.findByIdAndUpdate(oldDaily, {$pull: {mealLogs: id}}, {new:true, runValidators:true});
+        updatedLog.dailyLog = await updateDailyLogs('meal', updatedLog);
+    } else {
+        updatedLog.dailyLog = oldLog.dailyLog;
+    }            
+
     await MealLog.findByIdAndUpdate(id, updatedLog, {new:true, runValidators:true})
         .then(() => res.redirect(`/kcalog/logs/meals/${id}`))
         .catch(e => next(mongoError(e)));
@@ -145,10 +143,14 @@ module.exports.updateMealLog = async (req, res, next) => {
 
 module.exports.showMealLog = async (req, res, next) => {
     const { id } = req.params;
-    await MealLog.findById(id)
-        // .then(mealLog => res.send(mealLog))
-        .then(mealLog => res.render('kcalog/logs/meals/show', { title: capitalize(mealLog.meal.name), mealLog}))
+    const mealLog = await MealLog.findById(id)
         .catch(e => next(mongoError(e)))
+    if (mealLog) {
+        res.render('kcalog/logs/meals/show', { title: capitalize(mealLog.meal.name), mealLog})
+    } else {
+        res.redirect('/kcalog/logs/meals')
+    }
+
 };
 
 module.exports.destroyMealLog = async (req, res, next) => {

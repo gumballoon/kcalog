@@ -41,8 +41,8 @@ module.exports.updateDailyLogs = async (type, log) => {
     }
 }
 
-// populate the Daily Log to get the Meal - Workout kcal balance
-module.exports.getDailyKcalBalance = async (daily) => {
+// populate the Daily Log to get the Meal & Workout total kcal + balance
+module.exports.getDailyKcal = async (daily) => {
     let totalMealKcal = 0;
     await daily.populate('mealLogs')
     .then(res => {
@@ -55,8 +55,8 @@ module.exports.getDailyKcalBalance = async (daily) => {
     let totalWorkoutKcal = 0;
     await daily.populate('workoutLogs')
     .then(res => {
-        for (e of res.workoutLogs){
-            totalWorkoutKcal += e.kcal;
+        for (w of res.workoutLogs){
+            totalWorkoutKcal += w.kcal;
         }
     })
     daily.totalWorkoutKcal = totalWorkoutKcal;

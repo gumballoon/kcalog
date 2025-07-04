@@ -45,7 +45,7 @@ mealLogSchema.virtual('longDate').get(function(){
     return dateTime.format(this.date, 'dddd, DD MMMM'); // Monday, January 11
 });
 
-// to get the meal's kcal (regardless of single vs. full)
+// to get the meal's kcal (regardless of serving)
 mealLogSchema.virtual('kcal').get(function(){
     if (this.meal.serving === 'single') {
         return this.meal.totalKcal;
