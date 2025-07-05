@@ -48,7 +48,7 @@ module.exports.createMeal = async (req, res, next) => {
         const tagsArray = newMeal.tags[0].split('+++');
         newMeal.tags = tagsArray;
     }
-    newMeal.image = `https://picsum.photos/400?random=${Math.random()}`;
+    newMeal.image = '/images/default-meal.svg';
     const { _id: id } = newMeal;
     await newMeal.save()
         .then(() => res.redirect(`/kcalog/db/meals/${id}`))

@@ -6,19 +6,16 @@
 
 <div class="d-flex flex-wrap justify-content-center">
     <% for (let workoutLog of allWorkoutLogs) { %>
-        <section class="border border-secondary m-4 p-3 text-start col-10 col-lg-5">
+        <section class="border border-secondary m-4 p-3 text-start col-10 col-md-5 col-xl-3">
             <h3 class="fs-3 text-capitalize" ><%= workoutLog.name %></h3>
             <div class="row">
-                <div class="col d-flex flex-column justify-content-between">
-                    <div class="d-flex flex-column justify-content between py-2">
+                <div class="col d-flex flex-column justify-content-around py-2">
                         <p><%= workoutLog.longDate %></p>
                         <p>Kcal Burned: <span class="fw-semibold"><%= workoutLog.kcal %></span></p>
-                    </div>
-
-                    <a href="http://localhost:8080/kcalog/logs/workouts/<%= workoutLog._id %>" class="btn btn-secondary">View</a>
                 </div>
-                <img src="<%= workoutLog.image %>" alt="<%= workoutLog.name %>" class="img-fluid m-0 col-5">
+                <img src="<%= workoutLog.image %>" alt="<%= workoutLog.name %>" class="img-fluid m-0 col-4">
             </div>
+            <a href="http://localhost:8080/kcalog/logs/workouts/<%= workoutLog._id %>" class="btn btn-secondary col-12 mt-2">View</a>
         </section>
     <% } %>
 </div>

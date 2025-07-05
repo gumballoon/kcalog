@@ -56,7 +56,7 @@ async function seedMeal(){
     for (let i = 0; i < 15; i++){
         const newMeal = new Meal({
             name: `${getRandomElement(adjectives)} ${getRandomElement(terms)}`,
-            image: getRandomImage(),
+            image: '/images/default-meal.svg',
             notes: getRandomElement(['So tasty!', 'Love it.', 'Yummy, what a treat!']),
             tags: [getRandomElement(tags), getRandomElement(tags)],
             serving: getRandomElement(['single', 'full'])
@@ -95,7 +95,7 @@ async function seedMealLog(){
             date: getRandomDate(), 
             category: getRandomElement(['breakfast', 'lunch', 'snack', 'dinner']),
             meal: randomMeal,
-            image: getRandomImage(),
+            image: '/images/default-mealLog.svg',
             notes: getRandomElement(['Nice meal!', "Why don't I eat this more often? I love it!", "Great post-workout meal."]),
         });
 
@@ -125,7 +125,7 @@ async function seedWorkoutLogs(){
             name: getRandomElement(workouts),
             kcal: Math.floor(Math.random() * 300) + 50, // random nº between 50-350
             duration: getRandomElement(['00:15', '00:30', '00:45', '01:00', '01:15', '01:30']),
-            image: getRandomImage(),
+            image: '/images/default-workoutLog.svg',
             notes: getRandomElement(['Great workout!', 'So proud of myself!', "I should push myself a little harder next time."])
         });
 

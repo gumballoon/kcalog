@@ -28,7 +28,7 @@ module.exports.renderNewForm = async (req, res) => {
 
 module.exports.createWorkoutLog = async (req, res, next) => {
     const newLog = new WorkoutLog(req.body.workoutLog);
-    newLog.image = `https://picsum.photos/400?random=${Math.random()}`;
+    newLog.image =  '/images/default-workoutLog.svg';
     const { duration} = req.body.workoutLog;
     newLog.minutes = duration.slice(0,2) * 60 + parseInt(duration.slice(3,5));
 

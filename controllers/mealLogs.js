@@ -79,7 +79,7 @@ module.exports.createMealLog = async (req, res, next) => {
             newLog.meal = mealData;
         }
     }
-    newLog.image = `https://picsum.photos/400?random=${Math.random()}`;
+    newLog.image = '/images/default-mealLog.svg';
     newLog.dailyLog = await updateDailyLogs('meal', newLog);
     await newLog.save()
         .then(() => res.redirect(`/kcalog/logs/meals/${newLog._id}`))

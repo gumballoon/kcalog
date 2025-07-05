@@ -11,22 +11,19 @@
 
 <div class="d-flex flex-wrap justify-content-center">
     <% for (let mealLog of allMealLogs) { %>
-        <section class="border border-secondary m-4 p-3 text-start col-10 col-lg-5">
+        <section class="border border-secondary m-4 p-3 text-start col-10 col-md-5 col-xl-3">
             <h3 class="fs-3 text-capitalize"><%= mealLog.meal.name %></h3>
             <div class="row">
-                <div class="col d-flex flex-column justify-content-between">
-                        <div class="d-flex flex-column justify-content between py-2">
+                <div class="col d-flex flex-column justify-content-around">
                         <p><%= mealLog.longDate %></p>
                         <p>Total Kcal: <span class="fw-semibold"><%= mealLog.kcal %></span></p>
                         <p>
                             <a href="/kcalog/logs/meals/?category=<%= mealLog.category %>" class="text-capitalize btn btn-light"><%= mealLog.category %></a>
                         </p>
-                    </div>
-
-                    <a href="http://localhost:8080/kcalog/logs/meals/<%= mealLog._id %>" class="btn btn-secondary">View</a>
                 </div>
-                <img src="<%= mealLog.image %>" alt="<%= mealLog.name %>" class="img-fluid m-0 col-5">
+                <img src="<%= mealLog.image %>" alt="<%= mealLog.name %>" class="m-0 col-4">
             </div>
+            <a href="http://localhost:8080/kcalog/logs/meals/<%= mealLog._id %>" class="btn btn-secondary col-12 mt-2">View</a>
         </section>
     <% } %>
 </div>

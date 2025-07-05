@@ -1,3 +1,7 @@
+img {
+    max-width: 200px;
+}
+
 .tag:hover .badge {
     display: inline-block !important;
 }
