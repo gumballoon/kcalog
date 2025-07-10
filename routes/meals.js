@@ -1,6 +1,5 @@
 const express = require('express');
 const router = express.Router();
-
 const meals = require('../controllers/meals');
 
 // INDEX & CREATE routes

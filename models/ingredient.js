@@ -1,4 +1,4 @@
-const mongoose = require('mongoose'); // import MONGOOSE
+const mongoose = require('mongoose');
 
 const ingredientSchema = new mongoose.Schema({
     name: {
@@ -41,6 +41,7 @@ ingredientSchema.statics.getAllCategories = async function(){
     return allCategories;
 }
 
+// simplified Ingredient data for the Meal & MealLog routes
 ingredientSchema.statics.getFormattedIngredientData = async function(){
     const allInstances = await this.find({});
     const data = {};

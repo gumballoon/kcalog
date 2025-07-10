@@ -1,5 +1,6 @@
-const mongoose = require('mongoose'); // import MONGOOSE
-mongoose.set('strictQuery', true); // to surpress a Mongoose 7 warning
+const mongoose = require('mongoose');
+ // to surpress a Mongoose 7 warning
+mongoose.set('strictQuery', true);
 // to connect to a specific database
 mongoose.connect('mongodb://127.0.0.1:27017/kcalog')
     .then(() => {
@@ -10,30 +11,26 @@ mongoose.connect('mongodb://127.0.0.1:27017/kcalog')
         console.log(err)
     })
 
-// Utilties //
+const { DailyLog } = require('../models/dailyLog');
+const { getDailyLog } = require('../utilities/dailyLogs');
+const { Ingredient } = require('../models/ingredient');
+const ingredients = require('./data/ingredients');
+const { Meal } = require('../models/meal');
+const { adjectives, terms, tags } = require('./data/meals');
+const { MealLog } = require('../models/mealLog');
+const { WorkoutLog } = require('../models/workoutLog');
+const workouts = require('./data/workouts');
+
 function getRandomElement(arr){
     const randomIndex = Math.floor(Math.random() * arr.length)
     return arr[randomIndex];
 }
 
-// to get a random 400x400 image from Lorem Picsum
-function getRandomImage(){
-    return `https://picsum.photos/400?random=${Math.random()}`;
-}
-
-// to a random date from January 2025
+// to get a random date from January 2025
 function getRandomDate(){
     const day = Math.floor(Math.random() * 31) + 1; // random number between 1-31
     return new Date(`2025-01-${day}`);
 }
-
-const { DailyLog } = require('../models/dailyLog');
-// to create or update a Daily Log 
-const { updateDailyLogs } = require('../utilities/dailyLogs');
-
-// // INGREDIENT // //
-const { Ingredient } = require('../models/ingredient');
-const ingredients = require('./data/ingredients');
 
 async function seedIngredient(){
     await Ingredient.deleteMany({})
@@ -42,10 +39,6 @@ async function seedIngredient(){
     await Ingredient.insertMany(ingredients)
         .catch(e => console.log(e))     
 }
-
-// // MEAL // //
-const { Meal } = require('../models/meal');
-const { adjectives, terms, tags } = require('./data/meals');
 
 async function seedMeal(){
     await Meal.deleteMany({})
@@ -79,9 +72,6 @@ async function seedMeal(){
     }
 }
 
-// // MEAL LOG // // 
-const { MealLog } = require('../models/mealLog');
-
 async function seedMealLog(){
     await MealLog.deleteMany({})
     .then(() => console.log('MEAL LOG has been reset.'))
@@ -102,17 +92,14 @@ async function seedMealLog(){
         if (newMealLog.meal.serving === 'full') {
             newMealLog.grams = Math.round(Math.random() * 25) + 500;
         }
-
-        newMealLog.dailyLog = await updateDailyLogs('meal', newMealLog);
+        
+        // create or update an existing DailyLog instance
+        newMealLog.dailyLog = await getDailyLog('meal', newMealLog);
 
         await newMealLog.save()
             .catch(e => console.log(e))
     }
 }
-
-// // WORKOUT LOG // //
-const { WorkoutLog } = require('../models/workoutLog');
-const workouts = require('./data/workouts');
 
 async function seedWorkoutLogs(){
     await WorkoutLog.deleteMany({})
@@ -129,7 +116,8 @@ async function seedWorkoutLogs(){
             notes: getRandomElement(['Great workout!', 'So proud of myself!', "I should push myself a little harder next time."])
         });
 
-        newWorkoutLog.dailyLog = await updateDailyLogs('workout', newWorkoutLog);
+        // create or update an existing DailyLog instance
+        newWorkoutLog.dailyLog = await getDailyLog('workout', newWorkoutLog);
 
         await newWorkoutLog.save()
             .catch(e => console.log(e))
@@ -171,30 +159,6 @@ async function seedDB(){
     const randomWorkoutLog = await WorkoutLog.findOne({});
     console.log(`// WORKOUT LOG: Random Sample // ${randomWorkoutLog} // Kcal Per Hour: ${randomWorkoutLog.kcalPerHour}`);
     console.log('// // // // // // //')
-
-//     const randomDailyLog =  await DailyLog.findOne({});
-//     let totalMealKcal = 0;
-//     await randomDailyLog.populate('mealLogs')
-//         .then(res => {
-//             for (m of res.mealLogs){
-//                 totalMealKcal += m.kcal;
-//             }
-//         })
-//     let totalworkoutKcal = 0;
-//     await randomDailyLog.populate('workoutLogs')
-//         .then(res => {
-//             for (e of res.workoutLogs){
-//                 totalworkoutKcal += e.kcal;
-//             }
-//     })
-        
-//     console.log(`// // DAILY LOG: Random Sample // //
-// ${randomDailyLog}
-// Total Meal Kcal: ${totalMealKcal}
-// Total workout Kcal: ${totalworkoutKcal}
-// Daily Balance: ${totalMealKcal - totalworkoutKcal}
-// console.log('// // // // // // //')
-// }`)
 }
 
 // to close the connection to MongoDB after execution, so the terminal won't stay on hold

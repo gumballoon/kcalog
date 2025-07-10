@@ -1,5 +1,4 @@
-const mongoose = require('mongoose'); // import MONGOOSE
-const { Ingredient } = require('./ingredient');
+const mongoose = require('mongoose');
 const { Schema } = mongoose;
 
 const mealSchema = new Schema({
@@ -58,7 +57,7 @@ mealSchema.pre('save', function(next) {
     this.tags = filteredTags;
     return next();
 })
-mealSchema.pre('updateOne', function(next) {
+mealSchema.pre('findOneAndUpdate', function(next) {
     const filteredTags = this.tags.filter(t => t !== '');
     this.tags = filteredTags;
     return next();
@@ -66,6 +65,14 @@ mealSchema.pre('updateOne', function(next) {
 
 // to calculate the KCAL of each ingredient (where it wasn't provided)
 mealSchema.pre('save', function(next) {
+    for (let i of this.ingredients) {
+        if (!i.kcal) {
+            i.kcal = Math.round(i.quantity * i.kcalPerUnit);
+        }
+    };
+    return next();
+})
+mealSchema.pre('findOneAndUpdate', function(next) {
     for (let i of this.ingredients) {
         if (!i.kcal) {
             i.kcal = Math.round(i.quantity * i.kcalPerUnit);
@@ -95,7 +102,7 @@ mealSchema.pre('save', function(next) {
     }
     return next();
 })
-mealSchema.pre('updateOne', function(next) {
+mealSchema.pre('findOneAndUpdate', function(next) {
     if (!this.totalKcal) {
         let totalKcal = 0;
         for (let i of this.ingredients){
@@ -106,6 +113,7 @@ mealSchema.pre('updateOne', function(next) {
     return next();
 })
 
+// to calculate the KCAL PER GRAM
 mealSchema.pre('save', function(next){
     if (this.totalGrams){
         this.kcalPerGram = Math.round(this.totalKcal / this.totalGrams * 100) / 100;
@@ -114,7 +122,7 @@ mealSchema.pre('save', function(next){
     };
     return next();
 })
-mealSchema.pre('updateOne', function(next){
+mealSchema.pre('findOneAndUpdate', function(next){
     if (this.totalGrams){
         this.kcalPerGram = Math.round(this.totalKcal / this.totalGrams * 100) / 100;
     } else {
@@ -123,6 +131,7 @@ mealSchema.pre('updateOne', function(next){
     return next();
 })
 
+// S T A T I C S
 mealSchema.statics.getAllNames = async function(){
     const allInstances = await this.find({});
     const allNames = [];
@@ -149,5 +158,5 @@ mealSchema.statics.getAllTags = async function(){
     return allTags;
 }
 
-module.exports.mealSchema = mealSchema;
+module.exports.mealSchema = mealSchema; // to be used on the mealLog.js
 module.exports.Meal = mongoose.model('Meal', mealSchema);;

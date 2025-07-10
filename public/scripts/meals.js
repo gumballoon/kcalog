@@ -1,19 +1,15 @@
 const form = document.querySelector('form');
 const submit = document.querySelector('#submit');
-
 const mealName = document.querySelector('#name');
 const notUnique = document.querySelector('#not-unique');
-
 const single = document.querySelector('#single');
 const full = document.querySelector('#full');
 const totalGrams = document.querySelector('#total-grams');
-
 const mealIngredients = document.querySelector('#meal-ingredients');
 const mealIngredientTemplate = mealIngredients.querySelector('.ingredient').outerHTML;
 const newIngredient = document.querySelector('#new-ingredient');
 const noIngredient = document.querySelector('#no-ingredient');
 const totalKcal = document.querySelector('#total-kcal');
-
 const defaultIngredients = document.querySelectorAll('.ingredient');
 const defaultTags = document.querySelectorAll('.tag');
 
@@ -31,7 +27,7 @@ function isFormValid() {
     }
 }
 
-// NAME //
+// to check if the NAME value is unique in the DB //
 if (mealName) {
     mealName.addEventListener('input', function(){
         if(allMealNames.includes(this.value.toLowerCase().trim())) {
@@ -43,7 +39,7 @@ if (mealName) {
     })
 }
 
-// SERVING //
+// to hide/show totalGrams (depending on the SERVING) //
 if (totalGrams) {
     // to recover the previously inserted TotalGrams (on EDIT)
     const storedTotalGrams = totalGrams.value || 0;
@@ -82,7 +78,7 @@ function autoFillTotalKcal() {
 // to calculate the TotalKcal of the default ingredients
 autoFillTotalKcal();
 
-// to give a unique ID/name to the inputs & labels of an ingredient
+// to give a unique ID/name to the inputs & labels of an .ingredient
 function indexIngredientElements(ing, index) {
     ing.setAttribute('data-index', index)
     
@@ -163,12 +159,11 @@ function addIngredientEvents(ing) {
         }
     })
 }
-
+// to apply the functionalites on the default ingredients
 for (let ing of defaultIngredients) {
     addIngredientEvents(ing);
 }
 
-// to add a new ingredient
 function addNewIngredient() {
     let ing = document.createElement('div');
     mealIngredients.appendChild(ing);
@@ -251,13 +246,14 @@ if (tags) {
     })
 }
 
-// to prevent the form submition if there are no ingredients & pass-in the tagsArray
+// to prevent the form submition (if there are no ingredients) & pass-in the tagsArray
 form.addEventListener('submit', function(e){
     if (getIngredientCount() === 0) {
         e.preventDefault();
     } else {
         if (tagsArray) {
-            tags.value = tagsArray.join('+++'); // to convert the array into a string w/ a custom separator
+             // to convert the array into a string w/ a custom separator
+            tags.value = tagsArray.join('+++');
         }
     }
 })

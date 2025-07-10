@@ -1,13 +1,11 @@
 const search = document.querySelector('#search');
 const mealInfo = document.querySelector('#meal-info');
 const mealData = document.querySelector('#meal-data');
-
 const fullSection = document.querySelector('#full-section');
 const fullName = document.querySelector('#full-name');
 const fullIngredients = document.querySelector('#full-ingredients');
 const fullKcalPerGram = document.querySelector('#full-kcal-per-gram');
 const fullImage = document.querySelector('#full-image');
-
 const fullGrams = document.querySelector('#full-grams');
 const fullTotalKcal = document.querySelector('#full-total-kcal');
 

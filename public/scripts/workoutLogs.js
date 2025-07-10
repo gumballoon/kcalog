@@ -1,10 +1,7 @@
 const form = document.querySelector('form');
 const submit = document.querySelector('#submit');
-
 const date = document.querySelector('#date');
 const workout = document.querySelector('#name');
-
-console.log(date.value)
 
 function isFormValid() {
     submit.setAttribute('disabled', 'true');

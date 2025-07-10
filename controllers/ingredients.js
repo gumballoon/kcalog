@@ -1,24 +1,23 @@
 const { Ingredient } = require('../models/ingredient');
-
-// custom Error class (title, status, message)
-const AppError = require('../utilities/AppError')
-// default MongoDB error
-function mongoError(e) {
-    return new AppError('MongoDB Error', 500, e.message)
-}
+// custom Error class (title, status, message) & default MongoDB error
+const { AppError, mongoError } = require('../utilities/errors');
 
 module.exports.index = async (req, res, next) => {
     const { category } = req.query;
     const allCategories = await Ingredient.getAllCategories()
         .catch(e => next(mongoError(e)));
+
+    // filtered index per CATEGORY
     if (category && allCategories.includes(category)){
-        await Ingredient.find({ category })
-            .then(allIngredients => res.render('kcalog/db/ingredients/index', { title:'Ingredients', allIngredients, category }))
-            .catch(e => next(mongoError(e)))   
-    } else {
-        await Ingredient.find({})
-            .then(allIngredients => res.render('kcalog/db/ingredients/index', { title:'Ingredients', allIngredients, category: "all" }))
+        const allIngredients = await Ingredient.find({ category })
             .catch(e => next(mongoError(e)))
+        res.render('kcalog/db/ingredients/index', { title:'Ingredients', allIngredients, category });
+
+    // show all
+    } else {
+        const allIngredients = await Ingredient.find({ })
+            .catch(e => next(mongoError(e)))
+        res.render('kcalog/db/ingredients/index', { title:'Ingredients', allIngredients, category: "all" });
     }
 }
 
@@ -27,13 +26,13 @@ module.exports.renderNewForm = async (req, res, next) => {
         .catch(e => next(mongoError(e)))
     const allCategories = await Ingredient.getAllCategories()
         .catch(e => next(mongoError(e)))
-    
-    res.render('kcalog/db/ingredients/new', { title: "New Ingredient", allNames, allCategories })
+
+    res.render('kcalog/db/ingredients/new', { title: "New Ingredient", allNames, allCategories });
 }
 
 module.exports.createIngredient = async (req, res, next) => {
-    const newIng = new Ingredient(req.body.ingredient);
-    await newIng.save()
+    const newIngredient = new Ingredient(req.body.ingredient);
+    await newIngredient.save()
         .then(() => res.redirect(`/kcalog/db/ingredients`))
         .catch(e => next(mongoError(e)))
 }
@@ -46,11 +45,13 @@ module.exports.renderEditForm = async (req, res, next) => {
         .catch(e => next(mongoError(e)))
     const ingredient = await Ingredient.findById(id)
         .catch(e => next(mongoError(e)))
-    res.render('kcalog/db/ingredients/edit', { title: 'Edit Ingredient', ingredient, allNames, allCategories })
+
+    res.render('kcalog/db/ingredients/edit', { title: 'Edit Ingredient', ingredient, allNames, allCategories });
 }
 
 module.exports.updateIngredient = async (req, res, next) => {
     const { id } = req.params;
+
     await Ingredient.findByIdAndUpdate(id, req.body.ingredient, {runValidators:true})
         .then(() => res.redirect(`/kcalog/db/ingredients`))
         .catch(e => next(mongoError(e)))
@@ -58,6 +59,7 @@ module.exports.updateIngredient = async (req, res, next) => {
 
 module.exports.destroyIngredient = async (req, res, next) => {
     const { id } = req.params;
+    
     await Ingredient.findByIdAndDelete(id)
         .then(() => res.redirect(`/kcalog/db/ingredients`))
         .catch(e => next(mongoError(e)))

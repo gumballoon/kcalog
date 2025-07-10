@@ -8,4 +8,9 @@ class AppError extends Error {
     }
 }
 
-module.exports = AppError;  
+// default MongoDB error
+function mongoError(e) {
+    return new AppError('MongoDB Error', 500, e.message)
+};
+
+module.exports = { AppError, mongoError }

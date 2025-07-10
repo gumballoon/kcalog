@@ -1,28 +1,42 @@
-// on index.js
-// Starting Setup //
-const express = require('express'); // import EXPRESS
-const app = express(); // to create a server object, a local server on the machine
+// S T A R T I N G  S E T U P //
+const express = require('express');
+// create a server object, a local server on the machine
+const app = express();
 
-app.set('view engine', 'ejs'); // to set the templating engine (EJS)
-const ejsMate = require('ejs-mate'); // EJS engine to add layout functionalities
-app.engine('ejs', ejsMate); // to set the engine to run/parse EJS
-const path = require('path'); // module for working w/ file & directory paths
-app.set('views', path.join(__dirname, '/views')); // to associate the VIEWS dir w/ the app dir
+// set the templating engine (EJS)
+app.set('view engine', 'ejs');
+// EJS engine to add layout functionalities
+const ejsMate = require('ejs-mate');
+// set the engine to run/parse EJS
+app.engine('ejs', ejsMate);
+// module for working w/ file & directory paths
+const path = require('path');
+// associate the VIEWS dir w/ the app dir
+app.set('views', path.join(__dirname, '/views'));
 
-const methodOverride = require('method-override'); // to 'fake' put/patch/delete requests
-app.use(methodOverride('_method')); // query string parameter for the HTTP verb
+// module to 'fake' put/patch/delete requests
+const methodOverride = require('method-override');
+// query string parameter for the HTTP verb
+app.use(methodOverride('_method'));
 
-const dateTime = require('date-and-time'); // to format dates/times
+// format dates/times
+const dateTime = require('date-and-time');
 
-app.use(express.urlencoded({ extended: true })) // to parse form data in POST request body
-app.use(express.json()) // to parse incoming JSON in POST request body
+// parse form data in POST request body
+app.use(express.urlencoded({ extended: true }));
+// parse incoming JSON in POST request body
+app.use(express.json());
 
-app.listen(8080, () => console.log('Listening on port 8080...')); // to set the server on the port 8080
-app.use(express.static(path.join(__dirname, '/public'))); // to share the directory w/ the public assets (CSS, JS, images)
+// set the server on the port 8080
+app.listen(8080, () => console.log('Listening on port 8080...'));
+// to share the directory w/ the public assets (CSS, JS, images)
+app.use(express.static(path.join(__dirname, '/public')));
 
-const mongoose = require('mongoose'); // import MONGOOSE
-mongoose.set('strictQuery', true); // to surpress a Mongoose 7 warning
-mongoose.connect('mongodb://127.0.0.1:27017/kcalog') // to connect to a specific db
+const mongoose = require('mongoose');
+// to surpress a Mongoose 7 warning
+mongoose.set('strictQuery', true);
+// to connect to a specific db
+mongoose.connect('mongodb://127.0.0.1:27017/kcalog')
     .then(() => {
         console.log("Connection: Open")
     })
@@ -31,8 +45,8 @@ mongoose.connect('mongodb://127.0.0.1:27017/kcalog') // to connect to a specific
         console.log(err)
     })
 
-// custom Error class (title, status, message)
-const AppError = require('./utilities/AppError')
+// custom Error class (title, status, message) & default MongoDB error
+const { AppError, mongoError } = require('./utilities/errors');
 
 // // // // // // // // // // // // // // // //
 
@@ -41,12 +55,14 @@ const { DailyLog } = require('./models/dailyLog');
 const { getDailyKcal} = require('./utilities/dailyLogs');
 
 // HOME route (1. New Log, 2. Daily Log, 3. Food DB)
-app.get('/kcalog', async (req, res) => {
+app.get('/kcalog', async (req, res, next) => {
     const now = new Date();
     const today = dateTime.format(now, 'ddd DD MMMM') // Mon Jan 01
 
     const daily = await DailyLog.findOne({ calendarDate: now.toDateString() })
-    if (daily) {
+        .catch(e => next(mongoError(e)))
+    console.log(daily)
+    if (daily && (daily.mealLogs.length || daily.workoutLogs.length)) {
         const dailyStats = await getDailyKcal(daily);
         res.render('kcalog/home', { title: 'Home', today, dailyStats });
     } else {
@@ -54,27 +70,22 @@ app.get('/kcalog', async (req, res) => {
     }
 })
 
-// // M E A L  L O G S // //
+// M E A L  L O G S //
 const mealLogRoutes = require('./routes/mealLogs');
 app.use('/kcalog/logs/meals', mealLogRoutes);
 
-// // E X E R C I S E  L O G S // //
+// E X E R C I S E  L O G S //
 const workoutLogRoutes = require('./routes/workoutLogs');
 app.use('/kcalog/logs/workouts', workoutLogRoutes);
 
-// // D A I L Y  L O G S // //
+// D A I L Y  L O G S //
 const dailyLogRoutes = require('./routes/dailyLogs');
 app.use('/kcalog/logs', dailyLogRoutes);
 
-// DB route (1. Ingredients 2. Meals)
-app.get('/kcalog/db', (req, res) => {
-    res.render('kcalog/db/index', { title: 'Database'})
-})
-
-// // I N G R E D I E N T S //
+// I N G R E D I E N T S //
 const ingredientRoutes = require('./routes/ingredients');
 app.use('/kcalog/db/ingredients', ingredientRoutes);
 
-// // M E A L S // //
+// M E A L S //
 const mealRoutes = require('./routes/meals');
 app.use('/kcalog/db/meals', mealRoutes);

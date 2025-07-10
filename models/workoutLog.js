@@ -1,6 +1,8 @@
-const mongoose = require('mongoose'); // import MONGOOSE
+const mongoose = require('mongoose');
 const { Schema } = mongoose;
-const dateTime = require('date-and-time'); // to format dates/times
+const { DailyLog } = require('./dailyLog');
+// to format dates/times
+const dateTime = require('date-and-time');
 
 const workoutLogSchema = new Schema({
     date: {
@@ -47,5 +49,15 @@ workoutLogSchema.virtual('kcalPerHour').get(function(){
         return 'n/a';
     }
 });
+
+// update the associated DailyLog after a WorkoutLog is deleted
+workoutLogSchema.post('findOneAndDelete', async function (deletedLog) {
+    if (deletedLog) { 
+        const logId = deletedLog._id;
+        const dailyId = deletedLog.dailyLog;
+        await DailyLog.findByIdAndUpdate(dailyId, {$pull: {workoutLogs: logId}}, {new:true, runValidators:true})
+            .catch(e => console.log(e));
+    }
+})
 
 module.exports.WorkoutLog = mongoose.model('WorkoutLog', workoutLogSchema);

@@ -1,13 +1,8 @@
-const mongoose = require('mongoose'); // import MONGOOSE
-
-const MealLog = require('./mealLog');
-const WorkoutLog = require('./workoutLog');
-const dateTime = require('date-and-time'); // to format dates/times
-const { func } = require('joi');
-
+const mongoose = require('mongoose');
 const { Schema } = mongoose;
+// to format dates/times
+const dateTime = require('date-and-time'); 
 
-// to be added/updated automatically w/ the Meal & Workout logs
 const dailyLogSchema = new mongoose.Schema({
     calendarDate: {
         type: String,
