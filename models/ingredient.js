@@ -22,6 +22,11 @@ const ingredientSchema = new mongoose.Schema({
         type: Number,
         min: 0,
         required: [true, 'KCAL PER GRAM cannot be blank']
+    },
+    userId: {
+        type: String,
+        default: 'wifey',
+        required: true
     }
 })
 

@@ -48,7 +48,12 @@ const mealSchema = new Schema({
     kcalPerGram: Number,
     tags: [ String ],
     notes: String,
-    image: String
+    image: String,
+    userId: {
+        type: String,
+        default: 'wifey',
+        required: true
+    }
 })
 
 // to ignore any empty TAGS (i.e. "")

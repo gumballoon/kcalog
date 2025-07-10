@@ -1,4 +1,9 @@
 // S T A R T I N G  S E T U P //
+// if in the development stage, DOTENV will extract to process.env the environment variables stored in the .env file
+if (process.env.NODE_ENV !== 'production'){
+    require('dotenv').config();
+}
+
 const express = require('express');
 // create a server object, a local server on the machine
 const app = express();
@@ -29,21 +34,23 @@ app.use(express.json());
 
 // set the server on the port 8080
 app.listen(8080, () => console.log('Listening on port 8080...'));
-// to share the directory w/ the public assets (CSS, JS, images)
+// share the directory w/ the public assets (CSS, JS, images)
 app.use(express.static(path.join(__dirname, '/public')));
 
 const mongoose = require('mongoose');
-// to surpress a Mongoose 7 warning
+// surpress a Mongoose 7 warning
 mongoose.set('strictQuery', true);
-// to connect to a specific db
-mongoose.connect('mongodb://127.0.0.1:27017/kcalog')
+// production DB vs. development DB
+const dbURL = process.env.DB_URL || 'mongodb://127.0.0.1:27017/kcalog'
+// connect to a specific db
+mongoose.connect(dbURL)
     .then(() => {
         console.log("Connection: Open")
     })
     .catch(err => {
         console.log("Connection: Error")
         console.log(err)
-    })
+})
 
 // custom Error class (title, status, message) & default MongoDB error
 const { AppError, mongoError } = require('./utilities/errors');

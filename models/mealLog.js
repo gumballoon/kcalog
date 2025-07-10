@@ -29,7 +29,12 @@ const mealLogSchema = new Schema({
     },
     fullTotalKcal: Number,
     image: String,
-    notes: String
+    notes: String,
+    userId: {
+        type: String,
+        default: 'wifey',
+        required: true
+    }
 })
 
 // to calculate the FULL TOTAL KCAL (if it wasn't provided)

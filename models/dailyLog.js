@@ -2,6 +2,7 @@ const mongoose = require('mongoose');
 const { Schema } = mongoose;
 // to format dates/times
 const dateTime = require('date-and-time'); 
+const { required } = require('joi');
 
 const dailyLogSchema = new mongoose.Schema({
     calendarDate: {
@@ -15,7 +16,12 @@ const dailyLogSchema = new mongoose.Schema({
     workoutLogs: [{
         type: Schema.Types.ObjectId,
         ref: 'WorkoutLog'
-    }]
+    }],
+    userId: {
+        type: String,
+        default: 'wifey',
+        required: true
+    }
 })
 
 dailyLogSchema.virtual('shortDate').get(function(){

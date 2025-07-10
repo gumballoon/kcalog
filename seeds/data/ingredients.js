@@ -6,6 +6,15 @@ module.exports = [
     { name: "grape", category: "fruit", unit: "gram", kcalPerUnit: 0.69 },
     { name: "orange", category: "fruit", unit: "gram", kcalPerUnit: 0.47 },
     { name: "lemon", category: "fruit", unit: "gram", kcalPerUnit: 0.29 },
+    { name: "pear", category: "fruit", unit: "gram", kcalPerUnit: 0.57 },
+    { name: "peach", category: "fruit", unit: "gram", kcalPerUnit: 0.39 },
+    { name: "plum", category: "fruit", unit: "gram", kcalPerUnit: 0.46 },
+    { name: "melon", category: "fruit", unit: "gram", kcalPerUnit: 0.34 },
+    { name: "watermelon", category: "fruit", unit: "gram", kcalPerUnit: 0.30 },
+    { name: "cherry", category: "fruit", unit: "gram", kcalPerUnit: 0.50 },
+    { name: "apricot", category: "fruit", unit: "gram", kcalPerUnit: 0.48 },
+    { name: "blackberry", category: "fruit", unit: "gram", kcalPerUnit: 0.43 },
+    { name: "raspberry", category: "fruit", unit: "gram", kcalPerUnit: 0.52 },
   
     // Vegetables
     { name: "tomato (raw)", category: "vegetable", unit: "gram", kcalPerUnit: 0.18 },

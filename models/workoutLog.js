@@ -30,7 +30,12 @@ const workoutLogSchema = new Schema({
         default : '00:00'
     },
     image: String,
-    notes: String
+    notes: String,
+    userId: {
+        type: String,
+        default: 'wifey',
+        required: true
+    }
 })
 
 workoutLogSchema.virtual('shortDate').get(function(){
