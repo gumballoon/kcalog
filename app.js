@@ -1,4 +1,5 @@
 // S T A R T I N G  S E T U P //
+
 // if in the development stage, DOTENV will extract to process.env the environment variables stored in the .env file
 if (process.env.NODE_ENV !== 'production'){
     require('dotenv').config();
@@ -32,8 +33,8 @@ app.use(express.urlencoded({ extended: true }));
 // parse incoming JSON in POST request body
 app.use(express.json());
 
-// set the server on the port 8080
-app.listen(8080, () => console.log('Listening on port 8080...'));
+// set the server on the port 8080 (on development)
+app.listen(8080);
 // share the directory w/ the public assets (CSS, JS, images)
 app.use(express.static(path.join(__dirname, '/public')));
 
@@ -62,7 +63,7 @@ const { DailyLog } = require('./models/dailyLog');
 const { getDailyKcal} = require('./utilities/dailyLogs');
 
 // HOME route (1. New Log, 2. Daily Log, 3. Food DB)
-app.get('/kcalog', async (req, res, next) => {
+app.get('/', async (req, res, next) => {
     const now = new Date();
     const today = dateTime.format(now, 'ddd DD MMMM') // Mon Jan 01
 
@@ -79,20 +80,20 @@ app.get('/kcalog', async (req, res, next) => {
 
 // M E A L  L O G S //
 const mealLogRoutes = require('./routes/mealLogs');
-app.use('/kcalog/logs/meals', mealLogRoutes);
+app.use('/logs/meals', mealLogRoutes);
 
 // E X E R C I S E  L O G S //
 const workoutLogRoutes = require('./routes/workoutLogs');
-app.use('/kcalog/logs/workouts', workoutLogRoutes);
+app.use('/logs/workouts', workoutLogRoutes);
 
 // D A I L Y  L O G S //
 const dailyLogRoutes = require('./routes/dailyLogs');
-app.use('/kcalog/logs', dailyLogRoutes);
+app.use('/logs', dailyLogRoutes);
 
 // I N G R E D I E N T S //
 const ingredientRoutes = require('./routes/ingredients');
-app.use('/kcalog/db/ingredients', ingredientRoutes);
+app.use('/db/ingredients', ingredientRoutes);
 
 // M E A L S //
 const mealRoutes = require('./routes/meals');
-app.use('/kcalog/db/meals', mealRoutes);
+app.use('/db/meals', mealRoutes);
