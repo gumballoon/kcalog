@@ -1,6 +1,6 @@
 <% layout('layouts/boilerplate') %>
 
-<form action="/kcalog/db/ingredients/new">
+<form action="/db/ingredients/new">
     <button class="btn btn-light btn-lg">New Ingredient</button>
 </form>
 
@@ -9,21 +9,21 @@
 <% } else { %>
     <h2 class="display-3 fw-semibold my-3 text-capitalize"><%= category %></h2>
 
-    <a href="/kcalog/db/ingredients" class="btn btn-light">All Ingredients</a>
+    <a href="/db/ingredients" class="btn btn-light">All Ingredients</a>
 <% } %>
 
 <div class="d-flex flex-wrap justify-content-center">
     <% for (let ing of allIngredients) { %>
         <section class="border border-secondary m-4 p-3">
             <h3 class="fs-2"><%= ing.name %></h3>
-            <a href="/kcalog/db/ingredients?category=<%= ing.category %>" class="btn btn-sm btn-light mb-2"><%= ing.category %></a>
+            <a href="/db/ingredients?category=<%= ing.category %>" class="btn btn-sm btn-light mb-2"><%= ing.category %></a>
 
             <p class="text-capitalize">Kcal Per <%= ing.unit %>: <%= ing.kcalPerUnit %></p>
 
             <div class="d-flex justify-content-between">
-                <a href="/kcalog/db/ingredients/<%= ing._id %>/edit" button class="btn btn-secondary">Edit</a>
+                <a href="/db/ingredients/<%= ing._id %>/edit" button class="btn btn-secondary">Edit</a>
 
-                <form action="/kcalog/db/ingredients/<%= ing._id %>?_method=DELETE" method="post">
+                <form action="/db/ingredients/<%= ing._id %>?_method=DELETE" method="post">
                     <button type="submit" class="btn btn-secondary">Delete</button>
                 </form>
             </div>

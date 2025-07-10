@@ -1,10 +1,10 @@
 <% layout('layouts/boilerplate') %>
 
-<a href="http://localhost:8080/kcalog/logs/workouts" class="btn btn-light">All Workout Logs</a>
+<a href="/logs/workouts" class="btn btn-light">All Workout Logs</a>
 
 <h2 class="display-3 fw-semibold my-3 text-capitalize"><%= workoutLog.name %></h2>
 
-<a href="http://localhost:8080/kcalog/logs/<%= workoutLog.dailyLog %>" class="btn btn-light btn-lg border fw-normal my-3"><%= workoutLog.longDate %></a>
+<a href="/logs/<%= workoutLog.dailyLog %>" class="btn btn-light btn-lg border fw-normal my-3"><%= workoutLog.longDate %></a>
 
 <img src="<%= workoutLog.image %>" alt="Image for <%= workoutLog.name %>" class="my-3 d-block mx-auto">
 
@@ -38,8 +38,8 @@
     <p><%= workoutLog.notes %></p>
 <% } %>
 
-<a href= "http://localhost:8080/kcalog/logs/workouts/<%= workoutLog._id %>/edit"   class="btn btn-secondary my-4">Edit</a>
+<a href= "/logs/workouts/<%= workoutLog._id %>/edit"   class="btn btn-secondary my-4">Edit</a>
 
-<form action="/kcalog/logs/workouts/<%= workoutLog._id %>?_method=DELETE" method="post">
+<form action="/logs/workouts/<%= workoutLog._id %>?_method=DELETE" method="post">
     <button type="submit" class="btn btn-secondary">Delete</button>
 </form>

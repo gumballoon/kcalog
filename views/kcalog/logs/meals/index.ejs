@@ -1,12 +1,12 @@
 <% layout('layouts/boilerplate') %>
 
-<a href="http://localhost:8080/kcalog/logs/meals/new" class="btn btn-light btn-lg">New Meal Log</a>
+<a href="/logs/meals/new" class="btn btn-light btn-lg">New Meal Log</a>
 
 <% if (category === 'all') { %>
     <h2 class="display-5 fw-semibold my-3">All Meal Logs</h2>
 <% } else { %>
     <h2 class="display-5 fw-semibold my-3 text-capitalize"> <%= category %></h2>
-    <a href="/kcalog/logs/meals" class="btn btn-light">All Meal Logs</a>
+    <a href="/logs/meals" class="btn btn-light">All Meal Logs</a>
 <% } %>
 
 <div class="d-flex flex-wrap justify-content-center">
@@ -18,12 +18,12 @@
                         <p><%= mealLog.longDate %></p>
                         <p>Total Kcal: <span class="fw-semibold"><%= mealLog.kcal %></span></p>
                         <p>
-                            <a href="/kcalog/logs/meals/?category=<%= mealLog.category %>" class="text-capitalize btn btn-light"><%= mealLog.category %></a>
+                            <a href="/logs/meals/?category=<%= mealLog.category %>" class="text-capitalize btn btn-light"><%= mealLog.category %></a>
                         </p>
                 </div>
                 <img src="<%= mealLog.image %>" alt="<%= mealLog.name %>" class="m-0 col-4">
             </div>
-            <a href="http://localhost:8080/kcalog/logs/meals/<%= mealLog._id %>" class="btn btn-secondary col-12 mt-2">View</a>
+            <a href="/logs/meals/<%= mealLog._id %>" class="btn btn-secondary col-12 mt-2">View</a>
         </section>
     <% } %>
 </div>

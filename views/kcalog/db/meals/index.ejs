@@ -1,6 +1,6 @@
 <% layout('layouts/boilerplate') %>
 
-<a href="http://localhost:8080/kcalog/db/meals/new" class="btn btn-light btn-lg">New Meal</a>
+<a href="/db/meals/new" class="btn btn-light btn-lg">New Meal</a>
 
 <% if (tag === 'all' && serving === 'all') { %>
     <h2 class="display-5 fw-semibold my-3">All Meals</h2>
@@ -11,7 +11,7 @@
         <h2 class="display-3 fw-semibold my-3 text-capitalize"><%= serving %></h2>
     <% } %>
 
-    <a href="/kcalog/db/meals" class="btn btn-light">All Meals</a>
+    <a href="/db/meals" class="btn btn-light">All Meals</a>
 <% } %>
 
 
@@ -21,7 +21,7 @@
             <h3 class="fs-3 text-capitalize"><%= meal.name %></h3>
             <div class="row">
                 <div class="col d-flex flex-column justify-content-around">
-                    <p>Serving: <a href="/kcalog/db/meals?serving=<%= meal.serving %>" class="text-capitalize btn btn-light"><%= meal.serving %></a></p>
+                    <p>Serving: <a href="/db/meals?serving=<%= meal.serving %>" class="text-capitalize btn btn-light"><%= meal.serving %></a></p>
                     <% if (meal.serving === 'full') { %>
                         <p>Kcal Per Gram: <span class="fw-semibold"><%= meal.kcalPerGram %> </span></p>
                     <% } else { %>
@@ -31,7 +31,7 @@
                         <% if (meal.tags) { %>
                             <% for (tag of meal.tags) { %>
                                 <% if (tag !== '') { %>
-                                    <a href="/kcalog/db/meals?tag=<%= tag %>" class="btn btn-sm btn-light"><%= tag %></a>
+                                    <a href="/db/meals?tag=<%= tag %>" class="btn btn-sm btn-light"><%= tag %></a>
                                 <% } %>
                             <% } %>
                         <% } %>
@@ -39,7 +39,7 @@
                 </div>
                 <img src="<%= meal.image %>" alt="<%= meal.name %>" class="img-fluid mx-auto col-4">
             </div>
-            <a href="/kcalog/db/meals/<%= meal._id %>" class="btn btn-secondary col-12 mt-2">View</a>
+            <a href="/db/meals/<%= meal._id %>" class="btn btn-secondary col-12 mt-2">View</a>
         </section>
     <% } %>
 </div>

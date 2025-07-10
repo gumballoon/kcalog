@@ -1,16 +1,16 @@
 <% layout('layouts/boilerplate') %>
 
-<a href="http://localhost:8080/kcalog/logs/meals" class="btn btn-light btn-lg">All Meal Logs</a>
+<a href="/logs/meals" class="btn btn-light btn-lg">All Meal Logs</a>
 
 <h2 class="display-3 fw-semibold my-3 text-capitalize"><%= mealLog.meal.name %></h2>
 
-<a href="http://localhost:8080/kcalog/logs/<%= mealLog.dailyLog %>" class="btn btn-light btn-lg border fw-normal my-3"><%= mealLog.longDate %></a>
+<a href="/logs/<%= mealLog.dailyLog %>" class="btn btn-light btn-lg border fw-normal my-3"><%= mealLog.longDate %></a>
 
 <img src="<%= mealLog.image %>" alt="Image for <%= mealLog.name %>" class="my-3 d-block mx-auto">
 
 <section class="border d-flex justify-content-around align-items-center p-3">
     <div>
-        <a  href="/kcalog/logs/meals?category=<%= mealLog.category %>" class="btn btn-light btn-lg mb-2"> 
+        <a  href="/logs/meals?category=<%= mealLog.category %>" class="btn btn-light btn-lg mb-2"> 
             <h3><%= mealLog.category %></h3>
         </a>
         <p class="fw-bold text-muted">Category</p>
@@ -69,8 +69,8 @@
     <p><%= mealLog.notes %></p>
 <% } %>
 
-<a href= "http://localhost:8080/kcalog/logs/meals/<%= mealLog._id %>/edit" class="btn btn-secondary my-4">Edit</a>
+<a href= "/logs/meals/<%= mealLog._id %>/edit" class="btn btn-secondary my-4">Edit</a>
 
-<form action="/kcalog/logs/meals/<%= mealLog._id %>?_method=DELETE" method="post">
+<form action="/logs/meals/<%= mealLog._id %>?_method=DELETE" method="post">
     <button type="submit" class="btn btn-secondary">Delete</button>
 </form>

@@ -1,6 +1,6 @@
 <% layout('layouts/boilerplate') %>
 
-<a href="http://localhost:8080/kcalog/logs" class="btn btn-light btn-lg">All Daily Logs</a>
+<a href="/logs" class="btn btn-light btn-lg">All Daily Logs</a>
 
 <h2 class="display-6 fw-semibold my-3"><%= dailyLog.longDate %></h2>
 
@@ -31,12 +31,12 @@
                     <div class="col d-flex flex-column justify-content-around py-2">
                             <p>Total Kcal: <span class="fw-semibold"><%= mealLog.kcal %></span></p>
                             <p>
-                                <a href="/kcalog/logs/meals/?category=<%= mealLog.category %>" class="text-capitalize btn btn-light"><%= mealLog.category %></a>
+                                <a href="/logs/meals/?category=<%= mealLog.category %>" class="text-capitalize btn btn-light"><%= mealLog.category %></a>
                             </p>
                     </div>
                     <img src="<%= mealLog.image %>" alt="<%= mealLog.name %>" class="img-fluid m-0 col-4">
                 </div>
-                <a href="http://localhost:8080/kcalog/logs/meals/<%= mealLog._id %>" class="btn btn-secondary col-12 mt-2">View</a>
+                <a href="/logs/meals/<%= mealLog._id %>" class="btn btn-secondary col-12 mt-2">View</a>
             </section>
         <% } %>
     </div>
@@ -57,7 +57,7 @@
                     </div>
                     <img src="<%= workoutLog.image %>" alt="<%= workoutLog.name %>" class="img-fluid m-0 col-4">
                 </div>
-                <a href="http://localhost:8080/kcalog/logs/workouts/<%= workoutLog._id %>" class="btn btn-secondary col-12 mt-2">View</a>
+                <a href="/logs/workouts/<%= workoutLog._id %>" class="btn btn-secondary col-12 mt-2">View</a>
             </section>
         <% } %>
     </div>

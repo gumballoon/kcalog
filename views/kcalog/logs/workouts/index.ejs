@@ -1,6 +1,6 @@
 <% layout('layouts/boilerplate') %>
 
-<a href="http://localhost:8080/kcalog/logs/workouts/new" class="btn btn-light btn-lg">New Workout Log</a>
+<a href="/logs/workouts/new" class="btn btn-light btn-lg">New Workout Log</a>
 
 <h2 class="display-5 fw-semibold my-3">All Workout Logs</h2>
 
@@ -15,7 +15,7 @@
                 </div>
                 <img src="<%= workoutLog.image %>" alt="<%= workoutLog.name %>" class="img-fluid m-0 col-4">
             </div>
-            <a href="http://localhost:8080/kcalog/logs/workouts/<%= workoutLog._id %>" class="btn btn-secondary col-12 mt-2">View</a>
+            <a href="/logs/workouts/<%= workoutLog._id %>" class="btn btn-secondary col-12 mt-2">View</a>
         </section>
     <% } %>
 </div>

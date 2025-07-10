@@ -1,9 +1,9 @@
 <% layout('layouts/boilerplate') %>
 
 <div>
-    <a href="/kcalog/logs/meals" class="btn btn-light btn-lg">Meal Logs</a>
+    <a href="/logs/meals" class="btn btn-light btn-lg">Meal Logs</a>
     
-    <a href="/kcalog/logs/workouts" class="btn btn-light btn-lg">Workout Logs</a>
+    <a href="/logs/workouts" class="btn btn-light btn-lg">Workout Logs</a>
 </div>
 
 <h2 class="display-5 fw-semibold mt-0 mt-3">Daily Logs</h2>
@@ -17,7 +17,7 @@
                     <p>Meal Kcal: <span class="fw-semibold"><%= dailyLog.totalMealKcal %></span></p>
                     <p>Workout Kcal: <span class="fw-semibold"><%= dailyLog.totalWorkoutKcal %></span></p>
                     <p>Kcal Balance: <span class="fw-semibold"><%= dailyLog.kcalBalance %></span></p>
-                    <a href="http://localhost:8080/kcalog/logs/<%= dailyLog._id %>" class="btn btn-secondary">View</a>
+                    <a href="/logs/<%= dailyLog._id %>" class="btn btn-secondary">View</a>
                 </div>
             </div>
         </section>

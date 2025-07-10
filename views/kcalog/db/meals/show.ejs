@@ -1,6 +1,6 @@
 <% layout('layouts/boilerplate') %>
 
-<a href="http://localhost:8080/kcalog/db/meals" class="btn btn-light btn-lg">All Meals</a>
+<a href="db/meals" class="btn btn-light btn-lg">All Meals</a>
 
 <h2 class="display-3 fw-semibold mt-3 text-capitalize"><%= meal.name %></h2>
 
@@ -9,7 +9,7 @@
 
 <section class="border d-flex justify-content-around align-items-center p-3">
     <div>
-        <a  href="/kcalog/db/meals?serving=<%= meal.serving %>" class="btn btn-light btn-lg mb-2"> 
+        <a  href="/db/meals?serving=<%= meal.serving %>" class="btn btn-light btn-lg mb-2"> 
             <h3><%= meal.serving %></h3>
         </a>
         <p class="fw-bold text-muted">Serving</p>
@@ -55,7 +55,7 @@
     <div>
         <% for (let tag of meal.tags) { %>
             <% if (tag !== '') { %>
-                <a href="/kcalog/db/meals?tag=<%= tag %>" class="btn btn-light"><%= tag %></a>
+                <a href="/db/meals?tag=<%= tag %>" class="btn btn-light"><%= tag %></a>
             <% } %>
         <% } %>
     </div>
@@ -66,8 +66,8 @@
     <p><%= meal.notes %></p>
 <% } %>
 
-<a href= "http://localhost:8080/kcalog/db/meals/<%= meal._id %>/edit" class="btn btn-secondary my-4">Edit</a>
+<a href= "http://localhost:8080/db/meals/<%= meal._id %>/edit" class="btn btn-secondary my-4">Edit</a>
 
-<form action="/kcalog/db/meals/<%= meal._id %>?_method=DELETE" method="post">
+<form action="/db/meals/<%= meal._id %>?_method=DELETE" method="post">
     <button type="submit" class="btn btn-secondary">Delete</button>
 </form>

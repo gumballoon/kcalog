@@ -12,11 +12,11 @@
     <% } %>
 </datalist>
 
-<a href="http://localhost:8080/kcalog/logs/meals" class="btn btn-light btn-lg my-3">All Meal Logs</a>
+<a href="/logs/meals" class="btn btn-light btn-lg my-3">All Meal Logs</a>
 
 <h2 class="display-5 fw-semibold">Edit Meal Log</h2>
 
-<form action="/kcalog/logs/meals/<%= mealLog._id %>?_method=PUT" method="post" class="col-lg-10 mx-auto">
+<form action="/logs/meals/<%= mealLog._id %>?_method=PUT" method="post" class="col-lg-10 mx-auto">
     <!-- DATE -->
     <div class="col-6 mx-auto">
         <label for="date" class="d-block fs-3 mt-4 mb-3 form-label">Date</label>

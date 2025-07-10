@@ -27,9 +27,9 @@
 <section class="mb-2">
     <h2 class="fs-4">add a new log</h2>
     <div class="mx-auto d-lg-flex col-10">
-        <a href="/kcalog/logs/meals/new" class="btn btn-secondary btn-lg col-12 col-lg mb-3 mx-lg-2">meal</a>
+        <a href="/logs/meals/new" class="btn btn-secondary btn-lg col-12 col-lg mb-3 mx-lg-2">meal</a>
 
-        <a href="/kcalog/logs/workouts/new" class="btn btn-secondary btn-lg col-12 col-lg mb-3 mx-lg-2">workout</a>
+        <a href="/logs/workouts/new" class="btn btn-secondary btn-lg col-12 col-lg mb-3 mx-lg-2">workout</a>
     </div>
 </section>
 
@@ -37,20 +37,20 @@
     <h2 class="fs-4">check your progress</h2>
     <div class="mx-auto d-lg-flex col-10">
         <% if(dailyStats) { %>
-            <a href="/kcalog/logs/today" class="btn btn-secondary btn-lg col-12 col-lg mb-3 mx-lg-2">daily log</a>
+            <a href="/logs/today" class="btn btn-secondary btn-lg col-12 col-lg mb-3 mx-lg-2">daily log</a>
         <%  } else { %>
-            <a href="/kcalog/logs/today" class="btn btn-secondary btn-lg col-12 col-lg mb-3 mx-lg-2 disabled">daily log</a>
+            <a href="/logs/today" class="btn btn-secondary btn-lg col-12 col-lg mb-3 mx-lg-2 disabled">daily log</a>
         <% } %>
 
-        <a href="/kcalog/logs/" class="btn btn-secondary btn-lg col-12 col-lg mb-3 mx-lg-2">weekly progress</a>
+        <a href="/logs/" class="btn btn-secondary btn-lg col-12 col-lg mb-3 mx-lg-2">weekly progress</a>
     </div>
 </section>
 
 <section>
     <h2 class="fs-4">manage the database</h2>
     <div class="mx-auto d-lg-flex col-10">
-        <a href="/kcalog/db/meals" class="btn btn-secondary btn-lg col-12 col-lg mb-3 mx-lg-2">meals</a>
+        <a href="/db/meals" class="btn btn-secondary btn-lg col-12 col-lg mb-3 mx-lg-2">meals</a>
 
-        <a href="/kcalog/db/ingredients" class="btn btn-secondary btn-lg col-12 col-lg mb-3 mx-lg-2">ingredients</a>
+        <a href="/db/ingredients" class="btn btn-secondary btn-lg col-12 col-lg mb-3 mx-lg-2">ingredients</a>
     </div>
 </section>
