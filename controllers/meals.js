@@ -54,7 +54,7 @@ module.exports.createMeal = async (req, res, next) => {
         newMeal.tags = tagsArray;
     }
     await newMeal.save()
-        .then(() => res.redirect(`/kcalog/db/meals/${id}`))
+        .then(() => res.redirect(`/db/meals/${id}`))
         .catch(e => next(mongoError(e)))
 };
 
@@ -86,7 +86,7 @@ module.exports.updateMeal = async (req, res, next) => {
     }
 
     await Meal.findByIdAndUpdate(id, updatedMeal, {runValidators:true})
-        .then(() => res.redirect(`/kcalog/db/meals/${id}`))
+        .then(() => res.redirect(`/db/meals/${id}`))
         .catch(e => next(mongoError(e)))
 };
 
@@ -103,6 +103,6 @@ module.exports.destroyMeal = async (req, res, next) => {
     const { id } = req.params;
     
     await Meal.findByIdAndDelete(id)
-        .then(() => res.redirect(`/kcalog/db/meals`))
+        .then(() => res.redirect(`/db/meals`))
         .catch(e => next(mongoError(e)))
 };

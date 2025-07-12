@@ -31,7 +31,7 @@ module.exports.showTodayLog = async (req, res, next) => {
         const dailyLog = await getDailyKcal(log);
         res.render('kcalog/logs/show', { title: dailyLog.calendarDate, dailyLog });
     } else {
-        res.redirect('/kcalog/logs/');
+        res.redirect('/logs/');
     }
 };
 
@@ -44,6 +44,6 @@ module.exports.showDailyLog = async (req, res, next) => {
         const dailyLog = await getDailyKcal(log);
         res.render('kcalog/logs/show', { title: dailyLog.calendarDate, dailyLog });
     } else {
-        res.redirect('/kcalog/logs/');
+        res.redirect('/logs/');
     }
 }

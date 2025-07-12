@@ -82,7 +82,7 @@ module.exports.createMealLog = async (req, res, next) => {
     newLog.dailyLog = await getDailyLog('meal', newLog);
 
     await newLog.save()
-        .then(() => res.redirect(`/kcalog/logs/meals/${newLog._id}`))
+        .then(() => res.redirect(`/logs/meals/${newLog._id}`))
         .catch(e => next(mongoError(e)));
 };
 
@@ -137,7 +137,7 @@ module.exports.updateMealLog = async (req, res, next) => {
     }            
 
     await MealLog.findByIdAndUpdate(id, updatedLog, {new:true, runValidators:true})
-        .then(() => res.redirect(`/kcalog/logs/meals/${id}`))
+        .then(() => res.redirect(`/logs/meals/${id}`))
         .catch(e => next(mongoError(e)));
 };
 
@@ -149,7 +149,7 @@ module.exports.showMealLog = async (req, res, next) => {
     if (mealLog) {
         res.render('kcalog/logs/meals/show', { title: textCapitalize(mealLog.meal.name), mealLog});
     } else {
-        res.redirect('/kcalog/logs/meals');
+        res.redirect('/logs/meals');
     }
 };
 
@@ -158,5 +158,5 @@ module.exports.destroyMealLog = async (req, res, next) => {
     await MealLog.findByIdAndDelete(id)
         .catch(e => next(mongoError(e)))
 
-    res.redirect('/kcalog/logs/meals');
+    res.redirect('/logs/meals');
 };

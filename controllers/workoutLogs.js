@@ -34,7 +34,7 @@ module.exports.createWorkoutLog = async (req, res, next) => {
     newLog.dailyLog = await getDailyLog('workout', newLog);
 
     await newLog.save()
-        .then(() => res.redirect(`/kcalog/logs/workouts/${newLog._id}`))
+        .then(() => res.redirect(`/logs/workouts/${newLog._id}`))
         .catch(e => next(mongoError(e)));
 };
 
@@ -63,7 +63,7 @@ module.exports.updateWorkoutLog = async (req, res, next) => {
     }     
 
     await WorkoutLog.findByIdAndUpdate(id, updatedLog, {new:true, runValidators:true})
-        .then(() => res.redirect(`/kcalog/logs/workouts/${id}`))
+        .then(() => res.redirect(`/logs/workouts/${id}`))
         .catch(e => next(mongoError(e)))
 };
 
@@ -81,5 +81,5 @@ module.exports.destroyWorkoutLog = async (req, res, next) => {
     await WorkoutLog.findByIdAndDelete(id)
         .catch(e => next(mongoError(e)))
     
-    res.redirect('/kcalog/logs/workouts');
+    res.redirect('/logs/workouts');
 };

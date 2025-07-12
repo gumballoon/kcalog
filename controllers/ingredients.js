@@ -33,7 +33,7 @@ module.exports.renderNewForm = async (req, res, next) => {
 module.exports.createIngredient = async (req, res, next) => {
     const newIngredient = new Ingredient(req.body.ingredient);
     await newIngredient.save()
-        .then(() => res.redirect(`/kcalog/db/ingredients`))
+        .then(() => res.redirect(`/db/ingredients`))
         .catch(e => next(mongoError(e)))
 }
 
@@ -53,7 +53,7 @@ module.exports.updateIngredient = async (req, res, next) => {
     const { id } = req.params;
 
     await Ingredient.findByIdAndUpdate(id, req.body.ingredient, {runValidators:true})
-        .then(() => res.redirect(`/kcalog/db/ingredients`))
+        .then(() => res.redirect(`/db/ingredients`))
         .catch(e => next(mongoError(e)))
 }
 
@@ -61,6 +61,6 @@ module.exports.destroyIngredient = async (req, res, next) => {
     const { id } = req.params;
     
     await Ingredient.findByIdAndDelete(id)
-        .then(() => res.redirect(`/kcalog/db/ingredients`))
+        .then(() => res.redirect(`/db/ingredients`))
         .catch(e => next(mongoError(e)))
 }
