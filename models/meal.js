@@ -33,22 +33,54 @@ const mealSchema = new Schema({
         },
         quantity: {
             type: Number,
+            min: 0,
             required: [true, 'Ingredients: QUANTITY cannot be blank']
         },
-        kcal: Number,
-        kcalPerUnit: Number
+        kcal: {
+            type: Number,
+            min: 0,
+            default: 0
+        },
+        kcalPerUnit: {
+            type: Number,
+            min: 0
+        }
     } ],
-    totalKcal: Number,
+    totalKcal: {
+        type: Number,
+        min: 0,
+        default: function() {
+            let result = 0;
+            for (let i of this.ingredients) {
+                result += i.kcal;
+            }
+            return Math.round(result);
+        }
+    },
     totalGrams: {
         type: Number,
+        min: 0,
         required: [function () {
           return this.serving === 'full';
         }, 'TOTAL GRAMS is required when SERVING is full']
     },
-    kcalPerGram: Number,
+    kcalPerGram: {
+        type: Number,
+        min: 0,
+        default: function() {
+            if (this.serving === 'full') {
+                return Math.round(this.totalKcal / this.totalGrams * 100) / 100;
+            } else {
+                return null;
+            }
+        }
+    },
     tags: [ String ],
     notes: String,
-    image: String,
+    image: {
+        type: String,
+        default: '/images/default-meal.svg'
+    },
     userId: {
         type: String,
         default: 'wifey',
@@ -56,93 +88,12 @@ const mealSchema = new Schema({
     }
 })
 
-// to ignore any empty TAGS (i.e. "")
-mealSchema.pre('save', function(next) {
-    const filteredTags = this.tags.filter(t => t !== '');
-    this.tags = filteredTags;
-    return next();
-})
-mealSchema.pre('findOneAndUpdate', function(next) {
-    const filteredTags = this.tags.filter(t => t !== '');
-    this.tags = filteredTags;
-    return next();
-})
-
-// to calculate the KCAL of each ingredient (where it wasn't provided)
-mealSchema.pre('save', function(next) {
-    for (let i of this.ingredients) {
-        if (!i.kcal) {
-            i.kcal = Math.round(i.quantity * i.kcalPerUnit);
-        }
-    };
-    return next();
-})
-mealSchema.pre('findOneAndUpdate', function(next) {
-    for (let i of this.ingredients) {
-        if (!i.kcal) {
-            i.kcal = Math.round(i.quantity * i.kcalPerUnit);
-        }
-    };
-    return next();
-})
-
-// to calculate the KCAL PER UNIT of each ingredient (where it wasn't provided)
-mealSchema.pre('save', function(next) {
-    for (let i of this.ingredients) {
-        if (!i.kcalPerUnit) {
-            i.kcalPerUnit = Math.round(i.kcal / i.quantity);
-        }
-    }
-    return next();
-})
-
-// to calculate the TOTAL KCAL (if it wasn't provided)
-mealSchema.pre('save', function(next) {
-    if (!this.totalKcal) {
-        let totalKcal = 0;
-        for (let i of this.ingredients){
-            totalKcal += i.kcal;
-        }
-        this.totalKcal = Math.round(totalKcal);
-    }
-    return next();
-})
-mealSchema.pre('findOneAndUpdate', function(next) {
-    if (!this.totalKcal) {
-        let totalKcal = 0;
-        for (let i of this.ingredients){
-            totalKcal += i.kcal;
-        }
-        this.totalKcal = Math.round(totalKcal);
-    }
-    return next();
-})
-
-// to calculate the KCAL PER GRAM
-mealSchema.pre('save', function(next){
-    if (this.totalGrams){
-        this.kcalPerGram = Math.round(this.totalKcal / this.totalGrams * 100) / 100;
-    } else {
-        this.kcalPerGram = null;
-    };
-    return next();
-})
-mealSchema.pre('findOneAndUpdate', function(next){
-    if (this.totalGrams){
-        this.kcalPerGram = Math.round(this.totalKcal / this.totalGrams * 100) / 100;
-    } else {
-        this.kcalPerGram = null;
-    };
-    return next();
-})
-
-// S T A T I C S
 mealSchema.statics.getAllNames = async function(){
     const allInstances = await this.find({});
     const allNames = [];
     allInstances.map(i => {
         if (!allNames.includes(i.name)) {
-            allNames.push(i.name.toLowerCase())
+            allNames.push(i.name.toLowerCase());
         }
     })
     return allNames;
@@ -155,7 +106,7 @@ mealSchema.statics.getAllTags = async function(){
         if (i.tags) {
             for (let tag of i.tags) {
                 if (!allTags.includes(tag)) {
-                    allTags.push(tag.toLowerCase())
+                    allTags.push(tag.toLowerCase());
                 }
             }
         }

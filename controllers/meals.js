@@ -47,9 +47,9 @@ module.exports.createMeal = async (req, res, next) => {
     const newMeal = new Meal(req.body.meal);
     const { _id: id } = newMeal;
 
-    newMeal.image = '/images/default-meal.svg';
     // to (re)convert the tags list into an array
     if (newMeal.tags) {
+        // the mealSchema turned the tags string into an array
         const tagsArray = newMeal.tags[0].split('+++');
         newMeal.tags = tagsArray;
     }
@@ -95,6 +95,8 @@ module.exports.showMeal = async (req, res, next) => {
 
     const meal = await Meal.findById(id)
         .catch(e => next(mongoError(e)))
+
+    res.send(meal)
 
     res.render('kcalog/db/meals/show', { title: textCapitalize(meal.name), meal})
 };

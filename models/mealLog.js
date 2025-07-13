@@ -28,7 +28,10 @@ const mealLogSchema = new Schema({
         }, 'GRAMS is required when SERVING is full']
     },
     fullTotalKcal: Number,
-    image: String,
+    image: {
+        type: String,
+        default: '/images/default-mealLog.svg'
+    },
     notes: String,
     userId: {
         type: String,

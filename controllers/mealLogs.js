@@ -77,7 +77,6 @@ module.exports.createMealLog = async (req, res, next) => {
             newLog.meal = mealData;
         }
     }
-    newLog.image = '/images/default-mealLog.svg';
     // create or update an existing DailyLog instance
     newLog.dailyLog = await getDailyLog('meal', newLog);
 

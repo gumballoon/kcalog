@@ -11,7 +11,7 @@ function isFormValid() {
 }
 
 for (let input of [date, workout]) {
-    input.addEventListener('change', function() {
+    input.addEventListener('input', function() {
         isFormValid();
     })
 }

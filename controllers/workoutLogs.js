@@ -24,7 +24,6 @@ module.exports.renderNewForm = async (req, res) => {
 
 module.exports.createWorkoutLog = async (req, res, next) => {
     const newLog = new WorkoutLog(req.body.workoutLog);
-    newLog.image =  '/images/default-workoutLog.svg';
 
     // convert the duration (00:00) to minutes
     const { duration} = req.body.workoutLog;

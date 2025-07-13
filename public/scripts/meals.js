@@ -20,8 +20,6 @@ function isFormValid() {
     const allRequired = document.querySelectorAll('input[required]');
     const invalidInputs = Array.from(allRequired).filter(i => !i.checkValidity());
 
-    console.log(invalidInputs);
-
     if (invalidInputs.length === 0) {
         submit.removeAttribute('disabled');
     }
@@ -44,7 +42,7 @@ if (totalGrams) {
     // to recover the previously inserted TotalGrams (on EDIT)
     const storedTotalGrams = totalGrams.value || 0;
     for (let serving of [single, full]) {
-        serving.addEventListener('change', function(){
+        serving.addEventListener('input', function(){
             if (!full.checked) {
                 totalGrams.disabled = true;
                 totalGrams.value = '';
@@ -113,7 +111,7 @@ function addIngredientEvents(ing) {
     const kcal = ing.querySelector('.kcal-input');
 
     // to auto-fill the fields UNIT & KCAL if the ingredient exists in the DB
-    name.addEventListener('change', function() {
+    name.addEventListener('input', function() {
         const ingName = name.value.toLowerCase().trim();
         if (allIngredients[ingName]) {
             unit.value = allIngredients[ingName].unit;
@@ -204,51 +202,51 @@ const tagInput = document.querySelector('#tag-input');
 const tags = document.querySelector('#tags');
 const insertedTags = document.querySelector('#inserted-tags')
 let tagsArray = []
-if (tags) {
-    if (tags.value) {
-        tagsArray = tags.value.split('+++');
-    }
-    
-    // to remove the tag when clicked-on
-    function removeTag(tag) {
-        tag.addEventListener('click', function() {
-            const tagName = this.querySelector('.tag-name').textContent;
-            this.remove();
-            tagsArray = tagsArray.filter(t => ( t !== tagName ));
-        })
-    }
-    
-    // to add the remove feature on the default tags (on EDIT)
-    for (let tag of defaultTags) {
-        removeTag(tag);
-    }
-    
-    // to display the inserted tags & store them on tagsArray
-    tagInput.addEventListener('focusout', function() {
-        const tagName = this.value.toLowerCase().trim();
-        if (tagName) {
-            if (!tagsArray.includes(tagName)) {
-                tagsArray.push(tagName);
-        
-                const newTag = document.createElement('small');
-                newTag.classList.add('btn', 'btn-sm', 'btn-light', 'm-3', 'position-relative', 'tag')
-                newTag.innerHTML = `<span class="tag-name">${tagName}</span>
-                <span class="badge text-bg-light text-muted position-absolute top-0 start-100 translate-middle d-none">X</span>
-                `
-    
-                removeTag(newTag);
-    
-                // to show the added tag & reset the input
-                insertedTags.appendChild(newTag);
-            }
-        }
-        this.value = null;
+if (tags.value) {
+    tagsArray = tags.value.split('+++');
+    console.log(tagsArray);
+}
+
+// to remove the tag when clicked-on
+function removeTag(tag) {
+    tag.addEventListener('click', function() {
+        const tagName = this.querySelector('.tag-name').textContent;
+        this.remove();
+        tagsArray = tagsArray.filter(t => ( t !== tagName ));
     })
 }
 
+// to add the remove feature on the default tags (on EDIT)
+for (let tag of defaultTags) {
+    removeTag(tag);
+}
+
+// to display the inserted tags & store them on tagsArray
+tagInput.addEventListener('focusout', function() {
+    const tagName = this.value.toLowerCase().trim();
+    if (tagName) {
+        if (!tagsArray.includes(tagName)) {
+            tagsArray.push(tagName);
+            console.log(tagsArray);
+    
+            const newTag = document.createElement('small');
+            newTag.classList.add('btn', 'btn-sm', 'btn-light', 'm-3', 'position-relative', 'tag')
+            newTag.innerHTML = `<span class="tag-name">${tagName}</span>
+            <span class="badge text-bg-light text-muted position-absolute top-0 start-100 translate-middle d-none">X</span>
+            `
+
+            removeTag(newTag);
+
+            // to show the added tag & reset the input
+            insertedTags.appendChild(newTag);
+        }
+    }
+    this.value = null;
+})
+
 // to prevent the form submition (if there are no ingredients) & pass-in the tagsArray
 form.addEventListener('submit', function(e){
-    if (getIngredientCount() === 0) {
+    if (form.id === 'meal-form' && getIngredientCount() === 0) {
         e.preventDefault();
     } else {
         if (tagsArray) {

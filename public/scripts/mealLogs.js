@@ -50,14 +50,14 @@ function populateMealInfo(meal) {
         fullTotalKcal.classList.remove('d-none');
     }
 
-    grams.addEventListener('change', function(){
+    grams.addEventListener('input', function(){
         if (this.value) {
             fullTotalKcal.value = Math.round(this.value * meal.kcalPerGram);
         }
         isFormValid();
     })
 
-    fullTotalKcal.addEventListener('change', function(){
+    fullTotalKcal.addEventListener('input', function(){
         if (!this.value) {
             if (grams.value) {
                 this.value = Math.round(grams.value * meal.kcalPerGram);
@@ -91,7 +91,7 @@ function resetMealInfo() {
     fullTotalKcal.value = 0;
 }
 
-search.addEventListener('change', function() {
+search.addEventListener('input', function() {
     resetMealInfo();
     notes.textContent = '';
     const mealName = search.value.toLowerCase().trim();

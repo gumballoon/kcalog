@@ -29,7 +29,10 @@ const workoutLogSchema = new Schema({
         type: String,
         default : '00:00'
     },
-    image: String,
+    image: {
+        type: String,
+        default: '/images/default-workoutLog.svg'
+    },
     notes: String,
     userId: {
         type: String,

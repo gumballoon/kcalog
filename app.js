@@ -1,7 +1,7 @@
 // S T A R T I N G  S E T U P //
 
 // if in the development stage, DOTENV will extract to process.env the environment variables stored in the .env file
-if (process.env.NODE_ENV !== 'production'){
+if (process.env.NODE_ENV === 'production'){
     require('dotenv').config();
 }
 
@@ -69,7 +69,6 @@ app.get('/', async (req, res, next) => {
 
     const daily = await DailyLog.findOne({ calendarDate: now.toDateString() })
         .catch(e => next(mongoError(e)))
-    console.log(daily)
     if (daily && (daily.mealLogs.length || daily.workoutLogs.length)) {
         const dailyStats = await getDailyKcal(daily);
         res.render('kcalog/home', { title: 'Home', today, dailyStats });
