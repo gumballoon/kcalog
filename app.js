@@ -1,7 +1,7 @@
 // S T A R T I N G  S E T U P //
 
 // if in the development stage, DOTENV will extract to process.env the environment variables stored in the .env file
-if (process.env.NODE_ENV === 'production'){
+if (process.env.NODE_ENV !== 'production'){
     require('dotenv').config();
 }
 
@@ -38,11 +38,37 @@ app.listen(8080);
 // share the directory w/ the public assets (CSS, JS, images)
 app.use(express.static(path.join(__dirname, '/public')));
 
+const session = require('express-session');
+const sessionOptions = { 
+		secret: '$Ab!x88', 
+		resave: false, 
+		saveUninitialized: true,
+		cookie: {
+                // to delete the cookie after one week
+				expires: Date.now() + (1000 * 60 * 60 * 24 * 7),
+				maxAge: 1000 * 60 * 60 * 24 * 7,
+				// security feature to protect the cookie
+                httpOnly: true
+		} 		
+}
+app.use(session(sessionOptions));
+
+// to display temporary messages
+const flash = require('connect-flash');
+app.use(flash());
+
+// to automatically send to the rendered template any flash messages that were defined during the req/res cycle
+app.use((req, res, next) => {
+    // to dynamically set the BS classes w/ the flash category (i.e. 'success', 'error', etc.)
+    res.locals.flash = req.flash();
+    next();
+})
+
 const mongoose = require('mongoose');
 // surpress a Mongoose 7 warning
 mongoose.set('strictQuery', true);
 // production DB vs. development DB
-const dbURL = process.env.DB_URL || 'mongodb://127.0.0.1:27017/kcalog'
+const dbURL = process.env.DB_URL || 'mongodb://127.0.0.1:27017/kcalog';
 // connect to a specific db
 mongoose.connect(dbURL)
     .then(() => {
@@ -96,3 +122,17 @@ app.use('/db/ingredients', ingredientRoutes);
 // M E A L S //
 const mealRoutes = require('./routes/meals');
 app.use('/db/meals', mealRoutes);
+
+// E R R O R S //
+// Dead End Route //
+app.use((req, res) => {
+    console.log(new AppError('URL Not Found', 404));
+    req.flash('danger', 'page not found');
+    res.redirect('/');
+})
+
+// Error Handler //
+app.use((err, req, res, next) => {
+    req.flash('danger', `${err.flash || 'something went wrong'}`);
+    res.status(err.status || 500).redirect('/');
+})

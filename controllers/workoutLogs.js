@@ -1,10 +1,10 @@
 const { WorkoutLog } = require('../models/workoutLog');
 const { DailyLog } = require('../models/dailyLog');
-const { getDailyLog, updateDailyLog } = require('../utilities/dailyLogs');
+const { getDailyLog } = require('../utilities/dailyLogs');
 const { textCapitalize } = require('../utilities/textCapitalize'); 
 const allWorkouts = require('../seeds/data/workouts');
 // custom Error class (title, status, message) & default MongoDB error
-const { AppError, mongoError } = require('../utilities/errors');
+const { serverError, mongoError } = require('../utilities/errors');
 
 module.exports.index = async (req, res, next) => {
     let allWorkoutLogs = await WorkoutLog.find({})
@@ -13,13 +13,21 @@ module.exports.index = async (req, res, next) => {
     // order from newest to oldest
     allWorkoutLogs = allWorkoutLogs.sort((a,b) => b.date - a.date)
 
-    res.render('kcalog/logs/workouts/index', { title:'Workout Logs', allWorkoutLogs })
+    try {
+         res.render('kcalog/logs/workouts/index', { title:'Workout Logs', allWorkoutLogs });
+    } catch (e) {
+        next(serverError(e));
+    }
 };
 
 module.exports.renderNewForm = async (req, res) => {
     const today = new Date().toISOString().split('T')[0];
 
-    res.render('kcalog/logs/workouts/new', { title: "New Workout Log", allWorkouts, today });
+    try {
+        res.render('kcalog/logs/workouts/new', { title: "New Workout Log", allWorkouts, today });        
+    } catch (e) {
+        next(serverError(e));
+    }
 };
 
 module.exports.createWorkoutLog = async (req, res, next) => {
@@ -33,8 +41,11 @@ module.exports.createWorkoutLog = async (req, res, next) => {
     newLog.dailyLog = await getDailyLog('workout', newLog);
 
     await newLog.save()
-        .then(() => res.redirect(`/logs/workouts/${newLog._id}`))
-        .catch(e => next(mongoError(e)));
+        .then(workoutLog => {
+            req.flash('success', `${textCapitalize(workoutLog.meal.name)} (Log) was saved`);
+            res.redirect(`/logs/workouts/${workoutLog._id}`);
+        })
+        .catch(e => next(mongoError(e, 'Workout Log could not be saved')));
 };
 
 module.exports.renderEditForm = async (req, res, next) => {
@@ -42,9 +53,13 @@ module.exports.renderEditForm = async (req, res, next) => {
     const today = new Date().toISOString().split('T')[0];
 
     const workoutLog = await WorkoutLog.findById(id)
-        .catch(e => next(mongoError(e)))
+        .catch(e => next(mongoError(e)));
     
-    res.render('kcalog/logs/workouts/edit', { title:'Edit Workout Log', workoutLog, allWorkouts, today })
+    try {
+        res.render('kcalog/logs/workouts/edit', { title:'Edit Workout Log', workoutLog, allWorkouts, today });
+    } catch (e) {
+        next(serverError(e));
+    }
 };
 
 module.exports.updateWorkoutLog = async (req, res, next) => {
@@ -62,23 +77,37 @@ module.exports.updateWorkoutLog = async (req, res, next) => {
     }     
 
     await WorkoutLog.findByIdAndUpdate(id, updatedLog, {new:true, runValidators:true})
-        .then(() => res.redirect(`/logs/workouts/${id}`))
-        .catch(e => next(mongoError(e)))
+        .then(workoutLog => {
+            req.flash('success', `${textCapitalize(workoutLog.name)} (Log) was updated`);
+            res.redirect(`/logs/workouts/${id}`);
+        })
+        .catch(e => next(mongoError(e, 'Workout Log could not be updated')));
 };
 
 module.exports.showWorkoutLog = async (req, res, next) => {
     const { id } = req.params;
 
     const workoutLog = await WorkoutLog.findById(id)
-        .catch(e => next(mongoError(e)))
-        
-    res.render('kcalog/logs/workouts/show', { title: textCapitalize(workoutLog.name), workoutLog})
+        .catch(e => next(mongoError(e, 'Workout Log not found')));
+
+    try {
+        res.render('kcalog/logs/workouts/show', { title: textCapitalize(workoutLog.name), workoutLog})   
+    } catch (e) {
+        next(serverError(e));
+    }
 };
 
 module.exports.destroyWorkoutLog = async (req, res, next) => {
     const { id } = req.params;
     await WorkoutLog.findByIdAndDelete(id)
-        .catch(e => next(mongoError(e)))
-    
-    res.redirect('/logs/workouts');
+        .then(workoutLog => {
+            req.flash('success', `${textCapitalize(workoutLog.name)} (Log) was deleted`);
+            res.redirect('/logs/workouts');
+        })
+        .catch(e => next(mongoError(e, 'Workout Log could not be deleted')));
+};
+
+module.exports.error = (err, req, res, next) => {
+    req.flash('danger', `${err.flash || 'something went wrong'}`);
+    res.status(err.status).redirect('/logs/workouts');
 };

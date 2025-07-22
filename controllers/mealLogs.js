@@ -2,10 +2,10 @@ const { Ingredient } = require('../models/ingredient');
 const { Meal } = require('../models/meal');
 const { MealLog } = require('../models/mealLog');
 const { DailyLog } = require('../models/dailyLog');
-const { getDailyLog, updateDailyLog } = require('../utilities/dailyLogs');
+const { getDailyLog } = require('../utilities/dailyLogs');
 const { textCapitalize } = require('../utilities/textCapitalize'); 
 // custom Error class (title, status, message) & default MongoDB error
-const { AppError, mongoError } = require('../utilities/errors');
+const { serverError, mongoError } = require('../utilities/errors');
 
 module.exports.index = async (req, res, next) => {
     const { category } = req.query;
@@ -16,16 +16,25 @@ module.exports.index = async (req, res, next) => {
         let allMealLogs = await MealLog.find({ category })
             .catch(e => next(mongoError(e)));
         // order from newest to oldest
+    try {
         allMealLogs = allMealLogs.sort((a,b) => b.date - a.date);
         res.render('kcalog/logs/meals/index', { title:'Meal Logs', allMealLogs, category });
+    } catch (e) {
+        next(serverError(e));
+    }
 
     // show all
     } else {
         let allMealLogs = await MealLog.find({ })
             .catch(e => next(mongoError(e)));
-        // order from newest to oldest
-        allMealLogs = allMealLogs.sort((a,b) => b.date - a.date);
-        res.render('kcalog/logs/meals/index', { title:'Meal Logs', allMealLogs, category: "all" });
+        
+        try {
+            // order from newest to oldest
+            allMealLogs = allMealLogs.sort((a,b) => b.date - a.date);
+            res.render('kcalog/logs/meals/index', { title:'Meal Logs', allMealLogs, category: "all" });
+        } catch (e) {
+            next(serverError(e));
+        }
     }
 };
 
@@ -34,7 +43,7 @@ module.exports.renderNewForm = async (req, res, next) => {
     const today = new Date().toISOString().split('T')[0];
 
     // automatically assign the Category based on the time of day
-    let category = ''
+    let category = '';
     const hours = parseInt(new Date().toTimeString().slice(0,2)); // 00 to 23
     if (hours >= 6 && hours <= 12) {
         category = 'breakfast';
@@ -57,7 +66,11 @@ module.exports.renderNewForm = async (req, res, next) => {
     const allTags = await Meal.getAllTags()
         .catch(e => next(mongoError(e)));
 
-    res.render('kcalog/logs/meals/new', { title: "New Meal Log", today, category, allMeals, allMealNames, allIngredients, allIngNames, allTags })
+    try {
+        res.render('kcalog/logs/meals/new', { title: "New Meal Log", today, category, allMeals, allMealNames, allIngredients, allIngNames, allTags });   
+    } catch (e) {
+        next(serverError(e));
+    }
 };
 
 module.exports.createMealLog = async (req, res, next) => {
@@ -81,8 +94,11 @@ module.exports.createMealLog = async (req, res, next) => {
     newLog.dailyLog = await getDailyLog('meal', newLog);
 
     await newLog.save()
-        .then(() => res.redirect(`/logs/meals/${newLog._id}`))
-        .catch(e => next(mongoError(e)));
+        .then((mealLog) => {
+            req.flash('success', `${textCapitalize(mealLog.meal.name)} (Log) was saved`);
+            res.redirect(`/logs/meals/${newLog._id}`);
+        })
+        .catch(e => next(mongoError(e, 'Meal Log could not be saved')));
 };
 
 module.exports.renderEditForm = async (req, res, next) => {
@@ -103,7 +119,11 @@ module.exports.renderEditForm = async (req, res, next) => {
     const allTags = await Meal.getAllTags()
         .catch(e => next(mongoError(e)));
 
-    res.render('kcalog/logs/meals/edit', { title:'Edit Meal Log', today, mealLog, allMeals, allMealNames, allIngredients, allIngNames, allTags })
+    try {
+        res.render('kcalog/logs/meals/edit', { title:'Edit Meal Log', today, mealLog, allMeals, allMealNames, allIngredients, allIngNames, allTags });
+    } catch (e) {
+        next(serverError(e));
+    }
 };
 
 module.exports.updateMealLog = async (req, res, next) => {
@@ -126,7 +146,8 @@ module.exports.updateMealLog = async (req, res, next) => {
     }
 
     // if the DATE was changed, update the old DailyLog & create a new one
-    const oldLog = await MealLog.findById(id);
+    const oldLog = await MealLog.findById(id)
+        .catch(e => next(mongoError(e)))
     if (oldLog.date.toDateString() !== new Date(updatedLog.date).toDateString()) {
         const oldDaily = oldLog.dailyLog;
         await DailyLog.findByIdAndUpdate(oldDaily, {$pull: {mealLogs: id}}, {new:true, runValidators:true});
@@ -136,26 +157,32 @@ module.exports.updateMealLog = async (req, res, next) => {
     }            
 
     await MealLog.findByIdAndUpdate(id, updatedLog, {new:true, runValidators:true})
-        .then(() => res.redirect(`/logs/meals/${id}`))
-        .catch(e => next(mongoError(e)));
+        .then((mealLog) => {
+            req.flash('success', `${textCapitalize(mealLog.meal.name)} (Log) was updated`);
+            res.redirect(`/logs/meals/${id}`);
+        })
+        .catch(e => next(mongoError(e, 'Meal Log could not be updated')));
 };
 
 module.exports.showMealLog = async (req, res, next) => {
     const { id } = req.params;
-    const mealLog = await MealLog.findById(id)
-        .catch(e => next(mongoError(e)))
-
-    if (mealLog) {
-        res.render('kcalog/logs/meals/show', { title: textCapitalize(mealLog.meal.name), mealLog});
-    } else {
-        res.redirect('/logs/meals');
-    }
+    await MealLog.findById(id)
+        .then(mealLog => res.render('kcalog/logs/meals/show', { title: textCapitalize(mealLog.meal.name), mealLog}))
+        .catch(e => next(mongoError(e, 'Meal Log not found')));
 };
 
 module.exports.destroyMealLog = async (req, res, next) => {
     const { id } = req.params;
-    await MealLog.findByIdAndDelete(id)
-        .catch(e => next(mongoError(e)))
 
-    res.redirect('/logs/meals');
+    await MealLog.findByIdAndDelete(id)
+        .then((mealLog) => {
+            req.flash('success', `${textCapitalize(mealLog.meal.name)} (Log) was deleted`);
+            res.redirect('/logs/meals');
+        })
+        .catch(e => next(mongoError(e, 'Meal Log could not be deleted')));
+};
+
+module.exports.error = (err, req, res, next) => {
+    req.flash('danger', `${err.flash || 'something went wrong'}`);
+    res.status(err.status).redirect('/logs/meals');
 };

@@ -1,6 +1,6 @@
 const { DailyLog } = require('../models/dailyLog');
 // custom Error class (title, status, message) & default MongoDB error
-const { AppError, mongoError } = require('../utilities/errors');
+const { mongoError } = require('../utilities/errors');
 // populate the DailyLog to get the total Meal & Exercise kcal + balance
 const { getDailyKcal } = require('../utilities/dailyLogs');
 

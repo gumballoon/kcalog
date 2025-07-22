@@ -25,14 +25,31 @@ function isFormValid() {
     }
 }
 
-// to check if the NAME value is unique in the DB //
+// to check if the NAME value is unique in the DB
 if (mealName) {
     mealName.addEventListener('input', function(){
-        if(allMealNames.includes(this.value.toLowerCase().trim())) {
-            notUnique.classList.remove('d-none');
+        const value = this.value.toLowerCase().trim();
+
+        // EDIT page (if the var 'meal' has been declared...)
+        if (typeof meal !== 'undefined') {
+            // to remove the saved instance's name from allNames
+            const validNames = allMealNames.filter(n => n !== meal.name)
+            if(validNames.includes(value)) {
+                notUnique.classList.remove('d-none');
+                submit.setAttribute('disabled', 'true');
+            } else {
+                notUnique.classList.add('d-none');
+                isFormValid();
+            }
+
+        // NEW page
         } else {
-            notUnique.classList.add('d-none');
-            isFormValid();
+            if(allMealNames.includes(value)) {
+                notUnique.classList.remove('d-none');
+            } else {
+                notUnique.classList.add('d-none');
+                isFormValid();
+            }
         }
     })
 }
@@ -204,7 +221,6 @@ const insertedTags = document.querySelector('#inserted-tags')
 let tagsArray = []
 if (tags.value) {
     tagsArray = tags.value.split('+++');
-    console.log(tagsArray);
 }
 
 // to remove the tag when clicked-on

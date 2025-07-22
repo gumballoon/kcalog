@@ -2,7 +2,7 @@ const { Meal } = require('../models/meal');
 const { Ingredient } = require('../models/ingredient');
 const { textCapitalize } = require('../utilities/textCapitalize'); 
 // custom Error class (title, status, message) & default MongoDB error
-const { AppError, mongoError } = require('../utilities/errors');
+const { serverError, mongoError } = require('../utilities/errors');
 
 module.exports.index = async (req, res, next) => {
     const { tag, serving } = req.query;
@@ -13,20 +13,33 @@ module.exports.index = async (req, res, next) => {
     if (tag && allTags.includes(tag)){
         // if the TAGS array contains the passed-in tag
         const allMeals = await Meal.find({ tags: { $all: [ tag ] } })
-            .catch(e => next(mongoError(e)))
-        res.render('kcalog/db/meals/index', { title:'Meals', allMeals, tag, serving: "all" });
+            .catch(e => next(mongoError(e)));
+        try {
+            res.render('kcalog/db/meals/index', { title:'Meals', allMeals, tag, serving: "all" });
+        } catch(e) {
+            next(serverError(e));
+        }
 
     // filtered index per SERVING
     } else if (serving && ['single', 'multi'].includes(serving)){
         const allMeals = await Meal.find({ serving })
-            .catch(e => next(mongoError(e)))
-        res.render('kcalog/db/meals/index', { title:'Meals', allMeals, tag: "all", serving });
+            .catch(e => next(mongoError(e)));
+        try {
+            res.render('kcalog/db/meals/index', { title:'Meals', allMeals, tag: "all", serving });
+        } catch(e) {
+            next(serverError(e));
+        }
 
     // show all
     } else {
         const allMeals = await Meal.find({})
-            .catch(e => next(mongoError(e)))
-        res.render('kcalog/db/meals/index', { title:'Meals', allMeals, tag: "all", serving: "all" });
+            .catch(e => next(mongoError(e)));
+
+        try {
+            res.render('kcalog/db/meals/index', { title:'Meals', allMeals, tag: "all", serving: "all" });
+        } catch(e) {
+            next(serverError(e));
+        }
     }
 };
 
@@ -40,7 +53,11 @@ module.exports.renderNewForm = async (req, res, next) => {
     const allTags = await Meal.getAllTags()
         .catch(e => next(mongoError(e)));
 
-    res.render('kcalog/db/meals/new', { title: "New Meal", allIngredients, allIngNames, allMealNames, allTags })
+    try {
+        res.render('kcalog/db/meals/new', { title: "New Meal", allIngredients, allIngNames, allMealNames, allTags })
+    } catch(e) {
+        next(serverError(e));
+    }
 };
 
 module.exports.createMeal = async (req, res, next) => {
@@ -54,8 +71,11 @@ module.exports.createMeal = async (req, res, next) => {
         newMeal.tags = tagsArray;
     }
     await newMeal.save()
-        .then(() => res.redirect(`/db/meals/${id}`))
-        .catch(e => next(mongoError(e)))
+        .then(meal => {
+            req.flash('success', `${textCapitalize(meal.name)} was saved`);
+            res.redirect(`/db/meals/${id}`);
+        })
+        .catch(e => next(mongoError(e, 'Meal could not be saved')));
 };
 
 module.exports.renderEditForm = async (req, res, next) => {
@@ -72,7 +92,12 @@ module.exports.renderEditForm = async (req, res, next) => {
     const meal = await Meal.findById(id).populate('ingredients')
         .catch(e => next(mongoError(e)));
 
-    res.render('kcalog/db/meals/edit', { title: 'Edit Meal', meal, allIngredients, allIngNames, allMealNames, allTags })
+    try {
+        res.render('kcalog/db/meals/edit', { title: 'Edit Meal', meal, allIngredients, allIngNames, allMealNames, allTags });
+    } catch(e) {
+        next(serverError(e));
+    }
+    
 };
 
 module.exports.updateMeal = async (req, res, next) => {
@@ -85,26 +110,34 @@ module.exports.updateMeal = async (req, res, next) => {
         updatedMeal.tags = tagsArray;
     }
 
-    await Meal.findByIdAndUpdate(id, updatedMeal, {runValidators:true})
-        .then(() => res.redirect(`/db/meals/${id}`))
-        .catch(e => next(mongoError(e)))
+    await Meal.findByIdAndUpdate(id, updatedMeal, {new:true, runValidators:true})
+        .then(meal => {
+            req.flash('success', `${textCapitalize(meal.name)} was updated`);
+            res.redirect(`/db/meals/${id}`);
+        })
+        .catch(e => next(mongoError(e, 'Meal could not be updated')));
 };
 
 module.exports.showMeal = async (req, res, next) => {
     const { id } = req.params;
 
-    const meal = await Meal.findById(id)
-        .catch(e => next(mongoError(e)))
-
-    res.send(meal)
-
-    res.render('kcalog/db/meals/show', { title: textCapitalize(meal.name), meal})
+    await Meal.findById(id)
+        .then(meal => res.render('kcalog/db/meals/show', { title: textCapitalize(meal.name), meal}))
+        .catch(e => next(mongoError(e, 'Meal not found')));
 };
 
 module.exports.destroyMeal = async (req, res, next) => {
     const { id } = req.params;
     
     await Meal.findByIdAndDelete(id)
-        .then(() => res.redirect(`/db/meals`))
-        .catch(e => next(mongoError(e)))
+        .then((meal) => {
+            req.flash('success', `${textCapitalize(meal.name)} was deleted`);
+            res.redirect('/db/meals');
+        })
+        .catch(e => next(mongoError(e, 'Meal could not be deleted')));
+};
+
+module.exports.error = (err, req, res, next) => {
+    req.flash('danger', `${err.flash || 'something went wrong'}`);
+    res.status(err.status).redirect('/db/meals');
 };

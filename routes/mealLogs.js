@@ -19,4 +19,7 @@ router.route('/:id')
 // EDIT route
 router.get('/:id/edit', mealLogs.renderEditForm)
 
+// ERROR handler
+router.use(mealLogs.error)
+
 module.exports = router;

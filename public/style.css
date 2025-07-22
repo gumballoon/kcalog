@@ -9,3 +9,15 @@ img {
 .pointer {
     cursor: pointer;
 }
+
+.flash {
+    display: block;
+    width: fit-content;
+    position: fixed;
+    top: 10%;
+    left: 50%; transform: translateX(-50%);
+
+    /* for the automatic closing w/ the scroll event */
+    opacity: 1;
+    transition: opacity 0.25s ease;
+}

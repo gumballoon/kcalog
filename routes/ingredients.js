@@ -1,6 +1,7 @@
 const express = require('express');
 const router = express.Router();
 const ingredients = require('../controllers/ingredients');
+const { AppError } = require('../utilities/errors');
 
 // INDEX & CREATE routes
 router.route('/')
@@ -17,5 +18,8 @@ router.route('/:id')
 
 // EDIT route
 router.get('/:id/edit', ingredients.renderEditForm)
+
+// ERROR handler
+router.use(ingredients.error)
 
 module.exports = router;

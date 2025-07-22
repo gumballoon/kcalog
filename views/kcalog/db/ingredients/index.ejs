@@ -14,7 +14,7 @@
 
 <div class="d-flex flex-wrap justify-content-center">
     <% for (let ing of allIngredients) { %>
-        <section class="border border-secondary m-4 p-3">
+        <section class="border border-secondary m-4 p-3" id="id_<%= ing.id %>">
             <h3 class="fs-2"><%= ing.name %></h3>
             <a href="/db/ingredients?category=<%= ing.category %>" class="btn btn-sm btn-light mb-2"><%= ing.category %></a>
 
@@ -31,3 +31,9 @@
         </section>
     <% } %>
 </div>
+
+<script>
+    const intoView = <%- JSON.stringify(intoView) %>;
+</script>
+
+<script src="/scripts/ingredients.js"></script>

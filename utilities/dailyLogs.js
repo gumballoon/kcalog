@@ -1,6 +1,6 @@
 const { DailyLog } = require('../models/dailyLog');
 // custom Error class (title, status, message) & default MongoDB error
-const { AppError, mongoError } = require('../utilities/errors');
+const { mongoError } = require('../utilities/errors');
 
 // to create or update an existing DailyLog instance (after creating or updating a MealLog or ExerciseLog instance)
 module.exports.getDailyLog = async (type, log, next) => {
