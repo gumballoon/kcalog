@@ -1,7 +1,7 @@
 const { Meal } = require('../models/meal');
 const { Ingredient } = require('../models/ingredient');
+const { orderByName } = require('../utilities/orderByName');
 const { textCapitalize } = require('../utilities/textCapitalize'); 
-// custom Error class (title, status, message) & default MongoDB error
 const { serverError, mongoError } = require('../utilities/errors');
 
 module.exports.index = async (req, res, next) => {
@@ -12,31 +12,39 @@ module.exports.index = async (req, res, next) => {
     // filtered index per TAG
     if (tag && allTags.includes(tag)){
         // if the TAGS array contains the passed-in tag
-        const allMeals = await Meal.find({ tags: { $all: [ tag ] } })
+        const meals = await Meal.find({ tags: { $all: [ tag ] } })
             .catch(e => next(mongoError(e)));
+
+        const allMeals = orderByName(meals);
+        
         try {
-            res.render('kcalog/db/meals/index', { title:'Meals', allMeals, tag, serving: "all" });
+            res.render('kcalog/db/meals/index', { title:'Meals', allMeals, allTags, tag, serving: "all" });
         } catch(e) {
             next(serverError(e));
         }
 
     // filtered index per SERVING
     } else if (serving && ['single', 'multi'].includes(serving)){
-        const allMeals = await Meal.find({ serving })
+        const meals = await Meal.find({ serving })
             .catch(e => next(mongoError(e)));
+
+        const allMeals = orderByName(meals);
+
         try {
-            res.render('kcalog/db/meals/index', { title:'Meals', allMeals, tag: "all", serving });
+            res.render('kcalog/db/meals/index', { title:'Meals', allMeals, allTags, tag: "all", serving });
         } catch(e) {
             next(serverError(e));
         }
 
     // show all
     } else {
-        const allMeals = await Meal.find({})
+        const meals = await Meal.find({})
             .catch(e => next(mongoError(e)));
 
+        const allMeals = orderByName(meals);
+        
         try {
-            res.render('kcalog/db/meals/index', { title:'Meals', allMeals, tag: "all", serving: "all" });
+            res.render('kcalog/db/meals/index', { title:'Meals', allMeals, allTags, tag: "all", serving: "all" });
         } catch(e) {
             next(serverError(e));
         }
@@ -122,7 +130,8 @@ module.exports.showMeal = async (req, res, next) => {
     const { id } = req.params;
 
     await Meal.findById(id)
-        .then(meal => res.render('kcalog/db/meals/show', { title: textCapitalize(meal.name), meal}))
+        .then(meal => res.send(meal))
+        // .then(meal => res.render('kcalog/db/meals/show', { title: textCapitalize(meal.name), meal}))
         .catch(e => next(mongoError(e, 'Meal not found')));
 };
 

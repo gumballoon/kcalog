@@ -4,33 +4,36 @@
     <button class="btn btn-light btn-lg">New Ingredient</button>
 </form>
 
-<% if (category === 'all') { %>
-    <h2 class="display-5 fw-semibold my-3">All Ingredients</h2>
-<% } else { %>
-    <h2 class="display-3 fw-semibold my-3 text-capitalize"><%= category %></h2>
-
-    <a href="/db/ingredients" class="btn btn-light">All Ingredients</a>
-<% } %>
+<h2 class="display-5 fw-semibold my-3">All Ingredients</h2>
 
 <div class="d-flex flex-wrap justify-content-center">
-    <% for (let ing of allIngredients) { %>
-        <section class="border border-secondary m-4 p-3" id="id_<%= ing.id %>">
-            <h3 class="fs-2"><%= ing.name %></h3>
-            <a href="/db/ingredients?category=<%= ing.category %>" class="btn btn-sm btn-light mb-2"><%= ing.category %></a>
-
-            <p class="text-capitalize">Kcal Per <%= ing.unit %>: <%= ing.kcalPerUnit %></p>
-
-            <div class="d-flex justify-content-between">
-                <a href="/db/ingredients/<%= ing._id %>/edit" button class="btn btn-secondary">Edit</a>
-
-                <form action="/db/ingredients/<%= ing._id %>?_method=DELETE" method="post">
-                    <button type="submit" class="btn btn-secondary">Delete</button>
-                </form>
-            </div>
-
-        </section>
+    <% for (let category of allCategories) { %>
+        <a href="/db/ingredients?intoView=<%= category %>" class="btn btn-light mx-3 my-2"><%= category %></a>
     <% } %>
 </div>
+
+<% for (let category of allCategories) { %>
+    <h2 id="id_<%= category %>" class="display-6 fw-semibold text-capitalize mt-4 mb-0"><%= category %></h3>
+    <div class="d-flex flex-wrap justify-content-center mb-5">
+        <% for (let ing of allIngredients) { %>
+            <% if (ing.category === category) { %>
+                <section class="d-flex justify-content-between align-items-center border-bottom border-secondary py-3 col-12 col-lg-5 mx-lg-3" id="id_<%= ing.id %>">
+                    <h4 class="fs-3 mb-0 text-start"><%= ing.name %></h3>
+
+                    <small class="text-capitalize mb-0 mx-2">Kcal Per <%= ing.unit %>: <span class="fs-5"><%= ing.kcalPerUnit %></span></small>
+
+                    <div class="d-flex justify-content-between">
+                        <a href="/db/ingredients/<%= ing._id %>/edit" button class="btn btn-secondary me-2">Edit</a>
+
+                        <form action="/db/ingredients/<%= ing._id %>?_method=DELETE" method="post">
+                            <button type="submit" class="btn btn-secondary">Delete</button>
+                        </form>
+                    </div>
+                </section>
+            <% } %>    
+        <% } %>
+    </div>
+<% } %>
 
 <script>
     const intoView = <%- JSON.stringify(intoView) %>;

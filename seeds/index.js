@@ -141,26 +141,26 @@ async function seedDB(){
     console.log(`// INGREDIENT: Random Sample // ${randomIngredient}`)
     console.log('// // // // // // //')
     
-    // await seedMeal()
-    //     .then(() => console.log('MEAL has been seeded.'))
-    //     .catch(e => console.log(e))
-    // const randomMeal = await Meal.findOne({});
-    // console.log(`// MEAL: Random Sample // ${randomMeal} // Total Kcal: ${randomMeal.totalKcal} // Kcal Per Gram: ${randomMeal.kcalPerGram}`)
-    // console.log('// // // // // // //')
+    await seedMeal()
+        .then(() => console.log('MEAL has been seeded.'))
+        .catch(e => console.log(e))
+    const randomMeal = await Meal.findOne({});
+    console.log(`// MEAL: Random Sample // ${randomMeal} // Total Kcal: ${randomMeal.totalKcal} // Kcal Per Gram: ${randomMeal.kcalPerGram}`)
+    console.log('// // // // // // //')
     
-    // await seedMealLog()
-    //     .then(() => console.log('MEAL LOG has been seeded.'))
-    //     .catch(e => console.log(e))
-    // const randomMealLog = await MealLog.findOne({});
-    // console.log(`// MEAL LOG: Random Sample // ${randomMealLog}`);
-    // console.log('// // // // // // //')
+    await seedMealLog()
+        .then(() => console.log('MEAL LOG has been seeded.'))
+        .catch(e => console.log(e))
+    const randomMealLog = await MealLog.findOne({});
+    console.log(`// MEAL LOG: Random Sample // ${randomMealLog}`);
+    console.log('// // // // // // //')
     
-    // await seedWorkoutLogs()
-    //     .then(() => console.log('WORKOUT LOG has been seeded.'))
-    //     .catch(e => console.log(e))
-    // const randomWorkoutLog = await WorkoutLog.findOne({});
-    // console.log(`// WORKOUT LOG: Random Sample // ${randomWorkoutLog} // Kcal Per Hour: ${randomWorkoutLog.kcalPerHour}`);
-    // console.log('// // // // // // //')
+    await seedWorkoutLogs()
+        .then(() => console.log('WORKOUT LOG has been seeded.'))
+        .catch(e => console.log(e))
+    const randomWorkoutLog = await WorkoutLog.findOne({});
+    console.log(`// WORKOUT LOG: Random Sample // ${randomWorkoutLog} // Kcal Per Hour: ${randomWorkoutLog.kcalPerHour}`);
+    console.log('// // // // // // //')
 }
 
 // to close the connection to MongoDB after execution, so the terminal won't stay on hold

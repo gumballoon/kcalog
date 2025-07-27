@@ -4,7 +4,6 @@ const { MealLog } = require('../models/mealLog');
 const { DailyLog } = require('../models/dailyLog');
 const { getDailyLog } = require('../utilities/dailyLogs');
 const { textCapitalize } = require('../utilities/textCapitalize'); 
-// custom Error class (title, status, message) & default MongoDB error
 const { serverError, mongoError } = require('../utilities/errors');
 
 module.exports.index = async (req, res, next) => {

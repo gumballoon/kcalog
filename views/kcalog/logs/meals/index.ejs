@@ -4,9 +4,16 @@
 
 <% if (category === 'all') { %>
     <h2 class="display-5 fw-semibold my-3">All Meal Logs</h2>
+
+    <div class="d-flex flex-wrap justify-content-center">
+        <% for (let category of ['breakfast', 'lunch', 'snack', 'dinner']) { %>
+            <a href="/logs/meals?category=<%= category %>" class="btn btn-light mx-3 my-2"><%= category %></a>
+        <% } %>
+    </div>
+
 <% } else { %>
     <h2 class="display-5 fw-semibold my-3 text-capitalize"> <%= category %></h2>
-    <a href="/logs/meals" class="btn btn-light">All Meal Logs</a>
+    <a href="/logs/meals" class="btn btn-lg btn-light">All Meal Logs</a>
 <% } %>
 
 <div class="d-flex flex-wrap justify-content-center">
@@ -21,7 +28,7 @@
                             <a href="/logs/meals/?category=<%= mealLog.category %>" class="text-capitalize btn btn-light"><%= mealLog.category %></a>
                         </p>
                 </div>
-                <img src="<%= mealLog.image %>" alt="<%= mealLog.name %>" class="m-0 col-4">
+                <img src="<%= mealLog.image %>" alt="" class="m-0 col-4">
             </div>
             <a href="/logs/meals/<%= mealLog._id %>" class="btn btn-secondary col-12 mt-2">View</a>
         </section>

@@ -10,10 +10,10 @@
             <h3 class="fs-3 text-capitalize" ><%= workoutLog.name %></h3>
             <div class="row">
                 <div class="col d-flex flex-column justify-content-around py-2">
-                        <p><%= workoutLog.longDate %></p>
-                        <p>Kcal Burned: <span class="fw-semibold"><%= workoutLog.kcal %></span></p>
+                    <p><%= workoutLog.longDate %></p>
+                    <p>Kcal Burned: <span class="fw-semibold"><%= workoutLog.kcal %></span></p>
                 </div>
-                <img src="<%= workoutLog.image %>" alt="<%= workoutLog.name %>" class="img-fluid m-0 col-4">
+                <img src="<%= workoutLog.image %>" alt="" class="img-fluid m-0 col-4">
             </div>
             <a href="/logs/workouts/<%= workoutLog._id %>" class="btn btn-secondary col-12 mt-2">View</a>
         </section>

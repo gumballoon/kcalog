@@ -1,34 +1,22 @@
 const { Ingredient } = require('../models/ingredient');
+const { orderByName } = require('../utilities/orderByName');
 const { textCapitalize } = require('../utilities/textCapitalize');
-// custom Error class (title, status, message) & default MongoDB error
 const { serverError, mongoError } = require('../utilities/errors');
 
 module.exports.index = async (req, res, next) => {
-    const { category, intoView=null } = req.query;
+    const { intoView=null } = req.query;
     const allCategories = await Ingredient.getAllCategories()
         .catch(e => next(mongoError(e)));
 
-    // filtered index per CATEGORY
-    if (category && allCategories.includes(category)){
-        const allIngredients = await Ingredient.find({ category })
-            .catch(e => next(mongoError(e)));
+    const ingredients = await Ingredient.find({ })
+        .catch(e => next(mongoError(e)));
+    
+    const allIngredients = orderByName(ingredients);
 
-        try {
-            res.render('kcalog/db/ingredients/index', { title:'Ingredients', allIngredients, category, intoView });
-        } catch (e) {
-            next(serverError(e));
-        }
-
-    // show all
-    } else {
-        const allIngredients = await Ingredient.find({ })
-            .catch(e => next(mongoError(e)));
-
-        try {
-            res.render('kcalog/db/ingredients/index', { title:'Ingredients', allIngredients, category: "all", intoView });
-        } catch (e) {
-            next(serverError(e));
-        }        
+    try {
+        res.render('kcalog/db/ingredients/index', { title:'Ingredients', allCategories, allIngredients, intoView });
+    } catch (e) {
+        next(serverError(e));
     }
 }
 

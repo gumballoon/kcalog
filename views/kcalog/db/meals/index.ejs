@@ -4,6 +4,11 @@
 
 <% if (tag === 'all' && serving === 'all') { %>
     <h2 class="display-5 fw-semibold my-3">All Meals</h2>
+    <div class="d-flex flex-wrap justify-content-center">
+    <% for (let tag of allTags) { %>
+        <a href="/db/meals?tag=<%= tag %>" class="btn btn-light mx-3 my-2"><%= tag %></a>
+    <% } %>
+</div>
 <% } else { %>
     <% if (serving === 'all') { %>
         <h2 class="display-3 fw-semibold my-3 text-capitalize"><%= tag %></h2>
@@ -11,9 +16,8 @@
         <h2 class="display-3 fw-semibold my-3 text-capitalize"><%= serving %></h2>
     <% } %>
 
-    <a href="/db/meals" class="btn btn-light">All Meals</a>
+    <a href="/db/meals" class="btn btn-lg btn-light">All Meals</a>
 <% } %>
-
 
 <div class="d-flex flex-wrap justify-content-center">
     <% for (let meal of allMeals) { %>
@@ -37,7 +41,7 @@
                         <% } %>
                     </p>
                 </div>
-                <img src="<%= meal.image %>" alt="<%= meal.name %>" class="img-fluid mx-auto col-4">
+                <img src="<%= meal.image %>" alt="" class="img-fluid mx-auto col-4">
             </div>
             <a href="/db/meals/<%= meal._id %>" class="btn btn-secondary col-12 mt-2">View</a>
         </section>

@@ -17,6 +17,10 @@ const dailyLogSchema = new mongoose.Schema({
         type: Schema.Types.ObjectId,
         ref: 'WorkoutLog'
     }],
+    image: {
+        type: String,
+        default: '/images/default-dailyLog.svg'
+    },
     userId: {
         type: String,
         default: 'wifey',

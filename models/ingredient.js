@@ -23,6 +23,10 @@ const ingredientSchema = new mongoose.Schema({
         min: 0,
         required: [true, 'KCAL PER GRAM cannot be blank']
     },
+    image: {
+        type: String,
+        default: '/images/default-ingredient.svg'
+    },
     userId: {
         type: String,
         default: 'wifey',
