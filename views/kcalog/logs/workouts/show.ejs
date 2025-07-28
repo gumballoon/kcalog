@@ -40,6 +40,8 @@
 
 <a href= "/logs/workouts/<%= workoutLog._id %>/edit"   class="btn btn-secondary my-4">Edit</a>
 
-<form action="/logs/workouts/<%= workoutLog._id %>?_method=DELETE" method="post">
+<form action="/logs/workouts/<%= workoutLog._id %>?_method=DELETE" method="post" id="<%= workoutLog.name %> (Log)" class="delete-form">
     <button type="submit" class="btn btn-secondary">Delete</button>
 </form>
+
+<script src="/scripts/deleteForms.js"></script>

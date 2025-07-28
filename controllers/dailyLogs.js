@@ -6,6 +6,7 @@ const { getDailyKcal } = require('../utilities/dailyLogs');
 module.exports.index = async (req, res, next) => {
     const allLogs = await DailyLog.find({})
         .catch(e => next(mongoError(e)));
+    const allMonths = await DailyLog.getAllMonths();
     if (allLogs) {
         // new var to hold the populated logs
         let allDailyLogs = allLogs;
@@ -16,7 +17,7 @@ module.exports.index = async (req, res, next) => {
         allDailyLogs = allDailyLogs.filter(d => d.mealLogs.length || d.workoutLogs.length);
         // order from newest to oldest
         allDailyLogs = allDailyLogs.sort((a,b) => new Date(b.calendarDate) - new Date(a.calendarDate));
-        res.render('kcalog/logs/index', { title: 'Daily Logs', allDailyLogs });
+        res.render('kcalog/logs/index', { title: 'Daily Logs', allDailyLogs, allMonths });
     }
 };
 

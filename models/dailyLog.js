@@ -36,4 +36,18 @@ dailyLogSchema.virtual('longDate').get(function(){
     return dateTime.format(new Date(this.calendarDate), 'dddd, DD MMMM'); // Monday, January 11
 });
 
+dailyLogSchema.virtual('month').get(function(){
+    return dateTime.format(new Date(this.calendarDate), 'MM MMMM YYYY'); // 01 January 2025
+});
+
+dailyLogSchema.statics.getAllMonths = async function() {
+    const allInstances = await this.find({});
+    let allMonths = [];
+    allInstances.map(i => {
+        if (!allMonths.includes(i.month))
+            allMonths.push(i.month)
+    });
+    return allMonths.sort((a,b) => b.slice(0,2) - a.slice(0,2));
+}
+
 module.exports.DailyLog = mongoose.model('DailyLog', dailyLogSchema);

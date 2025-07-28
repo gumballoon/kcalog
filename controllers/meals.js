@@ -130,8 +130,7 @@ module.exports.showMeal = async (req, res, next) => {
     const { id } = req.params;
 
     await Meal.findById(id)
-        .then(meal => res.send(meal))
-        // .then(meal => res.render('kcalog/db/meals/show', { title: textCapitalize(meal.name), meal}))
+        .then(meal => res.render('kcalog/db/meals/show', { title: textCapitalize(meal.name), meal}))
         .catch(e => next(mongoError(e, 'Meal not found')));
 };
 

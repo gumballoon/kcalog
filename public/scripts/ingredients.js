@@ -1,7 +1,8 @@
+const allCategoryButtons = document.querySelectorAll('.category-button');
 const form = document.querySelector('form');
 const ingredientName = document.querySelector('#name');
 const kcalPerUnit = document.querySelector('#kcalPerUnit');
-const notUnique = document.querySelector('#not-unique')
+const notUnique = document.querySelector('#not-unique');
 const submit = document.querySelector('#submit');
 
 // if the var 'intoView' has been declared...
@@ -11,6 +12,18 @@ if (typeof intoView !== 'undefined') {
     if (ingredientToFocus) {
         // scroll into view the new/edited ingredient
         ingredientToFocus.scrollIntoView({ behavior: 'instant', block: 'center' });
+    }
+}
+
+// scroll into view the clicked category
+if (allCategoryButtons && allCategoryButtons.length) {
+    for (let button of allCategoryButtons) {
+        button.addEventListener('click', function() {
+            const categoryToFocus = document.querySelector('#' + this.innerText);
+            if (categoryToFocus) {
+                categoryToFocus.scrollIntoView({ behavior: 'smooth', block: 'center' });
+            }
+        })
     }
 }
 

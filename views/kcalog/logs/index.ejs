@@ -6,10 +6,13 @@
     <a href="/logs/workouts" class="btn btn-light btn-lg">Workout Logs</a>
 </div>
 
-<h2 class="display-5 fw-semibold mt-0 mt-3">Daily Logs</h2>
+<h2 class="display-5 fw-semibold mt-0 mt-3">All Daily Logs</h2>
 
-<div class="d-flex flex-wrap justify-content-center">
+<% for (let month of allMonths) { %>
+    <h2 class="fs-2 fw-semibold text-capitalize mt-4 mb-0"><%= month.slice(2) %></h2>
+    <div class="d-flex flex-wrap justify-content-center">
     <% for (let dailyLog of allDailyLogs) { %>
+        <% if (dailyLog.month === month) { %>
         <section class="border border-secondary m-4 p-3 text-start col-10 col-md-5 col-xl-3">
             <h3 class="fs-3"><%= dailyLog.shortDate %></h3>
             <div class="row">
@@ -22,5 +25,7 @@
             </div>
             <a href="/logs/<%= dailyLog._id %>" class="btn btn-secondary col-12 mt-2">View</a>
         </section>
+        <% } %>
     <% } %>
 </div>
+<% } %>

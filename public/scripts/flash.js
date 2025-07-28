@@ -6,14 +6,14 @@ setTimeout(() => {
     window.addEventListener('scroll', function() {
         flash.classList.add('opacity-0');
         // time for the transition to end
-        setTimeout(() => flash.remove(), 500);
+        setTimeout(() => flash.remove(), 1000);
     }, {once: true}),
-    100
+    200
 });
 
-// fade-out/close the flash message after 4 seconds
+// fade-out/close the flash message after 3 seconds
 setTimeout(() => {
     flash.classList.add('opacity-0');
     // time for the transition to end
-    setTimeout(() => flash.remove(), 500);
-}, 4000)
+    setTimeout(() => flash.remove(), 1000);
+}, 3000)

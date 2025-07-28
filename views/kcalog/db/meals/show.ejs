@@ -9,7 +9,7 @@
 
 <section class="border d-flex justify-content-around align-items-center p-3">
     <div>
-        <a  href="/db/meals?serving=<%= meal.serving %>" class="btn btn-light btn-lg mb-2"> 
+        <a href="/db/meals?serving=<%= meal.serving %>" class="btn btn-light btn-lg mb-2"> 
             <h3><%= meal.serving %></h3>
         </a>
         <p class="fw-bold text-muted">Serving</p>
@@ -68,6 +68,9 @@
 
 <a href= "http://localhost:8080/db/meals/<%= meal._id %>/edit" class="btn btn-secondary my-4">Edit</a>
 
-<form action="/db/meals/<%= meal._id %>?_method=DELETE" method="post">
+<form action="/db/meals/<%= meal._id %>?_method=DELETE" method="post" id="<%= meal.name %>" class="delete-form">
     <button type="submit" class="btn btn-secondary">Delete</button>
 </form>
+
+<script src="/scripts/meals.js"></script>
+<script src="/scripts/deleteForms.js"></script>

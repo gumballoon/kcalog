@@ -8,12 +8,12 @@
 
 <div class="d-flex flex-wrap justify-content-center">
     <% for (let category of allCategories) { %>
-        <a href="/db/ingredients?intoView=<%= category %>" class="btn btn-light mx-3 my-2"><%= category %></a>
+        <button class="btn btn-light mx-3 my-2 category-button"><%= category %></button>
     <% } %>
 </div>
 
 <% for (let category of allCategories) { %>
-    <h2 id="id_<%= category %>" class="display-6 fw-semibold text-capitalize mt-4 mb-0"><%= category %></h3>
+    <h2 id="<%= category %>" class="display-6 fw-semibold text-capitalize mt-4 mb-0"><%= category %></h2>
     <div class="d-flex flex-wrap justify-content-center mb-5">
         <% for (let ing of allIngredients) { %>
             <% if (ing.category === category) { %>
@@ -25,7 +25,7 @@
                     <div class="d-flex justify-content-between">
                         <a href="/db/ingredients/<%= ing._id %>/edit" button class="btn btn-secondary me-2">Edit</a>
 
-                        <form action="/db/ingredients/<%= ing._id %>?_method=DELETE" method="post">
+                        <form action="/db/ingredients/<%= ing._id %>?_method=DELETE" method="post" id="<%= ing.name %>" class="delete-form">
                             <button type="submit" class="btn btn-secondary">Delete</button>
                         </form>
                     </div>
@@ -35,8 +35,9 @@
     </div>
 <% } %>
 
-<script>
+<script>    
     const intoView = <%- JSON.stringify(intoView) %>;
 </script>
 
 <script src="/scripts/ingredients.js"></script>
+<script src="/scripts/deleteForms.js"></script>

@@ -71,6 +71,8 @@
 
 <a href= "/logs/meals/<%= mealLog._id %>/edit" class="btn btn-secondary my-4">Edit</a>
 
-<form action="/logs/meals/<%= mealLog._id %>?_method=DELETE" method="post">
+<form action="/logs/meals/<%= mealLog._id %>?_method=DELETE" method="post" id="<%= mealLog.meal.name %> (Log)" class="delete-form">
     <button type="submit" class="btn btn-secondary">Delete</button>
 </form>
+
+<script src="/scripts/deleteForms.js"></script>
