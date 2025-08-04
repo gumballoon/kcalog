@@ -78,6 +78,7 @@ module.exports.createMeal = async (req, res, next) => {
         const tagsArray = newMeal.tags[0].split('+++');
         newMeal.tags = tagsArray;
     }
+    
     await newMeal.save()
         .then(meal => {
             req.flash('success', `${textCapitalize(meal.name)} was saved`);
@@ -147,5 +148,6 @@ module.exports.destroyMeal = async (req, res, next) => {
 
 module.exports.error = (err, req, res, next) => {
     req.flash('danger', `${err.flash || 'something went wrong'}`);
+    console.log(err);
     res.status(err.status).redirect('/db/meals');
 };

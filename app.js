@@ -126,7 +126,6 @@ app.use('/db/meals', mealRoutes);
 // E R R O R S //
 // Dead End Route //
 app.use((req, res) => {
-    console.log(new AppError('URL Not Found', 404));
     req.flash('danger', 'page not found');
     res.redirect('/');
 })
@@ -134,5 +133,6 @@ app.use((req, res) => {
 // Error Handler //
 app.use((err, req, res, next) => {
     req.flash('danger', `${err.flash || 'something went wrong'}`);
+    console.log(err);
     res.status(err.status || 500).redirect('/');
 })

@@ -1,4 +1,3 @@
-const { required, func } = require('joi');
 const mongoose = require('mongoose');
 const { Schema } = mongoose;
 
@@ -33,19 +32,17 @@ const mealSchema = new Schema({
                 enum: ['gram', 'millilitre', 'piece'],
                 required: [true, 'Ingredients: UNIT cannot be blank']
             },
-            kcalPerUnit: {
-                type: Number,
-                min: 0,
-                required: [true, 'Ingredients: KCAL PER UNIT cannot be blank']
-            },
             quantity: {
                 type: Number,
                 min: 0,
+                default: 0,
                 required: [true, 'Ingredients: QUANTITY cannot be blank']
             },
             kcal: {
                 type: Number,
-                min: 0
+                min: 0,
+                default: 0,
+                required: [true, 'Ingredients: KCAL cannot be blank']
             }
         } ],
         required: [true, 'INGREDIENTS is required']
@@ -78,14 +75,8 @@ const mealSchema = new Schema({
     }
 })
 
-// auto-fill the fields KCAL, TOTAL KCAL & KCAL PER GRAM if not provided
+// auto-fill the fields TOTAL KCAL & KCAL PER GRAM if not provided
 mealSchema.pre('save', function(next) {
-    for (let i of this.ingredients) {
-        if (this.kcal === null || this.kcal === undefined) {
-            i.kcal = Math.round(i.quantity * i.kcalPerUnit * 100) / 100;
-        }
-    }
-
     if (this.totalKcal === null || this.totalKcal === undefined) {
         let result = 0;
         for (let i of this.ingredients) {
@@ -94,20 +85,18 @@ mealSchema.pre('save', function(next) {
         this.totalKcal = Math.round(result);
     }
 
-    if (this.serving === 'full' && (this.kcalPerUnit === null || this.kcalPerUnit === undefined)) {
-        this.kcalPerGram = Math.round(this.totalKcal / this.totalGrams * 100) / 100;
+    if (this.serving === 'full' && (this.kcalPerGram === null || this.kcalPerGram === undefined)) {
+        if (this.totalKcal > 0) {
+            this.kcalPerGram = Math.round(this.totalKcal / this.totalGrams * 100) / 100;
+        } else {
+            this.kcalPerGram = 0;
+        }
     }
 
     next();
 });
 
 mealSchema.pre('findOneAndUpdate', function(next) {
-    for (let i of this.ingredients) {
-        if (this.kcal === null || this.kcal === undefined) {
-            i.kcal = Math.round(i.quantity * i.kcalPerUnit * 100) / 100;
-        }
-    }
-
     if (this.totalKcal === null || this.totalKcal === undefined) {
         let result = 0;
         for (let i of this.ingredients) {
@@ -116,8 +105,12 @@ mealSchema.pre('findOneAndUpdate', function(next) {
         this.totalKcal = Math.round(result);
     }
 
-    if (this.serving === 'full' && (this.kcalPerUnit === null || this.kcalPerUnit === undefined)) {
-        this.kcalPerGram = Math.round(this.totalKcal / this.totalGrams * 100) / 100;
+    if (this.serving === 'full' && (this.kcalPerGram === null || this.kcalPerGram === undefined)) {
+        if (this.totalKcal > 0) {
+            this.kcalPerGram = Math.round(this.totalKcal / this.totalGrams * 100) / 100;
+        } else {
+            this.kcalPerGram = 0;
+        }
     }
 
     next();

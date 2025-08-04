@@ -9,6 +9,7 @@ const { serverError, mongoError } = require('../utilities/errors');
 module.exports.index = async (req, res, next) => {
     const { category } = req.query;
     const allCategories = ['breakfast', 'lunch', 'snack', 'dinner'];
+    const allMonths = await MealLog.getAllMonths();
 
     // filtered index per CATEGORY
     if (category && allCategories.includes(category)) {
@@ -17,7 +18,7 @@ module.exports.index = async (req, res, next) => {
         // order from newest to oldest
     try {
         allMealLogs = allMealLogs.sort((a,b) => b.date - a.date);
-        res.render('kcalog/logs/meals/index', { title:'Meal Logs', allMealLogs, category });
+        res.render('kcalog/logs/meals/index', { title:'Meal Logs', allMealLogs, allMonths, category });
     } catch (e) {
         next(serverError(e));
     }
@@ -30,7 +31,7 @@ module.exports.index = async (req, res, next) => {
         try {
             // order from newest to oldest
             allMealLogs = allMealLogs.sort((a,b) => b.date - a.date);
-            res.render('kcalog/logs/meals/index', { title:'Meal Logs', allMealLogs, category: "all" });
+            res.render('kcalog/logs/meals/index', { title:'Meal Logs', allMealLogs, allMonths, category: "all" });
         } catch (e) {
             next(serverError(e));
         }
@@ -97,7 +98,9 @@ module.exports.createMealLog = async (req, res, next) => {
             req.flash('success', `${textCapitalize(mealLog.meal.name)} (Log) was saved`);
             res.redirect(`/logs/meals/${newLog._id}`);
         })
-        .catch(e => next(mongoError(e, 'Meal Log could not be saved')));
+        .catch((e) => {
+            next(mongoError(e, 'Meal Log could not be saved'))
+        });
 };
 
 module.exports.renderEditForm = async (req, res, next) => {
@@ -183,5 +186,6 @@ module.exports.destroyMealLog = async (req, res, next) => {
 
 module.exports.error = (err, req, res, next) => {
     req.flash('danger', `${err.flash || 'something went wrong'}`);
+    console.log(err);
     res.status(err.status).redirect('/logs/meals');
 };

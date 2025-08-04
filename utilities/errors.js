@@ -19,4 +19,4 @@ function mongoError(e, flash='something went wrong with the database') {
     return new AppError('MongoDB Error', 500, e.message, flash);
 };
 
-module.exports = { serverError, mongoError };
+module.exports = { AppError, serverError, mongoError };

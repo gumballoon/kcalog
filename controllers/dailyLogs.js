@@ -7,6 +7,7 @@ module.exports.index = async (req, res, next) => {
     const allLogs = await DailyLog.find({})
         .catch(e => next(mongoError(e)));
     const allMonths = await DailyLog.getAllMonths();
+    
     if (allLogs) {
         // new var to hold the populated logs
         let allDailyLogs = allLogs;

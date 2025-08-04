@@ -26,7 +26,7 @@ function populateMealInfo(meal) {
             const quantity = ing.querySelector('.quantity-input');
             quantity.value = i.quantity;
             const kcal = ing.querySelector('.kcal-input');
-            kcal.value = i.quantity;
+            kcal.value = i.kcal;
         };
         autoFillTotalKcal();
         

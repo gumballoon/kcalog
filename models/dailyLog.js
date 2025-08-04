@@ -2,7 +2,6 @@ const mongoose = require('mongoose');
 const { Schema } = mongoose;
 // to format dates/times
 const dateTime = require('date-and-time'); 
-const { required } = require('joi');
 
 const dailyLogSchema = new mongoose.Schema({
     calendarDate: {
@@ -37,7 +36,7 @@ dailyLogSchema.virtual('longDate').get(function(){
 });
 
 dailyLogSchema.virtual('month').get(function(){
-    return dateTime.format(new Date(this.calendarDate), 'MM MMMM YYYY'); // 01 January 2025
+    return dateTime.format(new Date(this.calendarDate), 'YYMM MMMM YYYY'); //  2501 January 2025 (2501 will only be used to sort)
 });
 
 dailyLogSchema.statics.getAllMonths = async function() {
@@ -47,7 +46,8 @@ dailyLogSchema.statics.getAllMonths = async function() {
         if (!allMonths.includes(i.month))
             allMonths.push(i.month)
     });
-    return allMonths.sort((a,b) => b.slice(0,2) - a.slice(0,2));
+    // Months sorted by date
+    return allMonths.sort((a,b) => b.slice(0,4) - a.slice(0,4));
 }
 
 module.exports.DailyLog = mongoose.model('DailyLog', dailyLogSchema);

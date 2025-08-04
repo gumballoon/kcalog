@@ -83,5 +83,6 @@ module.exports.destroyIngredient = async (req, res, next) => {
 
 module.exports.error = (err, req, res, next) => {
     req.flash('danger', 'something went wrong');
+    console.log(err);
     res.status(err.status).redirect('/db/ingredients');
 };

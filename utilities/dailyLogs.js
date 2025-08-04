@@ -21,7 +21,7 @@ module.exports.getDailyLog = async (type, log, next) => {
         }
 
         await foundDailyLog.save()
-            .catch(e => console.log(e))
+            .catch(e => next(mongoError(e)))
         return foundDailyLog._id;
 
     } else {
@@ -38,7 +38,7 @@ module.exports.getDailyLog = async (type, log, next) => {
         }
     
         await newDailyLog.save()
-            .catch(e => console.log(e))
+            .catch(e => next(mongoError(e)))
         return newDailyLog._id;
     }
 }

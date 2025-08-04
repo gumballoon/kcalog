@@ -8,12 +8,13 @@ const { serverError, mongoError } = require('../utilities/errors');
 module.exports.index = async (req, res, next) => {
     let allWorkoutLogs = await WorkoutLog.find({})
         .catch(e => next(mongoError(e)));
-
     // order from newest to oldest
     allWorkoutLogs = allWorkoutLogs.sort((a,b) => b.date - a.date)
 
+    const allMonths = await WorkoutLog.getAllMonths();
+
     try {
-         res.render('kcalog/logs/workouts/index', { title:'Workout Logs', allWorkoutLogs });
+         res.render('kcalog/logs/workouts/index', { title:'Workout Logs', allWorkoutLogs, allMonths });
     } catch (e) {
         next(serverError(e));
     }
@@ -41,7 +42,7 @@ module.exports.createWorkoutLog = async (req, res, next) => {
 
     await newLog.save()
         .then(workoutLog => {
-            req.flash('success', `${textCapitalize(workoutLog.meal.name)} (Log) was saved`);
+            req.flash('success', `${textCapitalize(workoutLog.name)} (Log) was saved`);
             res.redirect(`/logs/workouts/${workoutLog._id}`);
         })
         .catch(e => next(mongoError(e, 'Workout Log could not be saved')));
@@ -108,5 +109,6 @@ module.exports.destroyWorkoutLog = async (req, res, next) => {
 
 module.exports.error = (err, req, res, next) => {
     req.flash('danger', `${err.flash || 'something went wrong'}`);
+    console.log(err);
     res.status(err.status).redirect('/logs/workouts');
 };

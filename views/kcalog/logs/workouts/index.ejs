@@ -4,18 +4,25 @@
 
 <h2 class="display-5 fw-semibold my-3">All Workout Logs</h2>
 
-<div class="d-flex flex-wrap justify-content-center">
+<% for (let month of allMonths) { %>
+    <h2 class="fs-2 fw-semibold text-capitalize mt-4 mb-0"><%= month.slice(4) %></h2>
+    <div class="d-flex flex-wrap justify-content-center">
     <% for (let workoutLog of allWorkoutLogs) { %>
-        <section class="border border-secondary m-4 p-3 text-start col-10 col-md-5 col-xl-3">
-            <h3 class="fs-3 text-capitalize" ><%= workoutLog.name %></h3>
-            <div class="row">
-                <div class="col d-flex flex-column justify-content-around py-2">
-                    <p><%= workoutLog.longDate %></p>
-                    <p>Kcal Burned: <span class="fw-semibold"><%= workoutLog.kcal %></span></p>
+        <% if (workoutLog.month === month) { %>
+            <section class="border border-secondary m-4 p-3 text-start col-10 col-md-5 col-xl-3">
+                <h3 class="fs-3 text-capitalize" ><%= workoutLog.name %></h3>
+                <div class="row">
+                    <div class="col d-flex flex-column justify-content-around py-2">
+                        <p><%= workoutLog.longDate %></p>
+                        <p>Kcal Burned: <span class="fw-semibold"><%= workoutLog.kcal %></span></p>
+                    </div>
+                    <img src="<%= workoutLog.image %>" alt="" class="img-fluid m-0 col-4">
                 </div>
-                <img src="<%= workoutLog.image %>" alt="" class="img-fluid m-0 col-4">
-            </div>
-            <a href="/logs/workouts/<%= workoutLog._id %>" class="btn btn-secondary col-12 mt-2">View</a>
-        </section>
+                <a href="/logs/workouts/<%= workoutLog._id %>" class="btn btn-secondary col-12 mt-2">View</a>
+            </section>
+        <% } %>
     <% } %>
-</div>
+    </div>
+<% } %>
+
+

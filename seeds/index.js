@@ -66,6 +66,7 @@ async function seedMeal(){
             // to add a copy of a Mongo doc WITHOUT the schema validation (so it won't block new properties)
             const randomIng = getRandomElement(allIngredients).toObject();
             randomIng.quantity = Math.round(Math.random() * 30) + 10;
+            randomIng.kcal = Math.round(randomIng.quantity * randomIng.kcalPerUnit);
             newMeal.ingredients.push(randomIng);
         }
 
