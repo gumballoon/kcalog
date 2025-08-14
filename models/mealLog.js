@@ -36,7 +36,6 @@ const mealLogSchema = new Schema({
     notes: String,
     userId: {
         type: String,
-        default: 'wifey',
         required: true
     }
 })
@@ -60,8 +59,8 @@ mealLogSchema.virtual('month').get(function(){
     return dateTime.format(this.date, 'YYMM MMMM YYYY'); //  2501 January 2025 (2501 will only be used to sort)
 });
 
-mealLogSchema.statics.getAllMonths = async function() {
-    const allInstances = await this.find({});
+mealLogSchema.statics.getAllMonths = async function(userId) {
+    const allInstances = await this.find({ userId });
     let allMonths = [];
     allInstances.map(i => {
         if (!allMonths.includes(i.month))
@@ -81,7 +80,7 @@ mealLogSchema.virtual('kcal').get(function(){
 });
 
 // to update the associated DailyLog after a MealLog is deleted
-mealLogSchema.post('findOneAndDelete', async function (deletedLog, next) {
+mealLogSchema.post('findOneAndDelete', async function(deletedLog, next) {
     if (deletedLog) { 
         const logId = deletedLog._id;
         const dailyId = deletedLog.dailyLog;

@@ -26,7 +26,6 @@ module.exports.terms = [
       "comfort food",
       "spicy",
       "low-carb",
-      "quick & easy",
       "mediterranean",
       "paleo",
       "slow-cooked",

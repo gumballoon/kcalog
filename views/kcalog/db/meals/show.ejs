@@ -2,7 +2,7 @@
 
 <a href="/db/meals" class="btn btn-light btn-lg">All Meals</a>
 
-<h2 class="display-3 fw-semibold mt-3 text-capitalize"><%= meal.name %></h2>
+<h1 class="display-5 fw-semibold text-capitalize mt-3"><%= meal.name %></h1>
 
 <img src="<%= meal.image %>" alt="" class="my-3">
 
@@ -10,24 +10,24 @@
 <section class="border d-flex justify-content-around align-items-center p-3">
     <div>
         <a href="/db/meals?serving=<%= meal.serving %>" class="btn btn-light btn-lg mb-2"> 
-            <h3><%= meal.serving %></h3>
+            <h2><%= meal.serving %></h2>
         </a>
         <p class="fw-bold text-muted">Serving</p>
     </div>
     
     <div>
-        <h3 class="display-5"><%= meal.totalKcal%></h3>
+        <h2><%= meal.totalKcal%></h2>
         <p class="fw-bold text-muted">Kcal</p>
     </div>
 
     <% if (meal.serving === 'full') { %>
         <div>
-            <h3 class="display-5"><%= meal.totalGrams %></h3>
+            <h2><%= meal.totalGrams %></h2>
             <p class="fw-bold text-muted">Total Grams</p>
         </div>
 
         <div>
-            <h3 class="display-5"><%= meal.kcalPerGram %></h3>
+            <h2><%= meal.kcalPerGram %></h2>
             <p class="fw-bold text-muted">Kcal Per Gram</p>
         </div>
     <% } %>
@@ -35,9 +35,9 @@
 </section>
 
 <section>
-    <h3 class="display-4 fw-normal mt-4 mb-3">Ingredients</h3>
+    <h2 class="display-6 fw-normal mt-4 mb-3">Ingredients</h2>
     <% for (let i of meal.ingredients) { %>
-        <h4 class="fs-4">
+        <h3 class="fs-4">
             <%= i.name %>
             <span class="fs-5 text-muted fw-normal border px-1 mx-2">
                 <%= i.quantity %> <small><%= i.unit %> </small>
@@ -45,13 +45,13 @@
             <span class="fs-5 text-muted fw-normal border px-1">
                 <%= i.kcal %> <small>kcal</small>
             </span>
-        </h4>
+        </h3>
     <% } %>
 </section>
 
 <!-- if TAGS isn't "empty" (i.e. [ "" ] )-->
 <% if (meal.tags && meal.tags[0]) { %>
-    <h3 class="display-4 fw-normal mt-4 mb-3">Tags</h3>
+    <h2 class="display-6 fw-normal mt-4 mb-3">Tags</h2>
     <div>
         <% for (let tag of meal.tags) { %>
             <% if (tag !== '') { %>
@@ -62,7 +62,7 @@
 <% } %>
 
 <% if (meal.notes) { %>
-    <h3 class="display-4 fw-normal mt-4 mb-3">Notes</h3>
+    <h2 class="display-6 fw-normal mt-4 mb-3">Notes</h2>
     <p><%= meal.notes %></p>
 <% } %>
 

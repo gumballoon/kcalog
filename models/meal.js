@@ -70,7 +70,6 @@ const mealSchema = new Schema({
     },
     userId: {
         type: String,
-        default: 'wifey',
         required: true
     }
 })
@@ -97,27 +96,40 @@ mealSchema.pre('save', function(next) {
 });
 
 mealSchema.pre('findOneAndUpdate', function(next) {
-    if (this.totalKcal === null || this.totalKcal === undefined) {
+    const update = this.getUpdate();
+
+    if (update.ingredients && (!update.totalKcal && update.totalKcal !== 0)) {
         let result = 0;
-        for (let i of this.ingredients) {
+        for (let i of update.ingredients) {
             result += i.kcal;
         }
-        this.totalKcal = Math.round(result);
+        update.totalKcal = Math.round(result);
     }
 
-    if (this.serving === 'full' && (this.kcalPerGram === null || this.kcalPerGram === undefined)) {
-        if (this.totalKcal > 0) {
-            this.kcalPerGram = Math.round(this.totalKcal / this.totalGrams * 100) / 100;
+    if (update.serving === 'full' && (update.kcalPerGram === null || update.kcalPerGram === undefined)) {
+        if (update.totalKcal > 0 && update.totalGrams) {
+            update.kcalPerGram = Math.round(update.totalKcal / update.totalGrams * 100) / 100;
         } else {
-            this.kcalPerGram = 0;
+            update.kcalPerGram = 0;
         }
     }
 
+    this.setUpdate(update);
     next();
 });
 
-mealSchema.statics.getAllNames = async function(){
-    const allInstances = await this.find({});
+
+// to catch duplication errors & add a custom message
+mealSchema.post('save', function(error, doc, next) {
+    if (error.name === 'MongoServerError' && error.code === 11000) {
+        next(new Error('A meal with the given name is already saved'));
+    } else {
+        next(error);
+    }
+});
+
+mealSchema.statics.getAllNames = async function(userId){
+    const allInstances = await this.find({ userId });
     const allNames = [];
     allInstances.map(i => {
         if (!allNames.includes(i.name)) {
@@ -127,8 +139,8 @@ mealSchema.statics.getAllNames = async function(){
     return allNames;
 };
 
-mealSchema.statics.getAllTags = async function(){
-    const allInstances = await this.find({});
+mealSchema.statics.getAllTags = async function(userId){
+    const allInstances = await this.find({ userId });
     let allTags = [];
     allInstances.map(i => {
         if (i.tags) {

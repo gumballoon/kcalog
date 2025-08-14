@@ -4,11 +4,12 @@ const { textCapitalize } = require('../utilities/textCapitalize');
 const { serverError, mongoError } = require('../utilities/errors');
 
 module.exports.index = async (req, res, next) => {
+    const userId = req.user._id;
     const { intoView=null } = req.query;
-    const allCategories = await Ingredient.getAllCategories()
+    const allCategories = await Ingredient.getAllCategories(userId)
         .catch(e => next(mongoError(e)));
 
-    const ingredients = await Ingredient.find({ })
+    const ingredients = await Ingredient.find({ userId })
         .catch(e => next(mongoError(e)));
     
     const allIngredients = orderByName(ingredients);
@@ -21,9 +22,10 @@ module.exports.index = async (req, res, next) => {
 }
 
 module.exports.renderNewForm = async (req, res, next) => {
-    const allNames = await Ingredient.getAllNames()
+    const userId = req.user._id;
+    const allNames = await Ingredient.getAllNames(userId)
         .catch(e => next(mongoError(e)));
-    const allCategories = await Ingredient.getAllCategories()
+    const allCategories = await Ingredient.getAllCategories(userId)
         .catch(e => next(mongoError(e)));
 
     try {
@@ -34,7 +36,9 @@ module.exports.renderNewForm = async (req, res, next) => {
 }
 
 module.exports.createIngredient = async (req, res, next) => {
+    const userId = req.user._id;
     const newIngredient = new Ingredient(req.body.ingredient);
+    newIngredient.userId = userId;
     await newIngredient.save()
         .then(() => {
             req.flash('success', `${textCapitalize(newIngredient.name)} was created`);
@@ -44,10 +48,11 @@ module.exports.createIngredient = async (req, res, next) => {
 }
 
 module.exports.renderEditForm = async (req, res, next) => {
+    const userId = req.user._id;
     const { id } = req.params;
-    const allNames = await Ingredient.getAllNames()
+    const allNames = await Ingredient.getAllNames(userId)
         .catch(e => next(mongoError(e)));
-    const allCategories = await Ingredient.getAllCategories()
+    const allCategories = await Ingredient.getAllCategories(userId)
         .catch(e => next(mongoError(e)));
     const ingredient = await Ingredient.findById(id)
         .catch(e => next(mongoError(e)));

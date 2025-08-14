@@ -4,9 +4,10 @@ const { mongoError } = require('../utilities/errors');
 const { getDailyKcal } = require('../utilities/dailyLogs');
 
 module.exports.index = async (req, res, next) => {
-    const allLogs = await DailyLog.find({})
+    const userId = req.user._id;
+    const allLogs = await DailyLog.find({ userId })
         .catch(e => next(mongoError(e)));
-    const allMonths = await DailyLog.getAllMonths();
+    const allMonths = await DailyLog.getAllMonths(userId);
     
     if (allLogs) {
         // new var to hold the populated logs
@@ -23,8 +24,9 @@ module.exports.index = async (req, res, next) => {
 };
 
 module.exports.showTodayLog = async (req, res, next) => {
+    const userId = req.user._id;
     const today = new Date().toDateString();
-    const log = await DailyLog.findOne({ calendarDate: today })
+    const log = await DailyLog.findOne({ userId, calendarDate: today })
         .catch(e => next(mongoError(e)));
     console.log(log);
     if (log) {

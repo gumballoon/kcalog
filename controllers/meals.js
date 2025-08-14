@@ -5,14 +5,15 @@ const { textCapitalize } = require('../utilities/textCapitalize');
 const { serverError, mongoError } = require('../utilities/errors');
 
 module.exports.index = async (req, res, next) => {
+    const userId = req.user._id;
     const { tag, serving } = req.query;
-    const allTags = await Meal.getAllTags()
+    const allTags = await Meal.getAllTags(userId)
         .catch(e => next(mongoError(e)));
 
     // filtered index per TAG
     if (tag && allTags.includes(tag)){
         // if the TAGS array contains the passed-in tag
-        const meals = await Meal.find({ tags: { $all: [ tag ] } })
+        const meals = await Meal.find({ userId, tags: { $all: [ tag ] } })
             .catch(e => next(mongoError(e)));
 
         const allMeals = orderByName(meals);
@@ -25,7 +26,7 @@ module.exports.index = async (req, res, next) => {
 
     // filtered index per SERVING
     } else if (serving && ['single', 'multi'].includes(serving)){
-        const meals = await Meal.find({ serving })
+        const meals = await Meal.find({ userId, serving })
             .catch(e => next(mongoError(e)));
 
         const allMeals = orderByName(meals);
@@ -38,7 +39,7 @@ module.exports.index = async (req, res, next) => {
 
     // show all
     } else {
-        const meals = await Meal.find({})
+        const meals = await Meal.find({ userId })
             .catch(e => next(mongoError(e)));
 
         const allMeals = orderByName(meals);
@@ -52,13 +53,14 @@ module.exports.index = async (req, res, next) => {
 };
 
 module.exports.renderNewForm = async (req, res, next) => {
-    const allIngredients = await Ingredient.getFormattedIngredientData()
+    const userId = req.user._id;
+    const allIngredients = await Ingredient.getFormattedIngredientData(userId)
         .catch(e => next(mongoError(e)));
-    const allIngNames = await Ingredient.getAllNames()
+    const allIngNames = await Ingredient.getAllNames(userId)
         .catch(e => next(mongoError(e)));
-    const allMealNames = await Meal.getAllNames()
+    const allMealNames = await Meal.getAllNames(userId)
         .catch(e => next(mongoError(e)));
-    const allTags = await Meal.getAllTags()
+    const allTags = await Meal.getAllTags(userId)
         .catch(e => next(mongoError(e)));
 
     try {
@@ -69,7 +71,9 @@ module.exports.renderNewForm = async (req, res, next) => {
 };
 
 module.exports.createMeal = async (req, res, next) => {
+    const userId = req.user._id;
     const newMeal = new Meal(req.body.meal);
+    newMeal.userId = userId;
     const { _id: id } = newMeal;
 
     // to (re)convert the tags list into an array
@@ -88,15 +92,16 @@ module.exports.createMeal = async (req, res, next) => {
 };
 
 module.exports.renderEditForm = async (req, res, next) => {
+    const userId = req.user._id;
     const { id } = req.params;
 
-    const allIngredients = await Ingredient.getFormattedIngredientData()
+    const allIngredients = await Ingredient.getFormattedIngredientData(userId)
         .catch(e => next(mongoError(e)));
-    const allIngNames = await Ingredient.getAllNames()
+    const allIngNames = await Ingredient.getAllNames(userId)
         .catch(e => next(mongoError(e)));
-    const allMealNames = await Meal.getAllNames()
+    const allMealNames = await Meal.getAllNames(userId)
         .catch(e => next(mongoError(e)));
-    const allTags = await Meal.getAllTags()
+    const allTags = await Meal.getAllTags(userId)
         .catch(e => next(mongoError(e)));
     const meal = await Meal.findById(id).populate('ingredients')
         .catch(e => next(mongoError(e)));
@@ -118,6 +123,8 @@ module.exports.updateMeal = async (req, res, next) => {
         const tagsArray = updatedMeal.tags.split('+++');
         updatedMeal.tags = tagsArray;
     }
+
+    console.log(updatedMeal);
 
     await Meal.findByIdAndUpdate(id, updatedMeal, {new:true, runValidators:true})
         .then(meal => {

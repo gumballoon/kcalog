@@ -1,0 +1,21 @@
+<% layout('layouts/boilerplate') %>
+
+<h1 class="display-5 fw-semibold my-3">Log In</h1>
+
+<form action="/login" method="post" class="col-10 col-md-8 col-lg-6 mx-auto">
+    <!-- USERNAME -->
+    <div>
+        <label for="name" class="d-block fs-3 mt-4 mb-3 form-label">Username</label>
+        <input type="text" id="username" name="username" class="mx-auto text-center form-control" required>
+    </div>
+
+    <!-- PASSWORD -->
+    <div>
+        <label for="password" class="d-block fs-3 mt-4 mb-3 form-label">Password</label>
+        <input type="password" id="password" name="password" class="mx-auto text-center form-control" required>
+    </div>
+
+    <button type="submit" class="btn btn-secondary mt-4" id="submit" disabled>Log In</button>
+</form>
+
+<script src="/scripts/users.js"></script>

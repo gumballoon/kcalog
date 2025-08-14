@@ -1,19 +1,25 @@
 <% layout('layouts/boilerplate') %>
 
-<a href="/db/meals/new" class="btn btn-light btn-lg">New Meal</a>
-
 <% if (tag === 'all' && serving === 'all') { %>
-    <h2 class="display-5 fw-semibold my-3">All Meals</h2>
-    <div class="d-flex flex-wrap justify-content-center">
-    <% for (let tag of allTags) { %>
-        <a href="/db/meals?tag=<%= tag %>" class="btn btn-light mx-3 my-2"><%= tag %></a>
+    <h1 class="display-5 fw-semibold mb-3">All Meals</h1>
+    <a href="/db/meals/new" class="btn btn-light btn-lg">New Meal</a>
+    
+    <% if (allTags.length && allTags[0] !== '') { %>
+        <h3 class="my-3">Tags</h3>
+        <div class="d-flex flex-wrap justify-content-center">
+             <% for (let tag of allTags) { %>
+                <% if (tag !== '') { %>
+                    <a href="/db/meals?tag=<%= tag %>" class="btn btn-light mx-3 my-2"><%= tag %></a>
+                <% } %>
+            <% } %>
+        </div>
     <% } %>
-</div>
+
 <% } else { %>
     <% if (serving === 'all') { %>
-        <h2 class="display-3 fw-semibold my-3 text-capitalize"><%= tag %></h2>
+        <h1 class="display-5 fw-semibold mb-3 text-capitalize"><%= tag %></h1>
     <% } else { %>
-        <h2 class="display-3 fw-semibold my-3 text-capitalize"><%= serving %></h2>
+        <h1 class="display-5 fw-semibold mb-3 text-capitalize"><%= serving %></h1>
     <% } %>
 
     <a href="/db/meals" class="btn btn-lg btn-light">All Meals</a>
@@ -22,7 +28,7 @@
 <div class="d-flex flex-wrap justify-content-center">
     <% for (let meal of allMeals) { %>
         <section class="border border-secondary m-4 p-3 text-start col-10 col-md-5 col-xl-3">
-            <h3 class="fs-3 text-capitalize"><%= meal.name %></h3>
+            <h2 class="fs-3 text-capitalize"><%= meal.name %></h2>
             <div class="row">
                 <div class="col d-flex flex-column justify-content-around">
                     <p>Serving: <a href="/db/meals?serving=<%= meal.serving %>" class="text-capitalize btn btn-light"><%= meal.serving %></a></p>
@@ -47,3 +53,7 @@
         </section>
     <% } %>
 </div>
+
+<% if (!allMeals.length) { %>
+    <p class="my-5 fst-italic text-muted">Nothing here yet...</p>
+<% } %>

@@ -4,7 +4,7 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
 
-    <% if(title) { %>
+    <% if(typeof title !== 'undefined') { %>
         <title>KCALOG: <%= title %></title>
     <% }  else { %>
         <title>KCALOG</title>
@@ -26,12 +26,10 @@
     
 </head>
 
-<body>
-    <main class="container text-center py-4">
-        <h1 class="m-0">
-            <a href="/" class="display-3 fw-bold text-decoration-none text-dark">KCALOG</a>
-        </h1>
+<body> 
+    <%- include('../partials/navbar') %>
 
+    <main class="container-fluid text-center py-4">
         <%- include('../partials/flash') %>
 
         <%- body %>

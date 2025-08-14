@@ -53,6 +53,17 @@ const sessionOptions = {
 }
 app.use(session(sessionOptions));
 
+// PASSPORT setup
+const passport = require('passport');
+const LocalStrategy = require('passport-local'); // to plugin a local strategy (username + password) on PASSPORT
+app.use(passport.initialize());
+app.use(passport.session()); // to have persistent login sessions (AFTER the session setup)
+
+const { User } = require('./models/user');
+passport.use(new LocalStrategy(User.authenticate())); // to use a specific strategy w/ an authentication method located on the model User
+passport.serializeUser(User.serializeUser()); // how to store an instance data in the Session
+passport.deserializeUser(User.deserializeUser()); // how to delete the stored instance data 
+
 // to display temporary messages
 const flash = require('connect-flash');
 app.use(flash());
@@ -61,6 +72,8 @@ app.use(flash());
 app.use((req, res, next) => {
     // to dynamically set the BS classes w/ the flash category (i.e. 'success', 'error', etc.)
     res.locals.flash = req.flash();
+     // to share the stored user info
+    res.locals.currentUser = req.user;
     next();
 })
 
@@ -90,10 +103,11 @@ const { getDailyKcal} = require('./utilities/dailyLogs');
 
 // HOME route (1. New Log, 2. Daily Log, 3. Food DB)
 app.get('/', async (req, res, next) => {
+    const userId = req.user?._id || null;
     const now = new Date();
     const today = dateTime.format(now, 'ddd DD MMMM') // Mon Jan 01
 
-    const daily = await DailyLog.findOne({ calendarDate: now.toDateString() })
+    const daily = await DailyLog.findOne({ userId, calendarDate: now.toDateString() })
         .catch(e => next(mongoError(e)))
     if (daily && (daily.mealLogs.length || daily.workoutLogs.length)) {
         const dailyStats = await getDailyKcal(daily);
@@ -102,6 +116,10 @@ app.get('/', async (req, res, next) => {
         res.render('kcalog/home', { title: 'Home', today, dailyStats: 0});
     }
 })
+
+// U S E R S //
+const userRoutes = require('./routes/users');
+app.use('', userRoutes);
 
 // M E A L  L O G S //
 const mealLogRoutes = require('./routes/mealLogs');

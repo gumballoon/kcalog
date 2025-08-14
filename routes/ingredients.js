@@ -1,7 +1,10 @@
 const express = require('express');
 const router = express.Router();
 const ingredients = require('../controllers/ingredients');
-const { AppError } = require('../utilities/errors');
+const { isLoggedIn } = require('../utilities/middleware');
+
+// apply isLoggedIn to ALL routes in this router
+router.use(isLoggedIn);
 
 // INDEX & CREATE routes
 router.route('/')

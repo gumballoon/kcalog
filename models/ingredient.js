@@ -4,7 +4,6 @@ const ingredientSchema = new mongoose.Schema({
     name: {
         type: String,
         lowercase: true,
-        unique: true,
         required: [true, 'NAME cannot be blank']
     },
     category: {
@@ -29,19 +28,27 @@ const ingredientSchema = new mongoose.Schema({
     },
     userId: {
         type: String,
-        default: 'wifey',
         required: true
     }
 })
 
-ingredientSchema.statics.getAllNames = async function(){
-    const allInstances = await this.find({});
+// to catch duplication errors & add a custom message
+ingredientSchema.post('save', function(error, doc, next) {
+    if (error.name === 'MongoServerError' && error.code === 11000) {
+        next(new Error('An ingredient with the given name is already saved'));
+    } else {
+        next(error);
+    }
+});
+
+ingredientSchema.statics.getAllNames = async function(userId){
+    const allInstances = await this.find({ userId });
     const allNames = allInstances.map(i => i.name);
     return allNames;
 }
 
-ingredientSchema.statics.getAllCategories = async function(){
-    const allInstances = await this.find({});
+ingredientSchema.statics.getAllCategories = async function(userId){
+    const allInstances = await this.find({ userId });
     let allCategories = [];
     allInstances.map(i => {
         if (!allCategories.includes(i.category))
@@ -51,8 +58,8 @@ ingredientSchema.statics.getAllCategories = async function(){
 }
 
 // simplified Ingredient data for the Meal & MealLog routes
-ingredientSchema.statics.getFormattedIngredientData = async function(){
-    const allInstances = await this.find({});
+ingredientSchema.statics.getFormattedIngredientData = async function(userId){
+    const allInstances = await this.find({ userId });
     const data = {};
     for (let i of allInstances) {
         data[i.name] = {

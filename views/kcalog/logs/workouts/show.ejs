@@ -2,39 +2,39 @@
 
 <a href="/logs/workouts" class="btn btn-light">All Workout Logs</a>
 
-<h2 class="display-3 fw-semibold my-3 text-capitalize"><%= workoutLog.name %></h2>
+<h1 class="display-5 fw-semibold my-3 text-capitalize"><%= workoutLog.name %></h1>
 
-<a href="/logs/<%= workoutLog.dailyLog %>" class="btn btn-light btn-lg border fw-normal my-3"><%= workoutLog.longDate %></a>
+<a href="/logs/<%= workoutLog.dailyLog %>" class="btn btn-light btn-lg border fw-normal mb-3"><%= workoutLog.longDate %></a>
 
 <img src="<%= workoutLog.image %>" alt="" class="my-3 d-block mx-auto">
 
 <section class="border d-flex justify-content-around align-items-center p-3">
     <div class="col-4">
-        <h3 class="display-5"><%= workoutLog.kcal %></h3>
+        <h2 class="display-5"><%= workoutLog.kcal %></h2>
         <p class="fw-bold text-muted">Kcal</p>
     </div>
 
     <div class="col-4">
         <% if (workoutLog.duration) { %>
-            <h3 class="display-5"><%= workoutLog.duration %></h3>
+            <h2 class="display-5"><%= workoutLog.duration %></h2>
         <% } else { %>
-            <h3 class="display-5">-</h3>
+            <h2 class="display-5">-</h2>
         <% } %>
         <p class="fw-bold text-muted">Duration</p>
     </div>
 
     <div class="col-4">
         <% if (workoutLog.duration) { %>
-            <h3 class="display-5"><%= workoutLog.kcalPerHour %></h3>
+            <h2 class="display-5"><%= workoutLog.kcalPerHour %></h2>
         <% } else { %>
-            <h3 class="display-5">-</h3>
+            <h2 class="display-5">-</h2>
         <% } %>
         <p class="fw-bold text-muted">Kcal Per Hour</p>
     </div>
 </section>
 
 <% if (workoutLog.notes) { %>
-    <h3 class="display-5 fw-normal mt-4 mb-3">Notes</h3>
+    <h2 class="display-5 fw-normal mt-4 mb-3">Notes</h2>
     <p><%= workoutLog.notes %></p>
 <% } %>
 

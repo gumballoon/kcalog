@@ -1,12 +1,6 @@
 <% layout('layouts/boilerplate') %>
 
-<div>
-    <a href="/logs/meals" class="btn btn-light btn-lg">Meal Logs</a>
-    
-    <a href="/logs/workouts" class="btn btn-light btn-lg">Workout Logs</a>
-</div>
-
-<h2 class="display-5 fw-semibold mt-0 mt-3">All Daily Logs</h2>
+<h1 class="display-5 fw-semibold mt-0 mb-3">All Daily Logs</h1>
 
 <% for (let month of allMonths) { %>
     <h2 class="fs-2 fw-semibold text-capitalize mt-4 mb-0"><%= month.slice(4) %></h2>

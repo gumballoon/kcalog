@@ -4,12 +4,13 @@ const { mongoError } = require('../utilities/errors');
 
 // to create or update an existing DailyLog instance (after creating or updating a MealLog or ExerciseLog instance)
 module.exports.getDailyLog = async (type, log, next) => {
+    const userId = log.userId;
     // to convert the DATE input value (i.e. 2025/01/01) to a Date object
     if (typeof log.date !== Date) {
         log.date = new Date(log.date);
     }
     const date = log.date.toDateString();
-    const foundDailyLog = await DailyLog.findOne({calendarDate: date})
+    const foundDailyLog = await DailyLog.findOne({userId, calendarDate: date})
         .catch(e => next(mongoError(e)))
     let newDailyLog = '';
 
@@ -28,12 +29,14 @@ module.exports.getDailyLog = async (type, log, next) => {
         if (type === 'meal') {
             newDailyLog = DailyLog({
                 calendarDate: date,
-                mealLogs: [log._id]
+                mealLogs: [log._id],
+                userId
             })
         } else if (type === 'workout') {
             newDailyLog = DailyLog({
                 calendarDate: date,
-                workoutLogs: [log._id]
+                workoutLogs: [log._id],
+                userId
             })
         }
     

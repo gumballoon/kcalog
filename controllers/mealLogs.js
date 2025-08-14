@@ -7,13 +7,14 @@ const { textCapitalize } = require('../utilities/textCapitalize');
 const { serverError, mongoError } = require('../utilities/errors');
 
 module.exports.index = async (req, res, next) => {
+    const userId = req.user._id;
     const { category } = req.query;
     const allCategories = ['breakfast', 'lunch', 'snack', 'dinner'];
-    const allMonths = await MealLog.getAllMonths();
+    const allMonths = await MealLog.getAllMonths(userId);
 
     // filtered index per CATEGORY
     if (category && allCategories.includes(category)) {
-        let allMealLogs = await MealLog.find({ category })
+        let allMealLogs = await MealLog.find({ userId, category })
             .catch(e => next(mongoError(e)));
         // order from newest to oldest
     try {
@@ -25,7 +26,7 @@ module.exports.index = async (req, res, next) => {
 
     // show all
     } else {
-        let allMealLogs = await MealLog.find({ })
+        let allMealLogs = await MealLog.find({ userId })
             .catch(e => next(mongoError(e)));
         
         try {
@@ -39,10 +40,11 @@ module.exports.index = async (req, res, next) => {
 };
 
 module.exports.renderNewForm = async (req, res, next) => {
+    const userId = req.user._id;
     // to assign the current date as default
     const today = new Date().toISOString().split('T')[0];
 
-    // automatically assign the Category based on the time of day
+    // to automatically assign the Category based on the time of day
     let category = '';
     const hours = parseInt(new Date().toTimeString().slice(0,2)); // 00 to 23
     if (hours >= 6 && hours <= 12) {
@@ -55,15 +57,15 @@ module.exports.renderNewForm = async (req, res, next) => {
         category = 'snack';
     }
 
-    const allMeals = await Meal.find({ })
+    const allMeals = await Meal.find({ userId })
         .catch(e => next(mongoError(e)));
-    const allMealNames = await Meal.getAllNames()
+    const allMealNames = await Meal.getAllNames(userId)
         .catch(e => next(mongoError(e)));
-    const allIngredients = await Ingredient.getFormattedIngredientData()
+    const allIngredients = await Ingredient.getFormattedIngredientData(userId)
         .catch(e => next(mongoError(e)));
-    const allIngNames = await Ingredient.getAllNames()
+    const allIngNames = await Ingredient.getAllNames(userId)
         .catch(e => next(mongoError(e)));
-    const allTags = await Meal.getAllTags()
+    const allTags = await Meal.getAllTags(userId)
         .catch(e => next(mongoError(e)));
 
     try {
@@ -74,9 +76,12 @@ module.exports.renderNewForm = async (req, res, next) => {
 };
 
 module.exports.createMealLog = async (req, res, next) => {
+    const userId = req.user._id;
     const { mealLog, meal } = req.body;
     const newLog = new MealLog(mealLog);
+    newLog.userId = userId;
     newLog.meal = meal;
+    newLog.meal.userId = userId;
 
     // if it's a meal from the DB, populate MEAL w/ the stored data
     if (req.body.mealData) {
@@ -91,7 +96,7 @@ module.exports.createMealLog = async (req, res, next) => {
         }
     }
     // create or update an existing DailyLog instance
-    newLog.dailyLog = await getDailyLog('meal', newLog);
+    newLog.dailyLog = await getDailyLog('meal', newLog, next);
 
     await newLog.save()
         .then((mealLog) => {
@@ -104,21 +109,22 @@ module.exports.createMealLog = async (req, res, next) => {
 };
 
 module.exports.renderEditForm = async (req, res, next) => {
+    const userId = req.user._id;
     const { id } = req.params;
     // to set the current date as max date
     const today = new Date().toISOString().split('T')[0];
 
     const mealLog = await MealLog.findById(id)
         .catch(e => next(mongoError(e)))
-    const allMeals = await Meal.find({ })
+    const allMeals = await Meal.find({ userId })
         .catch(e => next(mongoError(e)));
-    const allMealNames = await Meal.getAllNames()
+    const allMealNames = await Meal.getAllNames(userId)
         .catch(e => next(mongoError(e)));
-    const allIngredients = await Ingredient.getFormattedIngredientData()
+    const allIngredients = await Ingredient.getFormattedIngredientData(userId)
         .catch(e => next(mongoError(e)));
-    const allIngNames = await Ingredient.getAllNames()
+    const allIngNames = await Ingredient.getAllNames(userId)
         .catch(e => next(mongoError(e)));
-    const allTags = await Meal.getAllTags()
+    const allTags = await Meal.getAllTags(userId)
         .catch(e => next(mongoError(e)));
 
     try {
@@ -153,7 +159,7 @@ module.exports.updateMealLog = async (req, res, next) => {
     if (oldLog.date.toDateString() !== new Date(updatedLog.date).toDateString()) {
         const oldDaily = oldLog.dailyLog;
         await DailyLog.findByIdAndUpdate(oldDaily, {$pull: {mealLogs: id}}, {new:true, runValidators:true});
-        updatedLog.dailyLog = await getDailyLog('meal', updatedLog);
+        updatedLog.dailyLog = await getDailyLog('meal', updatedLog, next);
     } else {
         updatedLog.dailyLog = oldLog.dailyLog;
     }            

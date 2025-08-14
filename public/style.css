@@ -14,7 +14,7 @@ img {
     display: block;
     width: fit-content;
     position: fixed;
-    top: 10%;
+    top: 2.5%;
     left: 50%; transform: translateX(-50%);
 
     /* for the automatic closing w/ the scroll event */

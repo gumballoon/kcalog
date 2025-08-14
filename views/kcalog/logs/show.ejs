@@ -1,10 +1,10 @@
 <% layout('layouts/boilerplate') %>
 
+<h1 class="display-5 fw-semibold mb-3"><%= dailyLog.longDate %></h1>
+
 <a href="/logs" class="btn btn-light btn-lg">All Daily Logs</a>
 
-<h2 class="display-6 fw-semibold my-3"><%= dailyLog.longDate %></h2>
-
-<img src="<%= dailyLog.image %>" alt="" class="my-3">
+<img src="<%= dailyLog.image %>" alt="" class="d-block mx-auto my-3">
 
 <section class="border d-flex justify-content-around align-items-center p-3">
     <div class="col-4">

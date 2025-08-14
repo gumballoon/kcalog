@@ -36,7 +36,6 @@ const workoutLogSchema = new Schema({
     notes: String,
     userId: {
         type: String,
-        default: 'wifey',
         required: true
     }
 })
@@ -63,8 +62,8 @@ workoutLogSchema.virtual('month').get(function(){
     return dateTime.format(this.date, 'YYMM MMMM YYYY'); //  2501 January 2025 (2501 will only be used to sort)
 });
 
-workoutLogSchema.statics.getAllMonths = async function() {
-    const allInstances = await this.find({});
+workoutLogSchema.statics.getAllMonths = async function(userId) {
+    const allInstances = await this.find({ userId });
     let allMonths = [];
     allInstances.map(i => {
         if (!allMonths.includes(i.month))
@@ -75,7 +74,7 @@ workoutLogSchema.statics.getAllMonths = async function() {
 }
 
 // update the associated DailyLog after a WorkoutLog is deleted
-workoutLogSchema.post('findOneAndDelete', async function (deletedLog) {
+workoutLogSchema.post('findOneAndDelete', async function(deletedLog) {
     if (deletedLog) { 
         const logId = deletedLog._id;
         const dailyId = deletedLog.dailyLog;

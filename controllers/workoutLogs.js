@@ -2,16 +2,17 @@ const { WorkoutLog } = require('../models/workoutLog');
 const { DailyLog } = require('../models/dailyLog');
 const { getDailyLog } = require('../utilities/dailyLogs');
 const { textCapitalize } = require('../utilities/textCapitalize'); 
-const allWorkouts = require('../seeds/data/workouts');
+const allWorkouts = require('../public/data/workouts');
 const { serverError, mongoError } = require('../utilities/errors');
 
 module.exports.index = async (req, res, next) => {
-    let allWorkoutLogs = await WorkoutLog.find({})
+    const userId = req.user._id;
+    let allWorkoutLogs = await WorkoutLog.find({ userId })
         .catch(e => next(mongoError(e)));
     // order from newest to oldest
     allWorkoutLogs = allWorkoutLogs.sort((a,b) => b.date - a.date)
 
-    const allMonths = await WorkoutLog.getAllMonths();
+    const allMonths = await WorkoutLog.getAllMonths(userId);
 
     try {
          res.render('kcalog/logs/workouts/index', { title:'Workout Logs', allWorkoutLogs, allMonths });
@@ -31,14 +32,16 @@ module.exports.renderNewForm = async (req, res) => {
 };
 
 module.exports.createWorkoutLog = async (req, res, next) => {
+    const userId = req.user._id;
     const newLog = new WorkoutLog(req.body.workoutLog);
+    newLog.userId = userId;
 
     // convert the duration (00:00) to minutes
     const { duration} = req.body.workoutLog;
     newLog.minutes = duration.slice(0,2) * 60 + parseInt(duration.slice(3,5));
 
     // create or update an existing DailyLog instance
-    newLog.dailyLog = await getDailyLog('workout', newLog);
+    newLog.dailyLog = await getDailyLog('workout', newLog, next);
 
     await newLog.save()
         .then(workoutLog => {
@@ -71,7 +74,7 @@ module.exports.updateWorkoutLog = async (req, res, next) => {
     if (oldLog.date.toDateString() !== new Date(updatedLog.date).toDateString()) {
         const oldDaily = oldLog.dailyLog;
         await DailyLog.findByIdAndUpdate(oldDaily, {$pull: {workoutLogs: id}}, {new:true, runValidators:true});
-        updatedLog.dailyLog = await getDailyLog('workout', updatedLog);
+        updatedLog.dailyLog = await getDailyLog('workout', updatedLog, next);
     } else {
         updatedLog.dailyLog = oldLog.dailyLog;
     }     

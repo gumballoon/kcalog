@@ -1,20 +1,28 @@
 <% layout('layouts/boilerplate') %>
 
-<a href="/logs/meals/new" class="btn btn-light btn-lg">New Meal Log</a>
-
 <% if (category === 'all') { %>
-    <h2 class="display-5 fw-semibold my-3">All Meal Logs</h2>
+    <h1 class="display-5 fw-semibold mb-3">All Meal Logs</h1>
 
-    <div class="d-flex flex-wrap justify-content-center">
+    <a href="/logs/meals/new" class="btn btn-light btn-lg">New Meal Log</a>
+
+    <% if (allMealLogs.length) { %>
+        <h3 class="my-3">Categories</h3>
+
+        <div class="d-flex flex-wrap justify-content-center">
         <% for (let category of ['breakfast', 'lunch', 'snack', 'dinner']) { %>
             <a href="/logs/meals?category=<%= category %>" class="btn btn-light mx-3 my-2"><%= category %></a>
         <% } %>
-    </div>
+        </div>
+    <% } %>
 
 <% } else { %>
-    <h2 class="display-5 fw-semibold my-3 text-capitalize"> <%= category %></h2>
+    <h1 class="display-5 fw-semibold my-3 text-capitalize"> <%= category %></h1>
+
+    <a href="/logs/meals/new" class="btn btn-light btn-lg">New Meal Log</a>
+
     <a href="/logs/meals" class="btn btn-lg btn-light">All Meal Logs</a>
 <% } %>
+
 
 <% for (let month of allMonths) { %>
     <h2 class="fs-2 fw-semibold text-capitalize mt-4 mb-0"><%= month.slice(4) %></h2>
@@ -38,4 +46,8 @@
             <% } %>
         <% } %>
     </div>
+<% } %>
+
+<% if (!allMealLogs.length) { %>
+    <p class="my-5 fst-italic text-muted">Nothing here yet...</p>
 <% } %>

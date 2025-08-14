@@ -13,9 +13,9 @@
     <% } %>
 </datalist>
 
-<a href="/db/meals" class="btn btn-light btn-lg my-3">All Meals</a>
+<a href="/db/meals" class="btn btn-light btn-lg">All Meals</a>
 
-<h2 class="display-5 fw-semibold">New Meal</h2>
+<h1 class="display-5 fw-semibold my-3">New Meal</h1>
 
 <form id="meal-form" action="/db/meals" method="post" class="col-lg-10 mx-auto" autocomplete="off">
 
@@ -28,7 +28,7 @@
 
     <!-- INGREDIENTS -->
     <div>
-        <h3 class="d-block fs-3 mt-4 mb-3 fw-normal">Ingredients</h3>
+        <h2 class="d-block fs-3 mt-4 mb-3 fw-normal">Ingredients</h2>
         <p id="no-ingredient" class="text-danger d-none">Please insert at least one ingredient</p>
 
         <div id="meal-ingredients">
@@ -74,7 +74,7 @@
 
     <!-- SERVING -->
     <div class="mt-5 d-flex justify-content-center align-items-center">
-        <h3 class="fs-3 fw-normal">Serving</h3>
+        <h2 class="fs-3 fw-normal">Serving</h2>
         <div class="d-flex py-3 mx-3 border rounded-3">
             <div class="mx-3">
                 <input type="radio" class="btn-check" name="meal[serving]" value="single" id="single" checked>

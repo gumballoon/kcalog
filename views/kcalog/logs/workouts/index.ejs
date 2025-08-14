@@ -1,8 +1,8 @@
 <% layout('layouts/boilerplate') %>
 
-<a href="/logs/workouts/new" class="btn btn-light btn-lg">New Workout Log</a>
+<h1 class="display-5 fw-semibold my-3">All Workout Logs</h1>
 
-<h2 class="display-5 fw-semibold my-3">All Workout Logs</h2>
+<a href="/logs/workouts/new" class="btn btn-light btn-lg">New Workout Log</a>
 
 <% for (let month of allMonths) { %>
     <h2 class="fs-2 fw-semibold text-capitalize mt-4 mb-0"><%= month.slice(4) %></h2>
@@ -25,4 +25,6 @@
     </div>
 <% } %>
 
-
+<% if (!allWorkoutLogs.length) { %>
+    <p class="my-5 fst-italic text-muted">Nothing here yet...</p>
+<% } %>
