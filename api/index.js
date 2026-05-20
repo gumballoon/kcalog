@@ -11,15 +11,31 @@ const methodOverride = require('method-override');
 
 mongoose.set('strictQuery', true);
 const dbURL = process.env.DB_URL || 'mongodb://127.0.0.1:27017/kcalog';
-mongoose.connect(dbURL)
-    .then(() => console.log('DB: Open'))
-    .catch(err => console.log('DB: Error', err));
+
+// cache the connection across serverless invocations
+let dbConnected = false;
+async function connectDB() {
+    if (dbConnected) return;
+    await mongoose.connect(dbURL);
+    dbConnected = true;
+    console.log('DB: Open');
+}
 
 const allowedOrigins = process.env.NODE_ENV === 'production'
     ? [process.env.CLIENT_URL].filter(Boolean)
     : ['http://localhost:5173'];
 
 app.use(cors({ origin: allowedOrigins, credentials: true }));
+
+app.use(async (req, res, next) => {
+    try {
+        await connectDB();
+        next();
+    } catch (err) {
+        console.log('DB: Error', err);
+        res.status(500).json({ error: 'database connection failed' });
+    }
+});
 app.use(express.urlencoded({ extended: true }));
 app.use(express.json());
 app.use(cookieParser());
