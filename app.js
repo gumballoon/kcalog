@@ -32,23 +32,23 @@ app.use(express.urlencoded({ extended: true }));
 // parse incoming JSON in POST request body
 app.use(express.json());
 
-// set the server on the port 8080 (on development)
-app.listen(8080);
 // share the directory w/ the public assets (CSS, JS, images)
 app.use(express.static(path.join(__dirname, '/public')));
 
 const session = require('express-session');
-const sessionOptions = { 
-		secret: '$Ab!x88', 
-		resave: false, 
+const MongoStore = require('connect-mongo');
+const sessionOptions = {
+		secret: process.env.SESSION_SECRET,
+		resave: false,
 		saveUninitialized: true,
+		store: MongoStore.create({ mongoUrl: process.env.DB_URL || 'mongodb://127.0.0.1:27017/kcalog' }),
 		cookie: {
                 // to delete the cookie after one week
 				expires: Date.now() + (1000 * 60 * 60 * 24 * 7),
 				maxAge: 1000 * 60 * 60 * 24 * 7,
 				// security feature to protect the cookie
                 httpOnly: true
-		} 		
+		}
 }
 app.use(session(sessionOptions));
 
@@ -153,3 +153,6 @@ app.use((err, req, res, next) => {
     console.log(err);
     res.status(err.status || 500).redirect('/');
 })
+
+const PORT = process.env.PORT || 8080;
+app.listen(PORT);
